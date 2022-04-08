@@ -43,3 +43,21 @@ func StringSliceWalk(vs []string, f func(string) (string, bool)) []string {
 	}
 	return vsm
 }
+
+// StringsAddPrefix 每一个元素添加前缀
+func StringsAddPrefix(s []string, prefix string) []string {
+	var out []string
+	for _, v := range s {
+		out = append(out, prefix+v)
+	}
+	return out
+}
+
+// StringsAddPrefix 每一个元素添加后缀
+func StringsAddSuffix(s []string, suffix string) []string {
+	var out []string
+	for _, v := range s {
+		out = append(out, v+suffix)
+	}
+	return out
+}

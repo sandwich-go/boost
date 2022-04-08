@@ -1,9 +1,11 @@
 package xos
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 
+	"github.com/sandwich-go/boost/xpanic"
 	"github.com/sandwich-go/boost/xslice"
 )
 
@@ -55,4 +57,26 @@ func FileWalkFuncWithExcludeFilter(files *[]string, excluded func(f string) bool
 		}
 		return err
 	}
+}
+
+// FileGetContents 获取文件内容
+func FileGetContents(filename string) ([]byte, error) {
+	return ioutil.ReadFile(filename)
+}
+
+// MustFilePutContents 写入文件，如果发生错误则panic
+func MustFilePutContents(filename string, content []byte) {
+	dirName := filepath.Dir(filename)
+	xpanic.PanicIfErrorAsFmtFirst(os.MkdirAll(dirName, os.ModePerm), "got error:%w while MkdirAll with:%s", dirName)
+	xpanic.PanicIfErrorAsFmtFirst(ioutil.WriteFile(filename, content, 0644), "got error:%w while WriteFile with:%s", filename)
+}
+
+// FilePutContents 写入文件
+func FilePutContents(filename string, content []byte) error {
+	dirName := filepath.Dir(filename)
+	err := os.MkdirAll(dirName, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(filename, content, 0644)
 }

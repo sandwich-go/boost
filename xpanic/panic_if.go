@@ -3,7 +3,7 @@ package xpanic
 import "fmt"
 
 // PanicIfErrorAsFmtFirst err不为nil则wrap并panic，将err作为第一个fmt的参数
-func PanicIfErrorAsFirst(err error, fmtStr string, args ...interface{}) {
+func PanicIfErrorAsFmtFirst(err error, fmtStr string, args ...interface{}) {
 	if err == nil {
 		return
 	}
