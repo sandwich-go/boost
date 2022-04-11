@@ -24,3 +24,18 @@ func GetShell() string {
 		return path
 	}
 }
+
+// getShellOption returns the shell option depending on current working operating system.
+// It returns "/c" for windows, and "-c" for others.
+// -c string
+//      If the -c option is present, then commands are read from string.
+//      If there are arguments after the string, they are assigned to the positional
+//      parameters, starting with $0.
+func GetShellOption() string {
+	switch runtime.GOOS {
+	case "windows":
+		return "/c"
+	default:
+		return "-c"
+	}
+}

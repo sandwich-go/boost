@@ -6,6 +6,9 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+
+	"github.com/sandwich-go/boost/xos"
+	"github.com/sandwich-go/boost/xslice"
 )
 
 const envKeyPPid = "GO_PROC_PPID"
@@ -47,6 +50,13 @@ func NewProcessWithOptions(path string, cc *ProcessOptions) *Process {
 // NewProcess creates and returns a new Process.
 func NewProcess(path string, opt ...ProcessOption) *Process {
 	return NewProcessWithOptions(path, NewProcessOptions(opt...))
+}
+
+// NewProcessShellCmdWithOptions creates and returns a process with given command and optional environment variable array.
+func NewProcessShellCmdWithOptions(cmd string, cc *ProcessOptions) *Process {
+	cc.Args = xslice.StringSetAdd(cc.Args, xos.GetShellOption())
+	cc.Args = xslice.StringSetAdd(cc.Args, parseCommand(cmd)...)
+	return NewProcessWithOptions(xos.GetShell(), cc)
 }
 
 // Start starts executing the process in non-blocking way.
