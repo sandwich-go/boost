@@ -4,10 +4,20 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/sandwich-go/boost/xpanic"
 	"github.com/sandwich-go/boost/xslice"
 )
+
+// Ext 返回后缀
+func Ext(path string) string {
+	ext := filepath.Ext(path)
+	if p := strings.IndexByte(ext, '?'); p != -1 {
+		ext = ext[0:p]
+	}
+	return ext
+}
 
 // FileExists 给定的filename是否存在且是一个文件
 func FileExists(filename string) bool {

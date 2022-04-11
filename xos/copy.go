@@ -15,17 +15,17 @@ const (
 )
 
 // Copy copies src to dest, doesn't matter if src is a directory or a file.
-func Copy(src, dest string, opt ...Options) error {
+func Copy(src, dest string, opt ...CopyOption) error {
 	info, err := os.Lstat(src)
 	if err != nil {
 		return err
 	}
-	return switchboard(src, dest, info, assure(opt...))
+	return switchboard(src, dest, info, NewCopyOptions(opt...))
 }
 
 // switchboard switches proper copy functions regarding file type, etc...
 // If there would be anything else here, add a case to this switchboard.
-func switchboard(src, dest string, info os.FileInfo, opt Options) error {
+func switchboard(src, dest string, info os.FileInfo, opt *CopyOptions) error {
 	switch {
 	case info.Mode()&os.ModeSymlink != 0:
 		return onsymlink(src, dest, info, opt)
@@ -39,7 +39,7 @@ func switchboard(src, dest string, info os.FileInfo, opt Options) error {
 // copy decide if this src should be copied or not.
 // Because this "copy" could be called recursively,
 // "info" MUST be given here, NOT nil.
-func copy(src, dest string, info os.FileInfo, opt Options) error {
+func copy(src, dest string, info os.FileInfo, opt *CopyOptions) error {
 	skip, err := opt.Skip(src)
 	if err != nil {
 		return err
@@ -53,7 +53,7 @@ func copy(src, dest string, info os.FileInfo, opt Options) error {
 // fcopy is for just a file,
 // with considering existence of parent directory
 // and file permission.
-func fcopy(src, dest string, info os.FileInfo, opt Options) (err error) {
+func fcopy(src, dest string, info os.FileInfo, opt *CopyOptions) (err error) {
 
 	if err = os.MkdirAll(filepath.Dir(dest), os.ModePerm); err != nil {
 		return
@@ -89,7 +89,7 @@ func fcopy(src, dest string, info os.FileInfo, opt Options) (err error) {
 // dcopy is for a directory,
 // with scanning contents inside the directory
 // and pass everything to "copy" recursively.
-func dcopy(srcdir, destdir string, info os.FileInfo, opt Options) (err error) {
+func dcopy(srcdir, destdir string, info os.FileInfo, opt *CopyOptions) (err error) {
 
 	originalMode := info.Mode()
 
@@ -117,7 +117,7 @@ func dcopy(srcdir, destdir string, info os.FileInfo, opt Options) (err error) {
 	return
 }
 
-func onsymlink(src, dest string, info os.FileInfo, opt Options) error {
+func onsymlink(src, dest string, info os.FileInfo, opt *CopyOptions) error {
 
 	switch opt.OnSymlink(src) {
 	case Shallow:
@@ -165,20 +165,4 @@ func chmod(dir string, mode os.FileMode, reported *error) {
 	if err := os.Chmod(dir, mode); *reported == nil {
 		*reported = err
 	}
-}
-
-// assure Options struct, should be called only once.
-// All optional values MUST NOT BE nil/zero after assured.
-func assure(opts ...Options) Options {
-	if len(opts) == 0 {
-		return getDefaultOptions()
-	}
-	defopt := getDefaultOptions()
-	if opts[0].OnSymlink == nil {
-		opts[0].OnSymlink = defopt.OnSymlink
-	}
-	if opts[0].Skip == nil {
-		opts[0].Skip = defopt.Skip
-	}
-	return opts[0]
 }
