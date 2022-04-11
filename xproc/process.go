@@ -1,4 +1,4 @@
-package xexec
+package xproc
 
 import (
 	"fmt"

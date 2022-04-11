@@ -1,9 +1,8 @@
-package xexec
+package xproc
 
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"strings"
 )
 
@@ -16,8 +15,6 @@ func Run(path string, opt ...ProcessOption) (string, error) {
 	stdErr := new(bytes.Buffer)
 	cc.Stdout = stdOut
 	cc.Stderr = stdErr
-
-	fmt.Println(cc)
 	process := NewProcessWithOptions(path, cc)
 	err := process.Run()
 	if err != nil {
