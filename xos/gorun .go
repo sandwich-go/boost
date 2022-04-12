@@ -28,8 +28,8 @@ func IsGoRun() bool {
 
 func MustGetBinaryFilePath() (ret string) {
 	ex, err := os.Executable()
-	xpanic.PanicIfErrorAsFmtFirst(err, "Executable got error:%w")
+	xpanic.WhenErrorAsFmtFirst(err, "Executable got error:%w")
 	realPath, err := filepath.EvalSymlinks(ex)
-	xpanic.PanicIfErrorAsFmtFirst(err, "EvalSymlinks got error:%w")
+	xpanic.WhenErrorAsFmtFirst(err, "EvalSymlinks got error:%w")
 	return realPath
 }

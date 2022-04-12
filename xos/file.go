@@ -62,8 +62,8 @@ func FileGetContents(filename string) ([]byte, error) {
 // MustFilePutContents 写入文件，如果发生错误则panic
 func MustFilePutContents(filename string, content []byte) {
 	dirName := filepath.Dir(filename)
-	xpanic.PanicIfErrorAsFmtFirst(os.MkdirAll(dirName, os.ModePerm), "got error:%w while MkdirAll with:%s", dirName)
-	xpanic.PanicIfErrorAsFmtFirst(ioutil.WriteFile(filename, content, 0644), "got error:%w while WriteFile with:%s", filename)
+	xpanic.WhenErrorAsFmtFirst(os.MkdirAll(dirName, os.ModePerm), "got error:%w while MkdirAll with:%s", dirName)
+	xpanic.WhenErrorAsFmtFirst(ioutil.WriteFile(filename, content, 0644), "got error:%w while WriteFile with:%s", filename)
 }
 
 // FilePutContents 写入文件
@@ -82,15 +82,15 @@ func MustGetFileWriter(filePath string, prepend bool) (writer io.Writer, deferFu
 	if prepend {
 		if FileExists(filePath) {
 			fileContent, err := FileGetContents(filePath)
-			xpanic.PanicIfErrorAsFmtFirst(err, "got error:%w while FileGetContents:%s", filePath)
+			xpanic.WhenErrorAsFmtFirst(err, "got error:%w while FileGetContents:%s", filePath)
 			prependData = fileContent
 		}
 	}
 	dirParent := filepath.Dir(filePath)
 	err := os.MkdirAll(dirParent, os.ModePerm)
-	xpanic.PanicIfErrorAsFmtFirst(err, "got error:%w while MkdirAll:%s", dirParent)
+	xpanic.WhenErrorAsFmtFirst(err, "got error:%w while MkdirAll:%s", dirParent)
 	output, err := os.Create(filePath)
-	xpanic.PanicIfErrorAsFmtFirst(err, "got error:%w while Create:%s", filePath)
+	xpanic.WhenErrorAsFmtFirst(err, "got error:%w while Create:%s", filePath)
 	return output, func() {
 		_, _ = output.Write(prependData)
 		_ = output.Close()

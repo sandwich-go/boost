@@ -22,7 +22,7 @@ func WhenError(err error) {
 	panic(err)
 }
 
-// PanicIfTrue 当condation为true时panic
+// WhenTrue 当condation为true时panic
 func WhenTrue(condation bool, fmtStr string, args ...interface{}) {
 	if !condation {
 		return
