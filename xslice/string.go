@@ -75,6 +75,18 @@ func StringsRemoveRepeated(slc []string) []string {
 		return removeRepeatByMap(slc)
 	}
 }
+
+// StringsRemoveEmpty 移除空元素
+func StringsRemoveEmpty(s []string) []string {
+	var r []string
+	for _, str := range s {
+		if str != "" {
+			r = append(r, str)
+		}
+	}
+	return r
+}
+
 func removeRepeatByMap(slc []string) []string {
 	if len(slc) == 0 {
 		return slc

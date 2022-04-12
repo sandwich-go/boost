@@ -1,5 +1,7 @@
 package xstrings
 
+import "strings"
+
 // Is c an ASCII lower-case letter?
 func IsASCIILower(c byte) bool {
 	return 'a' <= c && c <= 'z'
@@ -56,3 +58,7 @@ func CamelCase(s string) string {
 	}
 	return string(t)
 }
+
+// CamelCaseSlice is like CamelCase, but the argument is a slice of strings to
+// be joined with "_".
+func CamelCaseSlice(elem []string) string { return CamelCase(strings.Join(elem, "_")) }
