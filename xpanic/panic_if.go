@@ -2,8 +2,9 @@ package xpanic
 
 import "fmt"
 
-// PanicIfErrorAsFmtFirst err不为nil则wrap并panic，将err作为第一个fmt的参数
-func PanicIfErrorAsFmtFirst(err error, fmtStr string, args ...interface{}) {
+// WhenErrorAsFmtFirst err不为nil则wrap并panic，将err作为第一个fmt的参数
+// xpanic.WhenErrorAsFmtFirst(err,"got error:%w while reading file:%s",filePath)
+func WhenErrorAsFmtFirst(err error, fmtStr string, args ...interface{}) {
 	if err == nil {
 		return
 	}
@@ -13,8 +14,8 @@ func PanicIfErrorAsFmtFirst(err error, fmtStr string, args ...interface{}) {
 	panic(fmt.Errorf(fmtStr, argList...))
 }
 
-// PanicIfError err不为nil则panic
-func PanicIfError(err error) {
+// WhenError err不为nil则panic
+func WhenError(err error) {
 	if err == nil {
 		return
 	}
@@ -22,7 +23,7 @@ func PanicIfError(err error) {
 }
 
 // PanicIfTrue 当condation为true时panic
-func PanicIfTrue(condation bool, fmtStr string, args ...interface{}) {
+func WhenTrue(condation bool, fmtStr string, args ...interface{}) {
 	if !condation {
 		return
 	}
