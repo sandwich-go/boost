@@ -75,3 +75,24 @@ func FilePutContents(filename string, content []byte) error {
 	}
 	return ioutil.WriteFile(filename, content, 0644)
 }
+
+// MustGetFileWriter 获取写文件句柄
+func MustGetFileWriter(filePath string, prepend bool) (writer io.Writer, deferFunc func()) {
+	var prependData []byte
+	if prepend {
+		if FileExists(filePath) {
+			fileContent, err := FileGetContents(filePath)
+			xpanic.PanicIfErrorAsFmtFirst(err, "got error:%w while FileGetContents:%s", filePath)
+			prependData = fileContent
+		}
+	}
+	dirParent := filepath.Dir(filePath)
+	err := os.MkdirAll(dirParent, os.ModePerm)
+	xpanic.PanicIfErrorAsFmtFirst(err, "got error:%w while MkdirAll:%s", dirParent)
+	output, err := os.Create(filePath)
+	xpanic.PanicIfErrorAsFmtFirst(err, "got error:%w while Create:%s", filePath)
+	return output, func() {
+		_, _ = output.Write(prependData)
+		_ = output.Close()
+	}
+}

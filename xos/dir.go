@@ -7,6 +7,17 @@ import (
 	"github.com/sandwich-go/boost/xslice"
 )
 
+func MkdirAll(path string) error {
+	return Mkdir(filepath.Dir(path))
+}
+
+func Mkdir(dir string) error {
+	if FileExists(dir) {
+		return nil
+	}
+	return os.MkdirAll(dir, 0775)
+}
+
 // IsEmpty 检测目录是否为空
 func IsEmpty(path string) bool {
 	stat, err := os.Stat(path)
