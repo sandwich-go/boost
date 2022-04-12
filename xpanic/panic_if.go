@@ -13,6 +13,14 @@ func PanicIfErrorAsFmtFirst(err error, fmtStr string, args ...interface{}) {
 	panic(fmt.Errorf(fmtStr, argList...))
 }
 
+// PanicIfError err不为nil则panic
+func PanicIfError(err error) {
+	if err == nil {
+		return
+	}
+	panic(err)
+}
+
 // PanicIfTrue 当condation为true时panic
 func PanicIfTrue(condation bool, fmtStr string, args ...interface{}) {
 	if !condation {
