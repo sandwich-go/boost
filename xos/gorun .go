@@ -3,9 +3,14 @@ package xos
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
+
+	"github.com/sandwich-go/boost/xpanic"
 )
+
+const PathSeparator = string(os.PathSeparator)
 
 var goRunOnce sync.Once
 var isGoRun bool
@@ -20,4 +25,27 @@ func IsGoRun() bool {
 		},
 	)
 	return isGoRun
+}
+
+func MustGetBinaryFilePath() (ret string) {
+	ex, err := os.Executable()
+	xpanic.PanicIfErrorAsFmtFirst(err, "Executable got error:%w")
+	realPath, err := filepath.EvalSymlinks(ex)
+	xpanic.PanicIfErrorAsFmtFirst(err, "EvalSymlinks got error:%w")
+	return realPath
+}
+
+//MustGetBinaryDir will return the location of the binary or the project in go run mode.
+func MustGetBinaryDir() (ret string) {
+	realPath := MustGetBinaryFilePath()
+	exPath := filepath.Dir(realPath)
+
+	if IsGoRun() { //This means we are running in go run and need to use the goPath
+		_, filename, _, _ := runtime.Caller(0)
+		currentDir := filepath.Dir(filename)
+		ret, _ = filepath.Abs(filepath.Join(currentDir, "../"))
+	} else {
+		ret = exPath + PathSeparator
+	}
+	return
 }
