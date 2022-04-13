@@ -5,10 +5,23 @@ import (
 	"strings"
 
 	"github.com/sandwich-go/boost/xslice"
+	"github.com/sandwich-go/boost/xstrings"
 )
 
-func RemoveCAndCppComments(src []byte) []byte {
+func RemoveCStyleComments(content []byte) []byte {
+	// http://blog.ostermiller.org/find-comment
 	ccmt := regexp.MustCompile(`\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/`)
-	out := ccmt.ReplaceAll(src, []byte(""))
-	return []byte(strings.Join(xslice.StringsRemoveEmpty(strings.Split(string(out), "\n")), "\n"))
+	return ccmt.ReplaceAll(content, []byte(""))
+}
+
+func RemoveCppStyleComments(content []byte) []byte {
+	cppcmt := regexp.MustCompile(`//.*`)
+	return cppcmt.ReplaceAll(content, []byte(""))
+}
+
+func RmoveCAndCppCommentAndBlanklines(src []byte) []byte {
+	out := RemoveCppStyleComments(RemoveCStyleComments(src))
+	return []byte(strings.Join(xslice.StringSliceWalk(strings.Split(string(out), "\n"), func(s string) (string, bool) {
+		return s, xstrings.Trim(s) != ""
+	}), "\n"))
 }
