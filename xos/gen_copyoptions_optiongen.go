@@ -39,29 +39,29 @@ func (cc *CopyOptions) ApplyOption(opts ...CopyOption) {
 // CopyOption option func
 type CopyOption func(cc *CopyOptions)
 
-// WithOnSymlink option func for filed OnSymlink
-func WithOnSymlink(v func(src string) SymlinkAction) CopyOption {
+// WithCopyOnSymlink option func for filed OnSymlink
+func WithCopyOnSymlink(v func(src string) SymlinkAction) CopyOption {
 	return func(cc *CopyOptions) {
 		cc.OnSymlink = v
 	}
 }
 
-// WithSkip option func for filed Skip
-func WithSkip(v func(src string) (bool, error)) CopyOption {
+// WithCopySkip option func for filed Skip
+func WithCopySkip(v func(src string) (bool, error)) CopyOption {
 	return func(cc *CopyOptions) {
 		cc.Skip = v
 	}
 }
 
-// WithAddPermission option func for filed AddPermission
-func WithAddPermission(v os.FileMode) CopyOption {
+// WithCopyAddPermission option func for filed AddPermission
+func WithCopyAddPermission(v os.FileMode) CopyOption {
 	return func(cc *CopyOptions) {
 		cc.AddPermission = v
 	}
 }
 
-// WithSync option func for filed Sync
-func WithSync(v bool) CopyOption {
+// WithCopySync option func for filed Sync
+func WithCopySync(v bool) CopyOption {
 	return func(cc *CopyOptions) {
 		cc.Sync = v
 	}
@@ -78,14 +78,14 @@ func newDefaultCopyOptions() *CopyOptions {
 	cc := &CopyOptions{}
 
 	for _, opt := range [...]CopyOption{
-		WithOnSymlink(func(src string) SymlinkAction {
+		WithCopyOnSymlink(func(src string) SymlinkAction {
 			return Shallow
 		}),
-		WithSkip(func(src string) (bool, error) {
+		WithCopySkip(func(src string) (bool, error) {
 			return false, nil
 		}),
-		WithAddPermission(0),
-		WithSync(false),
+		WithCopyAddPermission(0),
+		WithCopySync(false),
 	} {
 		opt(cc)
 	}

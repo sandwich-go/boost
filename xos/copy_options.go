@@ -16,7 +16,7 @@ const (
 	Skip
 )
 
-//go:generate optiongen --option_return_previous=false
+//go:generate optiongen --option_return_previous=false --option_prefix=WithCopy
 func CopyOptionsOptionDeclareWithDefault() interface{} {
 	return map[string]interface{}{
 		// OnSymlink can specify what to do on symlink
