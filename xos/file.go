@@ -42,18 +42,6 @@ func Ext(path string) string {
 	return ext
 }
 
-// FileExists 给定的filename是否存在且是一个文件
-func FileExists(filename string) bool {
-	info, err := os.Stat(filename)
-	if os.IsNotExist(err) {
-		return false
-	}
-	if err != nil {
-		return false
-	}
-	return !info.IsDir()
-}
-
 // FileGetContents 获取文件内容
 func FileGetContents(filename string) ([]byte, error) {
 	return ioutil.ReadFile(filename)

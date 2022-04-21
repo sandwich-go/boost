@@ -44,7 +44,11 @@ func IsEmpty(path string) bool {
 
 // RemoveSubDirsUnderDir 删除指定目录下的子目录
 func RemoveSubDirsUnderDir(dir string, filter func(dir string) bool) error {
-	if !FileExists(dir) {
+	exist, err := DirExists(dir)
+	if err != nil {
+		return err
+	}
+	if !exist {
 		return nil
 	}
 	fs, err := ioutil.ReadDir(dir)
