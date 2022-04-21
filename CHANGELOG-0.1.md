@@ -1,3 +1,11 @@
+### v0.1.0-alpha.4 (2022-04-21 14:36:13)
+
+#### 🤖  Tools
+  * **sem**: make changelog ([3acdfbf](https://github.com/sandwich-go/boost/commit/3acdfbfdb563497bca1dff6324f0339554b77a10)) (<small>[hui.wang](hui.wang@funplus.com)@2022-04-21 13:32:23 &#43;0800 &#43;0800</small>)
+
+#### 💪  Commit
+  * file exist ([22b23c0](https://github.com/sandwich-go/boost/commit/22b23c030ee4993945624683738b18b9540f031e)) (<small>[hui.wang](hui.wang@funplus.com)@2022-04-21 14:36:13 &#43;0800 &#43;0800</small>)
+
 ### v0.1.0-alpha.3 (2022-04-21 13:31:44)
 
 #### 🤖  Tools
