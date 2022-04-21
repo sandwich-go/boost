@@ -5,38 +5,54 @@ import (
 	"os"
 )
 
+// ExistsTreatErrorAsExist Exists函数组获取是否存在时，如果发生了非os.ErrNotExist错误，视作存在或者不存在，减轻逻辑层判断负担
+var ExistsTreatErrorAsExist = true
+
 // Exists 指定的文件或者目录是否存在
-func Exists(fileOrDirPath string) (bool, error) {
+// 如果发生了非os.ErrNotExist错误，则认为存在
+func Exists(fileOrDirPath string) bool {
 	_, err := os.Stat(fileOrDirPath)
 	if err == nil {
-		return true, nil
+		return true
 	}
 	if errors.Is(err, os.ErrNotExist) {
-		return false, nil
+		return false
 	}
-	return false, err
+	return ExistsTreatErrorAsExist
 }
 
-// FileExists 给定的filenName是否存在且是一个文件,如果filenName存在但是是一个目录也会返回false
-func FileExists(filenName string) (bool, error) {
+// FileExists 参考ExistsFile
+//
+// Deprecated: 使用ExistsFile
+func FileExists(filenName string) bool { return ExistsFile(filenName) }
+
+// ExistsFile 给定的filenName是否存在且是一个文件,如果filenName存在但是是一个目录也会返回false
+// 如果发生了非os.ErrNotExist错误，则认为存在
+func ExistsFile(filenName string) bool {
 	info, err := os.Stat(filenName)
 	if os.IsNotExist(err) {
-		return false, nil
+		return false
 	}
 	if err != nil {
-		return false, err
+		return ExistsTreatErrorAsExist
 	}
-	return !info.IsDir(), nil
+	return !info.IsDir()
 }
 
-// DirExists 给定的filePath是否存在且是一个目录,如果filePath存在但是是一个文件也会返回错误
-func DirExists(filePath string) (bool, error) {
+// DirExists 参考ExistsDir
+//
+// Deprecated: 使用ExistsDir
+func DirExists(filePath string) bool { return ExistsDir(filePath) }
+
+// ExistsDir 给定的filePath是否存在且是一个目录,如果filePath存在但是是一个文件也会返回错误
+// 如果发生了非os.ErrNotExist错误，则认为存在
+func ExistsDir(filePath string) bool {
 	info, err := os.Stat(filePath)
 	if os.IsNotExist(err) {
-		return false, nil
+		return false
 	}
 	if err != nil {
-		return false, err
+		return ExistsTreatErrorAsExist
 	}
-	return info.IsDir(), nil
+	return info.IsDir()
 }
