@@ -1,3 +1,11 @@
+### v0.1.0-alpha.5 (2022-04-25 12:58:05)
+
+#### 🤖  Tools
+  * **sem**: make changelog ([946b62e](https://github.com/sandwich-go/boost/commit/946b62eb5fa919e574b4a051b10de8ec186469fd)) (<small>[hui.wang](hui.wang@funplus.com)@2022-04-21 14:36:38 &#43;0800 &#43;0800</small>)
+
+#### 💪  Commit
+  * xstring add true false support from sandwich ([61e1f81](https://github.com/sandwich-go/boost/commit/61e1f813a8efa904f063b7134256096ae34e63f4)) (<small>[hui.wang](hui.wang@funplus.com)@2022-04-25 12:58:05 &#43;0800 &#43;0800</small>)
+
 ### v0.1.0-alpha.4 (2022-04-21 14:36:13)
 
 #### 🤖  Tools
