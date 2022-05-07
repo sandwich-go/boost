@@ -8,7 +8,8 @@ import (
 
 var DefaultManager = NewManager()
 
-// Run 运行指定命令,接管std out std error
+// Run 运行指定命令,接管stdOut,stdErr,数据被缓存不会随执行输出
+// 同时将stdError的内容看做错误以error返回
 func Run(path string, opt ...ProcessOption) (string, error) {
 	cc := NewProcessOptions(opt...)
 	stdOut := new(bytes.Buffer)
@@ -18,7 +19,8 @@ func Run(path string, opt ...ProcessOption) (string, error) {
 	return run(NewProcessWithOptions(path, cc), stdOut, stdErr)
 }
 
-// ShellRun 启动shell运行指定命令
+// ShellRun 启动shell运行指定命令,接管stdOut,stdErr,数据被缓存不会随执行输出
+// 同时将stdError的内容看做错误以error返回
 func ShellRun(cmd string, opt ...ProcessOption) (string, error) {
 	cc := NewProcessOptions(opt...)
 	stdOut := new(bytes.Buffer)
