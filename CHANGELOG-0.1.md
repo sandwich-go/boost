@@ -1,3 +1,15 @@
+### v0.1.0-alpha.6 (2022-05-07 17:59:17)
+
+#### 🐛  Bug Fixed
+  * shell run options ([521bc4c](https://github.com/sandwich-go/boost/commit/521bc4ced1b9f7f396cf9fe26963938800ee1e39)) (<small>[hui.wang](hui.wang@funplus.com)@2022-05-07 17:59:17 &#43;0800 &#43;0800</small>)
+
+#### 🤖  Tools
+  * **sem**: make changelog ([de97b18](https://github.com/sandwich-go/boost/commit/de97b18587ade483d4c25d9e06464b1037c0d273)) (<small>[hui.wang](hui.wang@funplus.com)@2022-04-25 14:30:56 &#43;0800 &#43;0800</small>)
+
+#### 💪  Commit
+  * spell ([ced3f38](https://github.com/sandwich-go/boost/commit/ced3f381cc5937e3194b6b69fc3d04f7a891a9ac)) (<small>[hui.wang](hui.wang@funplus.com)@2022-05-07 15:46:27 &#43;0800 &#43;0800</small>)
+  * add try support ([7827b0a](https://github.com/sandwich-go/boost/commit/7827b0a2561b4d82ba70fb18a29b1a47ed0a2522) , [91533a9](https://github.com/sandwich-go/boost/commit/91533a9c185f3e115e4d25a3301f666d9e6a0b0c)) (<small>[hui.wang](hui.wang@funplus.com)@2022-05-07 12:55:35 &#43;0800 &#43;0800</small>)
+
 ### v0.1.0-alpha.5 (2022-04-25 12:58:05)
 
 #### 🤖  Tools
