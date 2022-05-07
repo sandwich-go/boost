@@ -59,7 +59,6 @@ func NewProcessShellCmdWithOptions(cmd string, cc *ProcessOptions) *Process {
 	if argsLen == 0 {
 		cc.Args = xslice.StringSetAdd([]string{xos.GetShellOption()}, cc.Args...)
 	}
-	fmt.Println(cc.Args)
 	return NewProcessWithOptions(xos.GetShell(), cc)
 }
 
