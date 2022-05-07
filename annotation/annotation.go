@@ -69,11 +69,7 @@ func (a Annotation) GetBool(key string, defaultVal ...bool) bool {
 		}
 		return false
 	}
-	lowerV := xstrings.Trim(strings.ToLower(v))
-	if lowerV == "1" || lowerV == "true" || lowerV == "y" || lowerV == "yes" {
-		return true
-	}
-	return false
+	return xstrings.IsTrue(xstrings.Trim(strings.ToLower(v)))
 }
 
 func (a Annotation) GetString(key string, defaultVal ...string) string {
