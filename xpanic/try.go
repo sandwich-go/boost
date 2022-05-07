@@ -27,3 +27,6 @@ func Do(f func(), cb func(p *Panic)) {
 	defer Catch(cb)
 	f()
 }
+
+// Try alias for Do
+var Try = Do
