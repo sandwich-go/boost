@@ -1,3 +1,12 @@
+### v0.1.0-alpha.7 (2022-05-07 18:24:17)
+
+#### 🐛  Bug Fixed
+  * std error as error return ([6fe18bd](https://github.com/sandwich-go/boost/commit/6fe18bdbade8d33a6fdab1501b3e943d68d7cbdf) , [9c0b85e](https://github.com/sandwich-go/boost/commit/9c0b85e6d0faaadc566d79194d2101a6c507bdc2)) (<small>[hui.wang](hui.wang@funplus.com)@2022-05-07 18:24:17 &#43;0800 &#43;0800</small>)
+  * rm print ([09fdfba](https://github.com/sandwich-go/boost/commit/09fdfba277080a6d2a898264c99943e536ef7440)) (<small>[hui.wang](hui.wang@funplus.com)@2022-05-07 18:09:32 &#43;0800 &#43;0800</small>)
+
+#### 🤖  Tools
+  * **sem**: make changelog ([816168d](https://github.com/sandwich-go/boost/commit/816168d08e59a870e7ca13b0ada44fe25c1b23eb)) (<small>[hui.wang](hui.wang@funplus.com)@2022-05-07 17:59:37 &#43;0800 &#43;0800</small>)
+
 ### v0.1.0-alpha.6 (2022-05-07 17:59:17)
 
 #### 🐛  Bug Fixed
