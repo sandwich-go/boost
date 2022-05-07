@@ -24,12 +24,12 @@ func Exists(fileOrDirPath string) bool {
 // FileExists 参考ExistsFile
 //
 // Deprecated: 使用ExistsFile
-func FileExists(filenName string) bool { return ExistsFile(filenName) }
+func FileExists(fileName string) bool { return ExistsFile(fileName) }
 
-// ExistsFile 给定的filenName是否存在且是一个文件,如果filenName存在但是是一个目录也会返回false
+// ExistsFile 给定的fileName是否存在且是一个文件,如果fileName存在但是是一个目录也会返回false
 // 如果发生了非os.ErrNotExist错误，则认为存在
-func ExistsFile(filenName string) bool {
-	info, err := os.Stat(filenName)
+func ExistsFile(fileName string) bool {
+	info, err := os.Stat(fileName)
 	if os.IsNotExist(err) {
 		return false
 	}
