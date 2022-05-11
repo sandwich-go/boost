@@ -1,5 +1,7 @@
 package xstrings
 
+import "encoding/json"
+
 // UglyJSON removes insignificant space characters from the input json byte slice
 // and returns the compacted result.
 func UglyJSON(json []byte) []byte {
@@ -31,4 +33,14 @@ func ugly(dst, src []byte) []byte {
 		}
 	}
 	return dst
+}
+
+// ValidJSON 是否为合法json字符串
+func ValidJSON(bb []byte) bool {
+	if len(bb) == 0 {
+		return true
+	}
+	var jsonStr interface{}
+	err := json.Unmarshal(bb, &jsonStr)
+	return err == nil
 }
