@@ -4,7 +4,6 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 
@@ -20,7 +19,7 @@ func FileCopyToDir(src, dstDir string) error {
 	}
 	defer in.Close()
 
-	out, err := os.Create(path.Join(dstDir, path.Base(src)))
+	out, err := os.Create(filepath.Join(dstDir, filepath.Base(src)))
 	if err != nil {
 		return err
 	}
