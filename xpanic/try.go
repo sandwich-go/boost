@@ -1,32 +1,58 @@
 package xpanic
 
-// Panic is a snapshot of a panic, containing both the panic's reason and the
-// system stack.
-type Panic struct {
-	// Reason is the value supplied to the recover function.
-	Reason interface{}
+// https://github.com/manucorporat/try/blob/master/try.go
+
+const rethrow_panic = "_____rethrow"
+
+type (
+	E         interface{}
+	exception struct {
+		finally func()
+		Error   E
+	}
+)
+
+func Throw() {
+	panic(rethrow_panic)
 }
 
-// Catch recovers from panic. It should be used as a deferred call.
-//
-// If the supplied panic callback is nil, the panic will be silently discarded.
-// Otherwise, the callback will be invoked with the panic's information.
-func Catch(cb func(p *Panic)) {
-	if reason := recover(); reason != nil && cb != nil {
-		cb(&Panic{
-			Reason: reason,
-		})
+func Try(f func()) (e exception) {
+	e = exception{nil, nil}
+	// catch error in
+	defer func() {
+		e.Error = recover()
+	}()
+	f()
+	return
+}
+
+func (e exception) Catch(f func(err E)) {
+	if e.Error != nil {
+		defer func() {
+			// call finally
+			if e.finally != nil {
+				e.finally()
+			}
+
+			// rethrow exceptions
+			if err := recover(); err != nil {
+				if err == rethrow_panic {
+					err = e.Error
+				}
+				panic(err)
+			}
+		}()
+		f(e.Error)
+	} else if e.finally != nil {
+		e.finally()
 	}
 }
 
-// Do executes f. If a panic occurs during execution, the supplied callback will
-// be called with the panic's information.
-//
-// If the panic callback is nil, the panic will be caught and discarded silently.
-func Do(f func(), cb func(p *Panic)) {
-	defer Catch(cb)
-	f()
+func (e exception) Finally(f func()) (e2 exception) {
+	if e.finally != nil {
+		panic("finally was only set")
+	}
+	e2 = e
+	e2.finally = f
+	return
 }
-
-// Try alias for Do
-var Try = Do
