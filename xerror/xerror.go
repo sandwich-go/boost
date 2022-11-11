@@ -33,6 +33,11 @@ func (cc *Error) UnsetLogic() *Error {
 	return cc
 }
 
+// Unwrap 兼容errors.Unwrap
+func (cc *Error) Unwrap() error {
+	return cc.err
+}
+
 func New(opts ...ErrorOption) *Error {
 	e := &Error{callStack: nil}
 	for _, opt := range opts {
