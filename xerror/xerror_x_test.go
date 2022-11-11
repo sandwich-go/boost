@@ -5,9 +5,28 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/sandwich-go/boost/xerror"
 	. "github.com/smartystreets/goconvey/convey"
+
+	"github.com/sandwich-go/boost/xerror"
 )
+
+func TestErrors(t *testing.T) {
+	Convey("xerror errors", t, func() {
+		{
+			err := xerror.Wrap(errors.New("1"), "wrap with xerror")
+			So(errors.Unwrap(err), ShouldNotBeNil)
+		}
+		{
+			err := xerror.NewText("1")
+			So(errors.Unwrap(err), ShouldBeNil)
+		}
+		{
+			errChild := xerror.NewText("1")
+			errParent := xerror.Wrap(errChild, "wrap with xerror")
+			So(errors.Is(errParent, errChild), ShouldBeTrue)
+		}
+	})
+}
 
 func TestCause(t *testing.T) {
 	Convey("xerror case from system errors", t, func() {
