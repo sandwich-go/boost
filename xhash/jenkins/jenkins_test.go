@@ -8,8 +8,8 @@ import (
 	"time"
 	"unsafe"
 
-	"leb.io/hashland/jenkins"
-	"leb.io/hrff"
+	"github.com/sandwich-go/boost/hrff"
+	"github.com/sandwich-go/boost/xhash/jenkins"
 )
 
 //import "math"

@@ -8,8 +8,8 @@ package jenkins
 
 import (
 	"fmt"
+	"github.com/sandwich-go/boost/xhash/nhash"
 	"hash"
-	"leb.io/hashland/nhash"
 	"unsafe"
 )
 
