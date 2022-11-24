@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package codec.perf;
+
+// Buffer is a message that contains a body of bytes that is used to exercise
+// encoding and decoding overheads.
+message Buffer {
+  bytes body = 1;
+}
