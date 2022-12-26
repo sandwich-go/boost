@@ -7,6 +7,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/sandwich-go/boost/internal/log"
 	"github.com/sandwich-go/boost/xos"
 	"github.com/sandwich-go/boost/xslice"
 )
@@ -102,18 +103,22 @@ func (p *Process) Release() error {
 // Kill causes the Process to exit immediately.
 func (p *Process) Kill() (err error) {
 	if err = p.Process.Kill(); err != nil {
-		return err
+		return fmt.Errorf("Kill got err:%w", err)
 	}
 	if p.Manager != nil {
 		p.Manager.processes.Delete(p.Pid())
 	}
 	if runtime.GOOS != "windows" {
 		if err = p.Process.Release(); err != nil {
-			return err
+			return fmt.Errorf("Release got err:%w", err)
 		}
 	}
+	// ignores this error, just log it.
 	_, err = p.Process.Wait()
-	return err
+	if err != nil {
+		log.Error(fmt.Sprintf("Wait got err:%s", err.Error()))
+	}
+	return nil
 }
 
 // Signal sends a signal to the Process.
