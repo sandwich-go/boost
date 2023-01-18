@@ -13,7 +13,7 @@ type resolver struct {
 	opts *Options
 }
 
-// New 创建一个解析器，默认使用 defaultMagicPrefix 作为 MagicPrefix，只有包含 MagicPrefix 的行，才能萃取到注释
+// New 创建一个解析器，默认使用 annotation@ 作为 MagicPrefix，只有包含 MagicPrefix 的行，才能萃取到注释
 // descriptors 可以指定萃取的注释名，以及是否为合法的注释
 // 若不指定 descriptors，则任意名的注释，均为合法的注释
 func New(opts ...Option) Resolver {
