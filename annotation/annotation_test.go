@@ -27,44 +27,41 @@ func TestAnnotation(t *testing.T) {
 			{in: []string{`// annotation@X( a = "A" }`}, name: "X", panic: true},
 			{in: []string{`// annotation@X( a = A B C D  )`}, name: "X", validate: func(as []Annotation) {
 				So(len(as), ShouldEqual, 1)
-				So(as[0].Attributes["a"], ShouldEqual, "")
+				So(as[0].String("a"), ShouldEqual, "")
 			}},
 			{in: []string{`// annotation@X( a = false  )`}, name: "X", validate: func(as []Annotation) {
 				So(len(as), ShouldEqual, 1)
-				So(as[0].Attributes["a"], ShouldEqual, "")
+				So(as[0].String("a"), ShouldEqual, "")
 			}},
 			{in: []string{`// annotation@X( a = "A" ) some words`}, name: "X", validate: func(as []Annotation) {
 				So(len(as), ShouldEqual, 1)
-				So(as[0].Attributes["a"], ShouldEqual, "A")
+				So(as[0].String("a"), ShouldEqual, "A")
 			}},
 			{in: []string{`// annotation@X( a = "A" ) `}, name: "X", validate: func(as []Annotation) {
 				So(len(as), ShouldEqual, 1)
-				So(as[0].Attributes["a"], ShouldEqual, "A")
+				So(as[0].String("a"), ShouldEqual, "A")
 			}},
 			{in: []string{`// annotation@X( a = "A" )`, `annotation@X( b = "B" )`}, name: "X", validate: func(as []Annotation) {
 				So(len(as), ShouldEqual, 2)
-				So(as[0].Attributes["a"], ShouldEqual, "A")
-				So(as[1].Attributes["b"], ShouldEqual, "B")
+				So(as[0].String("a"), ShouldEqual, "A")
+				So(as[1].String("b"), ShouldEqual, "B")
 			}},
 			{in: []string{`// annotation@SomethingElse( aggregate = "@A@")`, `// annotation@Event( aggregate = "@A@")`}, name: "Event", validate: func(as []Annotation) {
 				So(len(as), ShouldEqual, 1)
-				So(as[0].Attributes["aggregate"], ShouldEqual, "@A@")
+				So(as[0].String("aggregate"), ShouldEqual, "@A@")
 			}},
 			{in: []string{`// annotation@Doit( a="/A/", b="/B" )`}, name: "Doit", validate: func(as []Annotation) {
 				So(len(as), ShouldEqual, 1)
-				So(as[0].Attributes["a"], ShouldEqual, "/A/")
-				So(as[0].Attributes["b"], ShouldEqual, "/B")
+				So(as[0].String("a"), ShouldEqual, "/A/")
+				So(as[0].String("b"), ShouldEqual, "/B")
 			}},
 		} {
-			registry := NewRegistry(&Descriptor{
-				Name:      test.name,
-				Validator: validateOk,
-			})
+			r := New(WithDescriptors(Descriptor{Name: test.name}))
+			ann, err := r.ResolveMultiple(test.in)
 			if test.panic {
-				So(func() { registry.ResolveAnnotations(test.in) }, ShouldPanic)
+				So(err, ShouldNotBeNil)
 			} else {
-				as := registry.ResolveAnnotations(test.in)
-				test.validate(as)
+				test.validate(ann)
 			}
 		}
 	})
