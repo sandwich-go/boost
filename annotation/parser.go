@@ -49,7 +49,7 @@ func parser(line string, lowerKey bool) (Annotation, error) {
 			case attributeValueStep:
 				var key = attrName
 				if lowerKey {
-					key = strings.ToLower(attrName)
+					key = strings.ToLower(key)
 				}
 				ann.attributes[key] =
 					xstrings.Trim(strings.Trim(strings.Trim(strings.Trim(s.TokenText(), "\""), "'"), "`"))
@@ -57,7 +57,7 @@ func parser(line string, lowerKey bool) (Annotation, error) {
 		}
 	}
 	if currentStep != doneStep {
-		return ann, fmt.Errorf("invalid completion-status %v name:%s for annotation:%s", currentStep, attrName, line)
+		return nil, fmt.Errorf("invalid completion-status %v name:%s for annotation:%s", currentStep, attrName, line)
 	}
 	return ann, nil
 }

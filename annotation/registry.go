@@ -191,17 +191,17 @@ func (r *resolver) Resolve(line string) (Annotation, error) {
 		}
 		ann, err := parser(line, r.opts.GetLowerKey())
 		if err != nil {
-			return ann, err
+			return nil, err
 		}
 		if !desc.match(ann) {
 			continue
 		}
 		return ann, nil
 	}
-	return annotation{}, ErrNoAnnotation
+	return nil, ErrNoAnnotation
 }
 
-func (r *resolver) ResolveMultiple(lines []string) ([]Annotation, error) {
+func (r *resolver) ResolveMany(lines ...string) ([]Annotation, error) {
 	as := make([]Annotation, 0, len(lines))
 	for _, line := range lines {
 		if ann, err := r.Resolve(line); err == nil {
@@ -213,21 +213,21 @@ func (r *resolver) ResolveMultiple(lines []string) ([]Annotation, error) {
 	return as, nil
 }
 
-func (r *resolver) ResolveWithName(lines []string, name string) (Annotation, error) {
+func (r *resolver) ResolveWithName(name string, lines ...string) (Annotation, error) {
 	for _, line := range lines {
 		if ann, err := r.Resolve(line); err == nil && ann.Name() == name {
 			return ann, nil
 		} else if err != nil && err != ErrNoAnnotation {
-			return annotation{}, err
+			return nil, err
 		}
 	}
-	return annotation{}, ErrNoAnnotation
+	return nil, ErrNoAnnotation
 }
 
-func (r *resolver) ResolveNoDuplicate(lines []string) ([]Annotation, error) {
-	as, err := r.ResolveMultiple(lines)
-	if err != nil || len(as) == 0 {
-		return nil, err
+func (r *resolver) ResolveNoDuplicate(lines ...string) ([]Annotation, error) {
+	as, err := r.ResolveMany(lines...)
+	if err != nil || len(as) <= 1 {
+		return as, err
 	}
 	mapping := make(map[string]Annotation)
 	for _, v := range as {

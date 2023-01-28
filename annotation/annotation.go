@@ -64,40 +64,46 @@ type Descriptor struct {
 	Validator func(Annotation) bool
 }
 
+// Resolver 解析器
 type Resolver interface {
 	// Resolve 解析一行注释
 	// 若未解析成功，则返回 ErrNoAnnotation 错误
 	Resolve(line string) (Annotation, error)
 
-	// ResolveWithName 解析一行注释，但要求 Annotation.Name 是指定的 name 参数
+	// ResolveWithName 解析多行注释，但要求 Annotation.Name 是指定的 name 参数
 	// 否则返回 ErrNoAnnotation 错误
-	ResolveWithName(lines []string, name string) (Annotation, error)
+	ResolveWithName(name string, lines ...string) (Annotation, error)
 
-	// ResolveMultiple 解析多行注释
-	ResolveMultiple(lines []string) ([]Annotation, error)
+	// ResolveMany 解析多行注释
+	// 该接口会忽略 ErrNoAnnotation 错误
+	ResolveMany(lines ...string) ([]Annotation, error)
 
 	// ResolveNoDuplicate 解析多行注释，但不允许有重复的 Annotation.Name
 	// 否则返回错误
-	ResolveNoDuplicate(lines []string) ([]Annotation, error)
+	// 该接口会忽略 ErrNoAnnotation 错误
+	ResolveNoDuplicate(lines ...string) ([]Annotation, error)
 }
 
 // Default 默认的解析器，只有包含 'annotation@' 的行，才能萃取到注释
 var Default = New()
 
 // Resolve 使用默认的解析器 Default 解析一行注释
+// 若未解析成功，则返回 ErrNoAnnotation 错误
 func Resolve(line string) (Annotation, error) { return Default.Resolve(line) }
 
-// ResolveMultiple 使用默认的解析器 Default 解析多行注释
-func ResolveMultiple(lines []string) ([]Annotation, error) { return Default.ResolveMultiple(lines) }
+// ResolveMany 使用默认的解析器 Default 解析多行注释
+// 该接口会忽略 ErrNoAnnotation 错误
+func ResolveMany(lines ...string) ([]Annotation, error) { return Default.ResolveMany(lines...) }
 
-// ResolveWithName 使用默认的解析器 Default 解析一行注释，但要求 Annotation.Name 是指定的 name 参数
+// ResolveWithName 使用默认的解析器 Default 解析多行注释，但要求 Annotation.Name 是指定的 name 参数
 // 否则返回 ErrNoAnnotation 错误
-func ResolveWithName(lines []string, name string) (Annotation, error) {
-	return Default.ResolveWithName(lines, name)
+func ResolveWithName(name string, lines ...string) (Annotation, error) {
+	return Default.ResolveWithName(name, lines...)
 }
 
 // ResolveNoDuplicate 使用默认的解析器 Default 解析多行注释，但不允许有重复的 Annotation.Name
 // 否则返回错误
-func ResolveNoDuplicate(lines []string) ([]Annotation, error) {
-	return Default.ResolveNoDuplicate(lines)
+// 该接口会忽略 ErrNoAnnotation 错误
+func ResolveNoDuplicate(lines ...string) ([]Annotation, error) {
+	return Default.ResolveNoDuplicate(lines...)
 }
