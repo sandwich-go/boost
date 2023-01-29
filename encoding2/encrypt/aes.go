@@ -2,7 +2,7 @@ package encrypt
 
 import (
 	"github.com/sandwich-go/boost/encoding2"
-	"github.com/sandwich-go/boost/encryption/aes"
+	"github.com/sandwich-go/boost/encryption/algorithm/aes"
 )
 
 type aesEncryptCodec struct {
@@ -18,7 +18,7 @@ func (c aesEncryptCodec) Marshal(v interface{}) ([]byte, error) {
 	if data, ok := v.([]byte); !ok {
 		return nil, errEncryptCodecMarshalParam
 	} else {
-		return aes.CBCEncrypt(data, c.key)
+		return aes.Encrypt(data, c.key)
 	}
 }
 
@@ -27,7 +27,7 @@ func (c aesEncryptCodec) Unmarshal(bytes []byte, v interface{}) error {
 	if !ok {
 		return errEncryptCodecUnmarshalParam
 	}
-	data, err := aes.CBCDecrypt(bytes, c.key)
+	data, err := aes.Decrypt(bytes, c.key)
 	if err != nil {
 		return err
 	}
