@@ -15,7 +15,7 @@ func GenerateSecretKey() ([]byte, error) {
 	return b, nil
 }
 
-// GeneratePublicKey 通过密钥 SecretKey 生成公钥
+// GeneratePublicKey 通过密钥 SecretKey 生成公钥 PublicKey
 func GeneratePublicKey(secretKey []byte) ([]byte, error) {
 	return curve25519.X25519(secretKey, curve25519.Basepoint)
 }
