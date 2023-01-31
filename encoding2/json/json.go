@@ -6,23 +6,25 @@ import (
 	"github.com/sandwich-go/boost/encoding2"
 )
 
-var Codec = &jsonCodec{}
+var Codec = &codec{}
+
+const (
+	// CodecName json 加解码名称，可以通过 encoding2.GetCodec(CodecName) 获取对应的 Codec
+	CodecName = "json"
+)
 
 func init() {
 	encoding2.RegisterCodec(Codec)
 }
 
-// jsonCodec is a Codec implementation with json
-type jsonCodec struct{}
+// codec is a Codec implementation with json
+type codec struct{}
 
-func (jsonCodec) Marshal(v interface{}) ([]byte, error) {
-	return json.Marshal(v)
-}
+// Name 返回 Codec 名
+func (codec) Name() string { return CodecName }
 
-func (jsonCodec) Unmarshal(data []byte, v interface{}) error {
-	return json.Unmarshal(data, v)
-}
+// Marshal 编码
+func (codec) Marshal(v interface{}) ([]byte, error) { return json.Marshal(v) }
 
-func (jsonCodec) Name() string {
-	return "json"
-}
+// Unmarshal 解码
+func (codec) Unmarshal(data []byte, v interface{}) error { return json.Unmarshal(data, v) }

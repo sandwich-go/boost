@@ -32,10 +32,4 @@ func TestCodec(t *testing.T) {
 		ctx := WithContext(context.Background(), mc)
 		So(FromContext(ctx), ShouldEqual, mc)
 	})
-
-	// Convey("with ark context", t, func() {
-	// 	arkContext := ark.New().NewArkContext(httptest.NewRequest(http.MethodPost, "/", nil), nil)
-	// 	ctx := WithContext(arkContext, mc)
-	// 	So(FromContext(ctx), ShouldEqual, mc)
-	// })
 }

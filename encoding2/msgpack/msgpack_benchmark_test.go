@@ -33,8 +33,8 @@ func setupBenchmarkCodecInputs(payloadBaseSize uint32) []proto.Message {
 
 // The possible use of certain protobuf APIs like the proto.Buffer API potentially involves caching
 // on our side. This can add checks around memory allocations and possible contention.
-// Example run: go test -v -run=^$ -bench=BenchmarkProtoCodec -benchmem
-func BenchmarkProtoCodec(b *testing.B) {
+// Example run: go test -v -run=^$ -bench=BenchmarkMsgpackCodec -benchmem
+func BenchmarkMsgpackCodec(b *testing.B) {
 	// range of message sizes
 	payloadBaseSizes := make([]uint32, 0)
 	for i := uint32(0); i <= 12; i += 4 {

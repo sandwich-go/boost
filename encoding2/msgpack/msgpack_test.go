@@ -1,4 +1,4 @@
-package pbjson
+package json
 
 import (
 	"bytes"
@@ -9,28 +9,17 @@ import (
 	"github.com/sandwich-go/boost/encoding2/protobuf/test_perf"
 )
 
-func TestEmitUnpopulated(t *testing.T) {
-	p := &test_perf.Buffer{}
-	EmitUnpopulated(true)
-	marshalledBytes, err := Codec.Marshal(p)
-	if err != nil {
-		t.Errorf("codec.Marshal(_) returned an error:%v", err)
-	}
-	if string(marshalledBytes) != `{"body":null}` {
-		t.Errorf("codec.Marshal(_) returned empty on emit unpopulated")
-	}
-}
-
 func marshalAndUnmarshal(t *testing.T, codec encoding2.Codec, expectedBody []byte) {
 	p := &test_perf.Buffer{}
 	p.Body = expectedBody
 
 	marshalledBytes, err := codec.Marshal(p)
 	if err != nil {
-		t.Errorf("codec.Marshal(_) returned an error:%v", err)
+		t.Errorf("codec.Marshal(_) returned an error")
 	}
-	if err = codec.Unmarshal(marshalledBytes, p); err != nil {
-		t.Errorf("codec.Unmarshal(_) returned an error:%v", err)
+
+	if err := codec.Unmarshal(marshalledBytes, p); err != nil {
+		t.Errorf("codec.Unmarshal(_) returned an error")
 	}
 
 	if !bytes.Equal(p.GetBody(), expectedBody) {
@@ -38,15 +27,15 @@ func marshalAndUnmarshal(t *testing.T, codec encoding2.Codec, expectedBody []byt
 	}
 }
 
-func TestBasicJsonCodecMarshalAndUnmarshal(t *testing.T) {
+func TestMsgpackCodecMarshalAndUnmarshal(t *testing.T) {
 	marshalAndUnmarshal(t, codec{}, []byte{1, 2, 3})
 }
 
 // Try to catch possible race conditions around use of pools
 func TestConcurrentUsage(t *testing.T) {
 	const (
-		numGoRoutines     = 100
-		numMarshUnmarshal = 1000
+		numGoRoutines   = 100
+		numMarshUnmarsh = 1000
 	)
 
 	// small, arbitrary byte slices
@@ -65,7 +54,7 @@ func TestConcurrentUsage(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			for k := 0; k < numMarshUnmarshal; k++ {
+			for k := 0; k < numMarshUnmarsh; k++ {
 				marshalAndUnmarshal(t, codec, protoBodies[k%len(protoBodies)])
 			}
 		}()
@@ -90,11 +79,11 @@ func TestStaggeredMarshalAndUnmarshalUsingSamePool(t *testing.T) {
 	var err error
 
 	if m1, err = codec1.Marshal(&proto1); err != nil {
-		t.Errorf("codec.Marshal proto1 failed")
+		t.Errorf("codec.Marshal(%v) failed", proto1)
 	}
 
 	if m2, err = codec2.Marshal(&proto2); err != nil {
-		t.Errorf("codec.Marshal proto2 failed")
+		t.Errorf("codec.Marshal(%v) failed", proto2)
 	}
 
 	if err = codec1.Unmarshal(m1, &proto1); err != nil {

@@ -28,10 +28,10 @@ func marshalAndUnmarshal(t *testing.T, codec encoding2.Codec, expectedBody []byt
 }
 
 func TestBasicProtoCodecMarshalAndUnmarshal(t *testing.T) {
-	marshalAndUnmarshal(t, &protoCodec{}, []byte{1, 2, 3})
+	marshalAndUnmarshal(t, &codec{}, []byte{1, 2, 3})
 }
 func TestBasicJsonCodecMarshalAndUnmarshal(t *testing.T) {
-	marshalAndUnmarshal(t, &protoCodec{}, []byte{1, 2, 3})
+	marshalAndUnmarshal(t, &codec{}, []byte{1, 2, 3})
 }
 
 // Try to catch possible race conditions around use of pools
@@ -51,7 +51,7 @@ func TestConcurrentUsage(t *testing.T) {
 	}
 
 	var wg sync.WaitGroup
-	codec := &protoCodec{}
+	codec := &codec{}
 
 	for i := 0; i < numGoRoutines; i++ {
 		wg.Add(1)
@@ -69,8 +69,8 @@ func TestConcurrentUsage(t *testing.T) {
 // TestStaggeredMarshalAndUnmarshalUsingSamePool tries to catch potential errors in which slices get
 // stomped on during reuse of a proto.Buffer.
 func TestStaggeredMarshalAndUnmarshalUsingSamePool(t *testing.T) {
-	codec1 := protoCodec{}
-	codec2 := protoCodec{}
+	codec1 := codec{}
+	codec2 := codec{}
 
 	expectedBody1 := []byte{1, 2, 3}
 	expectedBody2 := []byte{4, 5, 6}

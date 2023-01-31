@@ -12,7 +12,7 @@
 
 ```go
 frame := []byte("time.Duration,[]time.Duration,map[string]*Redis此类的非基础类型的slice或者map都需要辅助指明类型")
-c, err := New(WithType(GZIP), WithLevel(BestSpeed))
+c, err0 := New(WithType(GZIP), WithLevel(BestSpeed))
 if err0 != nil {
     panic(err0)
 }
