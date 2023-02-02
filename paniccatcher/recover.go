@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// AutoRecover 执行 f ，当 f 发生panic，启动新的协程重复 AutoRecover.
 func AutoRecover(tag string, f func(), opts ...AutoRecoverOption) {
 	defer func() {
 		if reason := recover(); reason != nil {
