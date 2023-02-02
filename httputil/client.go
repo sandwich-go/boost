@@ -1,39 +1,30 @@
 package httputil
 
 import (
-	"crypto/tls"
+	"io"
 	"net/http"
-	"time"
 )
 
-var defaultHTTPTimeout = time.Duration(10) * time.Second
-var defaultDNSCacheTime = time.Minute
-
-// A Client is an HTTP client.
-// It wraps net/http's client and add some methods for making HTTP request easier.
-type httpClient struct {
-	*http.Client
+// Client HTTP Client 接口
+type Client interface {
+	// Post 发送 POST 请求
+	Post(url, contentType string, body io.Reader) (resp *http.Response, err error)
+	// Get 发送 GET 请求
+	Get(url string) (*http.Response, error)
+	// Bytes 发送 GET 请求，返回 bytes 数据
+	Bytes(url string) ([]byte, error)
+	// String 发送 GET 请求，返回 string 数据
+	String(url string) (string, error)
+	// JSON 发送 GET 请求，返回 JSON 数据
+	JSON(url string, v interface{}) error
 }
 
-var globalClient httpClient
-
-func SetHTTPClient(c *http.Client) { globalClient.Client = c }
-
-func init() {
-	dc := NewDNSCache(defaultDNSCacheTime)
-	client := &http.Client{
-		Timeout: defaultHTTPTimeout,
-		Transport: &http.Transport{
-			DialContext:            dc.GetDialContext(),
-			MaxIdleConns:           50,
-			IdleConnTimeout:        60 * time.Second,
-			TLSHandshakeTimeout:    5 * time.Second,
-			ExpectContinueTimeout:  1 * time.Second,
-			MaxResponseHeaderBytes: 5 * 1024,
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: true, // 单向验证
-			},
-		},
-	}
-	SetHTTPClient(client)
+// Error is the custom error type returns from HTTP requests.
+type Error struct {
+	Message    string
+	StatusCode int
+	URL        string
 }
+
+// Error returns the error message.
+func (e *Error) Error() string { return e.Message }
