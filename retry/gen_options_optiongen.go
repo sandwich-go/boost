@@ -10,14 +10,23 @@ import (
 
 // Options should use NewOptions to initialize it
 type Options struct {
-	Limit            uint                    // 最大尝试次数
-	Delay            time.Duration           // 固定延迟
-	MaxJitter        time.Duration           // 延迟最大抖动
-	OnRetry          func(n uint, err error) // 每次重试会先调用此方法
-	RetryIf          func(err error) bool    // 何种error进行重试
-	DelayType        DelayTypeFunc
-	LastErrorOnly    bool            // 是否只返回最后遇到的error
-	Context          context.Context // context，可以设定超时等
+	// annotation@Limit(comment="最大尝试次数")
+	Limit uint
+	// annotation@Delay(comment="固定延迟")
+	Delay time.Duration
+	// annotation@MaxJitter(comment="延迟最大抖动")
+	MaxJitter time.Duration
+	// annotation@OnRetry(comment="每次重试会先调用此方法")
+	OnRetry func(n uint, err error) /*do nothing now*/
+	// annotation@RetryIf(comment="何种error进行重试")
+	RetryIf func(err error) bool
+	// annotation@DelayType(comment="何种error进行重试")
+	DelayType DelayTypeFunc
+	// annotation@LastErrorOnly(comment="是否只返回最后遇到的error")
+	LastErrorOnly bool
+	// annotation@Context(comment="context，可以设定超时等")
+	Context context.Context
+	// annotation@MaxDelay(comment="最大延迟时间")
 	MaxDelay         time.Duration
 	MaxBackOffNInner uint
 }
@@ -44,63 +53,63 @@ func (cc *Options) ApplyOption(opts ...Option) {
 // Option option func
 type Option func(cc *Options)
 
-// WithLimit option func for filed Limit
+// WithLimit 最大尝试次数
 func WithLimit(v uint) Option {
 	return func(cc *Options) {
 		cc.Limit = v
 	}
 }
 
-// WithDelay option func for filed Delay
+// WithDelay 固定延迟
 func WithDelay(v time.Duration) Option {
 	return func(cc *Options) {
 		cc.Delay = v
 	}
 }
 
-// WithMaxJitter option func for filed MaxJitter
+// WithMaxJitter 延迟最大抖动
 func WithMaxJitter(v time.Duration) Option {
 	return func(cc *Options) {
 		cc.MaxJitter = v
 	}
 }
 
-// WithOnRetry option func for filed OnRetry
+// WithOnRetry 每次重试会先调用此方法
 func WithOnRetry(v func(n uint, err error)) Option {
 	return func(cc *Options) {
 		cc.OnRetry = v
 	}
 }
 
-// WithRetryIf option func for filed RetryIf
+// WithRetryIf 何种error进行重试
 func WithRetryIf(v func(err error) bool) Option {
 	return func(cc *Options) {
 		cc.RetryIf = v
 	}
 }
 
-// WithDelayType option func for filed DelayType
+// WithDelayType 何种error进行重试
 func WithDelayType(v DelayTypeFunc) Option {
 	return func(cc *Options) {
 		cc.DelayType = v
 	}
 }
 
-// WithLastErrorOnly option func for filed LastErrorOnly
+// WithLastErrorOnly 是否只返回最后遇到的error
 func WithLastErrorOnly(v bool) Option {
 	return func(cc *Options) {
 		cc.LastErrorOnly = v
 	}
 }
 
-// WithContext option func for filed Context
+// WithContext context，可以设定超时等
 func WithContext(v context.Context) Option {
 	return func(cc *Options) {
 		cc.Context = v
 	}
 }
 
-// WithMaxDelay option func for filed MaxDelay
+// WithMaxDelay 最大延迟时间
 func WithMaxDelay(v time.Duration) Option {
 	return func(cc *Options) {
 		cc.MaxDelay = v
