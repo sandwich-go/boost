@@ -2,14 +2,14 @@
 
 深拷贝
 
-- 若实现 Clone() [proto1](https://github.com/golang/protobuf/tree/master/proto).Message 接口，可快速进行深拷贝
-- 若实现 Clone() [proto2](https://github.com/protocolbuffers/protobuf-go/tree/master/proto).Message 接口，可快速进行深拷贝
-- 若实现 `DeepCopy() interface{}` 接口，可快速进行深拷贝
+- 若实现 Clone() [proto1](https://github.com/golang/protobuf/tree/master/proto).Message 接口，可快速深拷贝
+- 若实现 Clone() [proto2](https://github.com/protocolbuffers/protobuf-go/tree/master/proto).Message 接口，可快速深拷贝
+- 若实现 `DeepCopy() interface{}` 接口，可快速深拷贝
 - 其他形式则通过反射进行深拷贝
 
 
 **注意** :
-- 通过反射进行深拷贝，注意未导出的属性，未导出的属性无法深拷贝
+- 通过反射进行深拷贝时，注意未导出的属性，**未导出的属性无法拷贝**
 
 # 例子
 ```go
