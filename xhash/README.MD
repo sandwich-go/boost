@@ -8,7 +8,7 @@
 
 # 例子
 ```go
-s, err := Buffer(bytes.NewReader([]byte("aaaaaaaa")))
+s, err := md5.Buffer(bytes.NewReader([]byte("aaaaaaaa")))
 if err != nil {
     panic(er)
 }
