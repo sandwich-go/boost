@@ -24,8 +24,10 @@ var Info = map[string]string{
 	"user_data":  UserData,
 }
 
+// Valid version info is valid
 func Valid() bool { return Version != "unknown" }
 
+// String format version info
 func String() string {
 	if UserData == "unknown" || UserData == "" {
 		return fmt.Sprintf("%s_%s_%s_%s_%s", Version, Revision, Branch, BuildUser, BuildDate)
