@@ -31,12 +31,5 @@ func TestArray(t *testing.T) {
 
 		arr.SetFormatFunc(DotFormatFunc)
 		t.Log(arr.Error())
-
-		err := New(WithText("io error"), WithCode(500), WithStack())
-		errW := Wrap(err, "link error")
-		errW = Wrap(errW, "session error")
-
-		t.Log(errW.Error())
-		t.Log(Caller(err.Cause(), 0))
 	})
 }

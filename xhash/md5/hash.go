@@ -7,21 +7,21 @@ import (
 	"os"
 )
 
-func HashFileMd5(filePath string) (string, error) {
+// File 对文件进行 md5 hash
+func File(filePath string) (string, error) {
 	//Open the passed argument and check for any error
 	file, err := os.Open(filePath)
 	if err != nil {
 		return "", err
 	}
-
 	//Tell the program to call the following function when the current function returns
 	defer func() { _ = file.Close() }()
-
-	return HashBufferMd5(file)
+	return Buffer(file)
 
 }
 
-func HashBufferMd5(src io.Reader) (string, error) {
+// Buffer 对数据流进行 md5 hash
+func Buffer(src io.Reader) (string, error) {
 	var returnMD5String string
 	//Open a new hash interface to write to
 	hash := md5.New()
