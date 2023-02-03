@@ -3,7 +3,7 @@
 深拷贝
 
 - 若实现 Clone() [proto1](https://github.com/golang/protobuf/tree/master/proto).Message 接口，可快速进行深拷贝
-- 若实现 Clone() [proto2](https://google.golang.org/protobuf/proto).Message 接口，可快速进行深拷贝
+- 若实现 Clone() [proto2](https://github.com/protocolbuffers/protobuf-go/tree/master/proto).Message 接口，可快速进行深拷贝
 - 若实现 `DeepCopy() interface{}` 接口，可快速进行深拷贝
 - 其他形式则通过反射进行深拷贝
 
