@@ -5,6 +5,7 @@ import (
 	"context"
 	"io"
 	"testing"
+	"time"
 )
 
 func TestReader(t *testing.T) {
@@ -43,5 +44,15 @@ func TestReader(t *testing.T) {
 	}
 	if err != io.EOF {
 		t.Error("should be EOF", err)
+	}
+
+	context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithCancel(context.Background())
+	r = NewReader(ctx, bytes.NewReader(buf))
+	block = true
+	cancel()
+	_, err = r.Read(buf2)
+	if err == nil {
+		t.Error("should have error")
 	}
 }
