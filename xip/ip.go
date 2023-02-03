@@ -62,6 +62,7 @@ func LocalIpv4Addrs() (ips []string, err error) {
 	return ips, nil
 }
 
+// IsIntranet 是否是内网地址
 func IsIntranet(ipStr string) bool {
 	if strings.HasPrefix(ipStr, "10.") || strings.HasPrefix(ipStr, "192.168.") {
 		return true
