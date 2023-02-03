@@ -50,7 +50,7 @@ func formatSubStack(st stack, buffer io.StringWriter) {
 			if index > 9 {
 				space = " "
 			}
-			buffer.WriteString(fmt.Sprintf("   <%d>:%s%s\n    \t%s:%d\n", index, space, fn.Name(), file, line))
+			_, _ = buffer.WriteString(fmt.Sprintf("   <%d>:%s%s\n    \t%s:%d\n", index, space, fn.Name(), file, line))
 			index++
 		}
 	}

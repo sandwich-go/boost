@@ -12,7 +12,7 @@ type apiStack interface {
 	Stack() string
 }
 
-// apiStack Stack feature.
+// apiCaller Caller feature.
 type apiCaller interface {
 	error
 	Caller(skip int) (file, funcName string, line int)
@@ -40,6 +40,7 @@ func Code(err error) int32 {
 	return CodeHandlerForNotAPICode(err)
 }
 
+// Caller 返回调用信息
 func Caller(err error, skip int) (file, funcName string, line int) {
 	if err == nil {
 		return

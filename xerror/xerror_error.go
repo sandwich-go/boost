@@ -61,8 +61,8 @@ func (cc *Error) Cause() error {
 		if loop.err != nil {
 			if e, ok := loop.err.(*Error); ok {
 				loop = e
-			} else if e, ok := loop.err.(apiCause); ok {
-				return e.Cause()
+			} else if ac, ok0 := loop.err.(apiCause); ok0 {
+				return ac.Cause()
 			} else {
 				return loop.err
 			}
