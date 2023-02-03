@@ -14,7 +14,7 @@ var emptyStringMap = map[string]struct{}{
 
 // IsFalse 判断command解析获取的数据是否为false
 func IsFalse(v string) bool {
-	_, ok := emptyStringMap[strings.ToLower(string(v))]
+	_, ok := emptyStringMap[strings.ToLower(v)]
 	return ok
 }
 
