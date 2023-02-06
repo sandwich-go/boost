@@ -49,7 +49,7 @@ import (
 func TestWalkMapDeterministic(t *testing.T) {
 	var n = 100
 {{- range $walkConfig := .WalkConfigs }}
-	{{- $camelCaseKey := $walkConfig.Key | CamelCase}}
+	{{- $camelCaseKey := $walkConfig.Key | CamelCase }}
 	{{- $camelCaseValue := $walkConfig.Value | CamelCase | trimSuffix "{}" }}
 	{{- $walkMapName := print "Walk" $camelCaseKey $camelCaseValue "MapDeterministic" }}
 	Convey("{{ $walkMapName }}", t, func() {
@@ -95,7 +95,7 @@ import "sort"
 var _ sort.Interface
 
 {{- range $walkConfig := .WalkConfigs }}
-{{- $camelCaseKey := $walkConfig.Key | CamelCase}}
+{{- $camelCaseKey := $walkConfig.Key | CamelCase }}
 {{- $camelCaseValue := $walkConfig.Value | CamelCase | trimSuffix "{}" }}
 {{- $walkMapName := print "Walk" $camelCaseKey $camelCaseValue "MapDeterministic" }}
 // {{ $walkMapName }} 有序遍历map

@@ -72,7 +72,7 @@ func TestMath(t *testing.T) {
 		So(IsBelowZeroFloat32(-0.1), ShouldBeTrue)
 	})
 {{ range $mathConfig := .MathConfigs }}
-{{- $camelCaseKey := $mathConfig.Key | CamelCase}}
+{{- $camelCaseKey := $mathConfig.Key | CamelCase }}
 	Convey("{{ $camelCaseKey }}", t, func() {
 {{- if or (eq $mathConfig.Key "float32") (eq $mathConfig.Key "float64") }}
 		So(Max{{ $camelCaseKey }}(3.000000001, 3.000000002), ShouldEqual, 3.000000002)
@@ -156,7 +156,7 @@ func IsBelowZeroFloat32(v float32) bool {
 	return (v - 0) {{ "<" | Unescaped }} EPSILON32
 }
 {{ range $mathConfig := .MathConfigs }}
-{{- $camelCaseKey := $mathConfig.Key | CamelCase}}
+{{- $camelCaseKey := $mathConfig.Key | CamelCase }}
 // Max{{ $camelCaseKey }} 返回 {{ $mathConfig.Key }} 类型大值
 func Max{{ $camelCaseKey }}(a, b {{ $mathConfig.Key }}) {{ $mathConfig.Key }} {
 {{- if eq $mathConfig.Key "float32" }}

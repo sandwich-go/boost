@@ -7,21 +7,23 @@ import (
 )
 
 func main() {
-	// 生成 walk.go
-	_, err := xtemplate.Execute(template2.WalkTPL, template2.GetWalkTPLArgs(),
-		xtemplate.WithOptionName("walk"),
-		xtemplate.WithOptionFileName("./../walk.go"),
-	)
-	if err != nil {
-		log.Fatal(err.Error())
+	for _, src := range []struct {
+		Name     string
+		FileName string
+		TPL      string
+		Args     interface{}
+	}{
+		{Name: "walk", FileName: "./../walk.go", TPL: template2.WalkTPL, Args: template2.GetWalkTPLArgs()},
+		{Name: "walk_test", FileName: "./../walk_test.go", TPL: template2.WalkTestTPL, Args: template2.GetWalkTPLArgs()},
+		{Name: "equal", FileName: "./../equal.go", TPL: template2.EqualTPL, Args: template2.GetEqualTPLArgs()},
+		{Name: "equal_test", FileName: "./../equal_test.go", TPL: template2.EqualTestTPL, Args: template2.GetEqualTPLArgs()},
+	} {
+		_, err := xtemplate.Execute(src.TPL, src.Args,
+			xtemplate.WithOptionName(src.Name),
+			xtemplate.WithOptionFileName(src.FileName),
+		)
+		if err != nil {
+			log.Fatal(err.Error())
+		}
 	}
-	// 生成 walk_test.go
-	_, err = xtemplate.Execute(template2.WalkTestTPL, template2.GetWalkTPLArgs(),
-		xtemplate.WithOptionName("walk_test"),
-		xtemplate.WithOptionFileName("./../walk_test.go"),
-	)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
 }

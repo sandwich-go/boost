@@ -7,20 +7,21 @@ import (
 )
 
 func main() {
-	// 生成 walk.go
-	_, err := xtemplate.Execute(template2.MathTPL, template2.GetMathTPLArgs(),
-		xtemplate.WithOptionName("math"),
-		xtemplate.WithOptionFileName("./../math.go"),
-	)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	// 生成 walk_test.go
-	_, err = xtemplate.Execute(template2.MathTestTPL, template2.GetMathTPLArgs(),
-		xtemplate.WithOptionName("math_test"),
-		xtemplate.WithOptionFileName("./../math_test.go"),
-	)
-	if err != nil {
-		log.Fatal(err.Error())
+	for _, src := range []struct {
+		Name     string
+		FileName string
+		TPL      string
+		Args     interface{}
+	}{
+		{Name: "math", FileName: "./../math.go", TPL: template2.MathTPL, Args: template2.GetMathTPLArgs()},
+		{Name: "math_test", FileName: "./../math_test.go", TPL: template2.MathTestTPL, Args: template2.GetMathTPLArgs()},
+	} {
+		_, err := xtemplate.Execute(src.TPL, src.Args,
+			xtemplate.WithOptionName(src.Name),
+			xtemplate.WithOptionFileName(src.FileName),
+		)
+		if err != nil {
+			log.Fatal(err.Error())
+		}
 	}
 }
