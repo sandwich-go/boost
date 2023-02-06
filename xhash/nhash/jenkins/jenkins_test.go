@@ -9,7 +9,7 @@ import (
 	"unsafe"
 
 	"github.com/sandwich-go/boost/hrff"
-	"github.com/sandwich-go/boost/xhash/jenkins"
+	"github.com/sandwich-go/boost/xhash/nhash/jenkins"
 )
 
 //import "math"
