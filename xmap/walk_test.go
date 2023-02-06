@@ -2,7 +2,6 @@
 package xmap
 
 import (
-	"fmt"
 	. "github.com/smartystreets/goconvey/convey"
 	"sort"
 	"strconv"
@@ -33,6 +32,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat32Float64MapDeterministic", t, func() {
 		var keys = make([]float32, 0, n)
 		var value float64
@@ -55,6 +55,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat32IntMapDeterministic", t, func() {
 		var keys = make([]float32, 0, n)
 		var value int
@@ -77,6 +78,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat32Int16MapDeterministic", t, func() {
 		var keys = make([]float32, 0, n)
 		var value int16
@@ -99,6 +101,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat32Int32MapDeterministic", t, func() {
 		var keys = make([]float32, 0, n)
 		var value int32
@@ -121,6 +124,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat32Int64MapDeterministic", t, func() {
 		var keys = make([]float32, 0, n)
 		var value int64
@@ -143,6 +147,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat32Int8MapDeterministic", t, func() {
 		var keys = make([]float32, 0, n)
 		var value int8
@@ -165,6 +170,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat32InterfaceMapDeterministic", t, func() {
 		var keys = make([]float32, 0, n)
 		var value interface{}
@@ -187,6 +193,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat32StringMapDeterministic", t, func() {
 		var keys = make([]float32, 0, n)
 		var value string
@@ -209,6 +216,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat32UintMapDeterministic", t, func() {
 		var keys = make([]float32, 0, n)
 		var value uint
@@ -231,6 +239,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat32Uint16MapDeterministic", t, func() {
 		var keys = make([]float32, 0, n)
 		var value uint16
@@ -253,6 +262,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat32Uint32MapDeterministic", t, func() {
 		var keys = make([]float32, 0, n)
 		var value uint32
@@ -275,6 +285,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat32Uint64MapDeterministic", t, func() {
 		var keys = make([]float32, 0, n)
 		var value uint64
@@ -297,6 +308,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat32Uint8MapDeterministic", t, func() {
 		var keys = make([]float32, 0, n)
 		var value uint8
@@ -319,6 +331,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat64Float32MapDeterministic", t, func() {
 		var keys = make([]float64, 0, n)
 		var value float32
@@ -341,6 +354,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat64Float64MapDeterministic", t, func() {
 		var keys = make([]float64, 0, n)
 		var value float64
@@ -363,6 +377,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat64IntMapDeterministic", t, func() {
 		var keys = make([]float64, 0, n)
 		var value int
@@ -385,6 +400,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat64Int16MapDeterministic", t, func() {
 		var keys = make([]float64, 0, n)
 		var value int16
@@ -407,6 +423,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat64Int32MapDeterministic", t, func() {
 		var keys = make([]float64, 0, n)
 		var value int32
@@ -429,6 +446,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat64Int64MapDeterministic", t, func() {
 		var keys = make([]float64, 0, n)
 		var value int64
@@ -451,6 +469,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat64Int8MapDeterministic", t, func() {
 		var keys = make([]float64, 0, n)
 		var value int8
@@ -473,6 +492,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat64InterfaceMapDeterministic", t, func() {
 		var keys = make([]float64, 0, n)
 		var value interface{}
@@ -495,6 +515,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat64StringMapDeterministic", t, func() {
 		var keys = make([]float64, 0, n)
 		var value string
@@ -517,6 +538,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat64UintMapDeterministic", t, func() {
 		var keys = make([]float64, 0, n)
 		var value uint
@@ -539,6 +561,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat64Uint16MapDeterministic", t, func() {
 		var keys = make([]float64, 0, n)
 		var value uint16
@@ -561,6 +584,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat64Uint32MapDeterministic", t, func() {
 		var keys = make([]float64, 0, n)
 		var value uint32
@@ -583,6 +607,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat64Uint64MapDeterministic", t, func() {
 		var keys = make([]float64, 0, n)
 		var value uint64
@@ -605,6 +630,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkFloat64Uint8MapDeterministic", t, func() {
 		var keys = make([]float64, 0, n)
 		var value uint8
@@ -627,6 +653,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkIntFloat32MapDeterministic", t, func() {
 		var keys = make([]int, 0, n)
 		var value float32
@@ -649,6 +676,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkIntFloat64MapDeterministic", t, func() {
 		var keys = make([]int, 0, n)
 		var value float64
@@ -671,6 +699,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkIntIntMapDeterministic", t, func() {
 		var keys = make([]int, 0, n)
 		var value int
@@ -693,6 +722,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkIntInt16MapDeterministic", t, func() {
 		var keys = make([]int, 0, n)
 		var value int16
@@ -715,6 +745,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkIntInt32MapDeterministic", t, func() {
 		var keys = make([]int, 0, n)
 		var value int32
@@ -737,6 +768,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkIntInt64MapDeterministic", t, func() {
 		var keys = make([]int, 0, n)
 		var value int64
@@ -759,6 +791,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkIntInt8MapDeterministic", t, func() {
 		var keys = make([]int, 0, n)
 		var value int8
@@ -781,6 +814,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkIntInterfaceMapDeterministic", t, func() {
 		var keys = make([]int, 0, n)
 		var value interface{}
@@ -803,6 +837,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkIntStringMapDeterministic", t, func() {
 		var keys = make([]int, 0, n)
 		var value string
@@ -825,6 +860,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkIntUintMapDeterministic", t, func() {
 		var keys = make([]int, 0, n)
 		var value uint
@@ -847,6 +883,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkIntUint16MapDeterministic", t, func() {
 		var keys = make([]int, 0, n)
 		var value uint16
@@ -869,6 +906,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkIntUint32MapDeterministic", t, func() {
 		var keys = make([]int, 0, n)
 		var value uint32
@@ -891,6 +929,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkIntUint64MapDeterministic", t, func() {
 		var keys = make([]int, 0, n)
 		var value uint64
@@ -913,6 +952,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkIntUint8MapDeterministic", t, func() {
 		var keys = make([]int, 0, n)
 		var value uint8
@@ -935,6 +975,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt16Float32MapDeterministic", t, func() {
 		var keys = make([]int16, 0, n)
 		var value float32
@@ -957,6 +998,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt16Float64MapDeterministic", t, func() {
 		var keys = make([]int16, 0, n)
 		var value float64
@@ -979,6 +1021,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt16IntMapDeterministic", t, func() {
 		var keys = make([]int16, 0, n)
 		var value int
@@ -1001,6 +1044,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt16Int16MapDeterministic", t, func() {
 		var keys = make([]int16, 0, n)
 		var value int16
@@ -1023,6 +1067,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt16Int32MapDeterministic", t, func() {
 		var keys = make([]int16, 0, n)
 		var value int32
@@ -1045,6 +1090,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt16Int64MapDeterministic", t, func() {
 		var keys = make([]int16, 0, n)
 		var value int64
@@ -1067,6 +1113,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt16Int8MapDeterministic", t, func() {
 		var keys = make([]int16, 0, n)
 		var value int8
@@ -1089,6 +1136,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt16InterfaceMapDeterministic", t, func() {
 		var keys = make([]int16, 0, n)
 		var value interface{}
@@ -1111,6 +1159,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt16StringMapDeterministic", t, func() {
 		var keys = make([]int16, 0, n)
 		var value string
@@ -1133,6 +1182,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt16UintMapDeterministic", t, func() {
 		var keys = make([]int16, 0, n)
 		var value uint
@@ -1155,6 +1205,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt16Uint16MapDeterministic", t, func() {
 		var keys = make([]int16, 0, n)
 		var value uint16
@@ -1177,6 +1228,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt16Uint32MapDeterministic", t, func() {
 		var keys = make([]int16, 0, n)
 		var value uint32
@@ -1199,6 +1251,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt16Uint64MapDeterministic", t, func() {
 		var keys = make([]int16, 0, n)
 		var value uint64
@@ -1221,6 +1274,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt16Uint8MapDeterministic", t, func() {
 		var keys = make([]int16, 0, n)
 		var value uint8
@@ -1243,6 +1297,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt32Float32MapDeterministic", t, func() {
 		var keys = make([]int32, 0, n)
 		var value float32
@@ -1265,6 +1320,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt32Float64MapDeterministic", t, func() {
 		var keys = make([]int32, 0, n)
 		var value float64
@@ -1287,6 +1343,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt32IntMapDeterministic", t, func() {
 		var keys = make([]int32, 0, n)
 		var value int
@@ -1309,6 +1366,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt32Int16MapDeterministic", t, func() {
 		var keys = make([]int32, 0, n)
 		var value int16
@@ -1331,6 +1389,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt32Int32MapDeterministic", t, func() {
 		var keys = make([]int32, 0, n)
 		var value int32
@@ -1353,6 +1412,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt32Int64MapDeterministic", t, func() {
 		var keys = make([]int32, 0, n)
 		var value int64
@@ -1375,6 +1435,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt32Int8MapDeterministic", t, func() {
 		var keys = make([]int32, 0, n)
 		var value int8
@@ -1397,6 +1458,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt32InterfaceMapDeterministic", t, func() {
 		var keys = make([]int32, 0, n)
 		var value interface{}
@@ -1419,6 +1481,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt32StringMapDeterministic", t, func() {
 		var keys = make([]int32, 0, n)
 		var value string
@@ -1441,6 +1504,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt32UintMapDeterministic", t, func() {
 		var keys = make([]int32, 0, n)
 		var value uint
@@ -1463,6 +1527,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt32Uint16MapDeterministic", t, func() {
 		var keys = make([]int32, 0, n)
 		var value uint16
@@ -1485,6 +1550,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt32Uint32MapDeterministic", t, func() {
 		var keys = make([]int32, 0, n)
 		var value uint32
@@ -1507,6 +1573,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt32Uint64MapDeterministic", t, func() {
 		var keys = make([]int32, 0, n)
 		var value uint64
@@ -1529,6 +1596,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt32Uint8MapDeterministic", t, func() {
 		var keys = make([]int32, 0, n)
 		var value uint8
@@ -1551,6 +1619,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt64Float32MapDeterministic", t, func() {
 		var keys = make([]int64, 0, n)
 		var value float32
@@ -1573,6 +1642,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt64Float64MapDeterministic", t, func() {
 		var keys = make([]int64, 0, n)
 		var value float64
@@ -1595,6 +1665,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt64IntMapDeterministic", t, func() {
 		var keys = make([]int64, 0, n)
 		var value int
@@ -1617,6 +1688,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt64Int16MapDeterministic", t, func() {
 		var keys = make([]int64, 0, n)
 		var value int16
@@ -1639,6 +1711,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt64Int32MapDeterministic", t, func() {
 		var keys = make([]int64, 0, n)
 		var value int32
@@ -1661,6 +1734,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt64Int64MapDeterministic", t, func() {
 		var keys = make([]int64, 0, n)
 		var value int64
@@ -1683,6 +1757,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt64Int8MapDeterministic", t, func() {
 		var keys = make([]int64, 0, n)
 		var value int8
@@ -1705,6 +1780,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt64InterfaceMapDeterministic", t, func() {
 		var keys = make([]int64, 0, n)
 		var value interface{}
@@ -1727,6 +1803,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt64StringMapDeterministic", t, func() {
 		var keys = make([]int64, 0, n)
 		var value string
@@ -1749,6 +1826,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt64UintMapDeterministic", t, func() {
 		var keys = make([]int64, 0, n)
 		var value uint
@@ -1771,6 +1849,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt64Uint16MapDeterministic", t, func() {
 		var keys = make([]int64, 0, n)
 		var value uint16
@@ -1793,6 +1872,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt64Uint32MapDeterministic", t, func() {
 		var keys = make([]int64, 0, n)
 		var value uint32
@@ -1815,6 +1895,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt64Uint64MapDeterministic", t, func() {
 		var keys = make([]int64, 0, n)
 		var value uint64
@@ -1837,6 +1918,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt64Uint8MapDeterministic", t, func() {
 		var keys = make([]int64, 0, n)
 		var value uint8
@@ -1859,6 +1941,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt8Float32MapDeterministic", t, func() {
 		var keys = make([]int8, 0, n)
 		var value float32
@@ -1881,6 +1964,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt8Float64MapDeterministic", t, func() {
 		var keys = make([]int8, 0, n)
 		var value float64
@@ -1903,6 +1987,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt8IntMapDeterministic", t, func() {
 		var keys = make([]int8, 0, n)
 		var value int
@@ -1925,6 +2010,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt8Int16MapDeterministic", t, func() {
 		var keys = make([]int8, 0, n)
 		var value int16
@@ -1947,6 +2033,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt8Int32MapDeterministic", t, func() {
 		var keys = make([]int8, 0, n)
 		var value int32
@@ -1969,6 +2056,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt8Int64MapDeterministic", t, func() {
 		var keys = make([]int8, 0, n)
 		var value int64
@@ -1991,6 +2079,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt8Int8MapDeterministic", t, func() {
 		var keys = make([]int8, 0, n)
 		var value int8
@@ -2013,6 +2102,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt8InterfaceMapDeterministic", t, func() {
 		var keys = make([]int8, 0, n)
 		var value interface{}
@@ -2035,6 +2125,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt8StringMapDeterministic", t, func() {
 		var keys = make([]int8, 0, n)
 		var value string
@@ -2057,6 +2148,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt8UintMapDeterministic", t, func() {
 		var keys = make([]int8, 0, n)
 		var value uint
@@ -2079,6 +2171,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt8Uint16MapDeterministic", t, func() {
 		var keys = make([]int8, 0, n)
 		var value uint16
@@ -2101,6 +2194,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt8Uint32MapDeterministic", t, func() {
 		var keys = make([]int8, 0, n)
 		var value uint32
@@ -2123,6 +2217,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt8Uint64MapDeterministic", t, func() {
 		var keys = make([]int8, 0, n)
 		var value uint64
@@ -2145,6 +2240,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkInt8Uint8MapDeterministic", t, func() {
 		var keys = make([]int8, 0, n)
 		var value uint8
@@ -2167,6 +2263,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkStringFloat32MapDeterministic", t, func() {
 		var keys = make([]string, 0, n)
 		var value float32
@@ -2189,6 +2286,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkStringFloat64MapDeterministic", t, func() {
 		var keys = make([]string, 0, n)
 		var value float64
@@ -2211,6 +2309,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkStringIntMapDeterministic", t, func() {
 		var keys = make([]string, 0, n)
 		var value int
@@ -2233,6 +2332,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkStringInt16MapDeterministic", t, func() {
 		var keys = make([]string, 0, n)
 		var value int16
@@ -2255,6 +2355,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkStringInt32MapDeterministic", t, func() {
 		var keys = make([]string, 0, n)
 		var value int32
@@ -2277,6 +2378,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkStringInt64MapDeterministic", t, func() {
 		var keys = make([]string, 0, n)
 		var value int64
@@ -2299,6 +2401,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkStringInt8MapDeterministic", t, func() {
 		var keys = make([]string, 0, n)
 		var value int8
@@ -2321,6 +2424,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkStringInterfaceMapDeterministic", t, func() {
 		var keys = make([]string, 0, n)
 		var value interface{}
@@ -2343,6 +2447,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkStringStringMapDeterministic", t, func() {
 		var keys = make([]string, 0, n)
 		var value string
@@ -2365,6 +2470,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkStringUintMapDeterministic", t, func() {
 		var keys = make([]string, 0, n)
 		var value uint
@@ -2387,6 +2493,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkStringUint16MapDeterministic", t, func() {
 		var keys = make([]string, 0, n)
 		var value uint16
@@ -2409,6 +2516,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkStringUint32MapDeterministic", t, func() {
 		var keys = make([]string, 0, n)
 		var value uint32
@@ -2431,6 +2539,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkStringUint64MapDeterministic", t, func() {
 		var keys = make([]string, 0, n)
 		var value uint64
@@ -2453,6 +2562,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkStringUint8MapDeterministic", t, func() {
 		var keys = make([]string, 0, n)
 		var value uint8
@@ -2475,6 +2585,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUintFloat32MapDeterministic", t, func() {
 		var keys = make([]uint, 0, n)
 		var value float32
@@ -2497,6 +2608,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUintFloat64MapDeterministic", t, func() {
 		var keys = make([]uint, 0, n)
 		var value float64
@@ -2519,6 +2631,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUintIntMapDeterministic", t, func() {
 		var keys = make([]uint, 0, n)
 		var value int
@@ -2541,6 +2654,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUintInt16MapDeterministic", t, func() {
 		var keys = make([]uint, 0, n)
 		var value int16
@@ -2563,6 +2677,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUintInt32MapDeterministic", t, func() {
 		var keys = make([]uint, 0, n)
 		var value int32
@@ -2585,6 +2700,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUintInt64MapDeterministic", t, func() {
 		var keys = make([]uint, 0, n)
 		var value int64
@@ -2607,6 +2723,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUintInt8MapDeterministic", t, func() {
 		var keys = make([]uint, 0, n)
 		var value int8
@@ -2629,6 +2746,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUintInterfaceMapDeterministic", t, func() {
 		var keys = make([]uint, 0, n)
 		var value interface{}
@@ -2651,6 +2769,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUintStringMapDeterministic", t, func() {
 		var keys = make([]uint, 0, n)
 		var value string
@@ -2673,6 +2792,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUintUintMapDeterministic", t, func() {
 		var keys = make([]uint, 0, n)
 		var value uint
@@ -2695,6 +2815,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUintUint16MapDeterministic", t, func() {
 		var keys = make([]uint, 0, n)
 		var value uint16
@@ -2717,6 +2838,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUintUint32MapDeterministic", t, func() {
 		var keys = make([]uint, 0, n)
 		var value uint32
@@ -2739,6 +2861,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUintUint64MapDeterministic", t, func() {
 		var keys = make([]uint, 0, n)
 		var value uint64
@@ -2761,6 +2884,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUintUint8MapDeterministic", t, func() {
 		var keys = make([]uint, 0, n)
 		var value uint8
@@ -2783,6 +2907,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint16Float32MapDeterministic", t, func() {
 		var keys = make([]uint16, 0, n)
 		var value float32
@@ -2805,6 +2930,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint16Float64MapDeterministic", t, func() {
 		var keys = make([]uint16, 0, n)
 		var value float64
@@ -2827,6 +2953,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint16IntMapDeterministic", t, func() {
 		var keys = make([]uint16, 0, n)
 		var value int
@@ -2849,6 +2976,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint16Int16MapDeterministic", t, func() {
 		var keys = make([]uint16, 0, n)
 		var value int16
@@ -2871,6 +2999,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint16Int32MapDeterministic", t, func() {
 		var keys = make([]uint16, 0, n)
 		var value int32
@@ -2893,6 +3022,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint16Int64MapDeterministic", t, func() {
 		var keys = make([]uint16, 0, n)
 		var value int64
@@ -2915,6 +3045,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint16Int8MapDeterministic", t, func() {
 		var keys = make([]uint16, 0, n)
 		var value int8
@@ -2937,6 +3068,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint16InterfaceMapDeterministic", t, func() {
 		var keys = make([]uint16, 0, n)
 		var value interface{}
@@ -2959,6 +3091,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint16StringMapDeterministic", t, func() {
 		var keys = make([]uint16, 0, n)
 		var value string
@@ -2981,6 +3114,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint16UintMapDeterministic", t, func() {
 		var keys = make([]uint16, 0, n)
 		var value uint
@@ -3003,6 +3137,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint16Uint16MapDeterministic", t, func() {
 		var keys = make([]uint16, 0, n)
 		var value uint16
@@ -3025,6 +3160,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint16Uint32MapDeterministic", t, func() {
 		var keys = make([]uint16, 0, n)
 		var value uint32
@@ -3047,6 +3183,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint16Uint64MapDeterministic", t, func() {
 		var keys = make([]uint16, 0, n)
 		var value uint64
@@ -3069,6 +3206,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint16Uint8MapDeterministic", t, func() {
 		var keys = make([]uint16, 0, n)
 		var value uint8
@@ -3091,6 +3229,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint32Float32MapDeterministic", t, func() {
 		var keys = make([]uint32, 0, n)
 		var value float32
@@ -3113,6 +3252,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint32Float64MapDeterministic", t, func() {
 		var keys = make([]uint32, 0, n)
 		var value float64
@@ -3135,6 +3275,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint32IntMapDeterministic", t, func() {
 		var keys = make([]uint32, 0, n)
 		var value int
@@ -3157,6 +3298,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint32Int16MapDeterministic", t, func() {
 		var keys = make([]uint32, 0, n)
 		var value int16
@@ -3179,6 +3321,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint32Int32MapDeterministic", t, func() {
 		var keys = make([]uint32, 0, n)
 		var value int32
@@ -3201,6 +3344,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint32Int64MapDeterministic", t, func() {
 		var keys = make([]uint32, 0, n)
 		var value int64
@@ -3223,6 +3367,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint32Int8MapDeterministic", t, func() {
 		var keys = make([]uint32, 0, n)
 		var value int8
@@ -3245,6 +3390,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint32InterfaceMapDeterministic", t, func() {
 		var keys = make([]uint32, 0, n)
 		var value interface{}
@@ -3267,6 +3413,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint32StringMapDeterministic", t, func() {
 		var keys = make([]uint32, 0, n)
 		var value string
@@ -3289,6 +3436,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint32UintMapDeterministic", t, func() {
 		var keys = make([]uint32, 0, n)
 		var value uint
@@ -3311,6 +3459,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint32Uint16MapDeterministic", t, func() {
 		var keys = make([]uint32, 0, n)
 		var value uint16
@@ -3333,6 +3482,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint32Uint32MapDeterministic", t, func() {
 		var keys = make([]uint32, 0, n)
 		var value uint32
@@ -3355,6 +3505,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint32Uint64MapDeterministic", t, func() {
 		var keys = make([]uint32, 0, n)
 		var value uint64
@@ -3377,6 +3528,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint32Uint8MapDeterministic", t, func() {
 		var keys = make([]uint32, 0, n)
 		var value uint8
@@ -3399,6 +3551,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint64Float32MapDeterministic", t, func() {
 		var keys = make([]uint64, 0, n)
 		var value float32
@@ -3421,6 +3574,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint64Float64MapDeterministic", t, func() {
 		var keys = make([]uint64, 0, n)
 		var value float64
@@ -3443,6 +3597,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint64IntMapDeterministic", t, func() {
 		var keys = make([]uint64, 0, n)
 		var value int
@@ -3465,6 +3620,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint64Int16MapDeterministic", t, func() {
 		var keys = make([]uint64, 0, n)
 		var value int16
@@ -3487,6 +3643,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint64Int32MapDeterministic", t, func() {
 		var keys = make([]uint64, 0, n)
 		var value int32
@@ -3509,6 +3666,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint64Int64MapDeterministic", t, func() {
 		var keys = make([]uint64, 0, n)
 		var value int64
@@ -3531,6 +3689,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint64Int8MapDeterministic", t, func() {
 		var keys = make([]uint64, 0, n)
 		var value int8
@@ -3553,6 +3712,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint64InterfaceMapDeterministic", t, func() {
 		var keys = make([]uint64, 0, n)
 		var value interface{}
@@ -3575,6 +3735,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint64StringMapDeterministic", t, func() {
 		var keys = make([]uint64, 0, n)
 		var value string
@@ -3597,6 +3758,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint64UintMapDeterministic", t, func() {
 		var keys = make([]uint64, 0, n)
 		var value uint
@@ -3619,6 +3781,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint64Uint16MapDeterministic", t, func() {
 		var keys = make([]uint64, 0, n)
 		var value uint16
@@ -3641,6 +3804,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint64Uint32MapDeterministic", t, func() {
 		var keys = make([]uint64, 0, n)
 		var value uint32
@@ -3663,6 +3827,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint64Uint64MapDeterministic", t, func() {
 		var keys = make([]uint64, 0, n)
 		var value uint64
@@ -3685,6 +3850,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint64Uint8MapDeterministic", t, func() {
 		var keys = make([]uint64, 0, n)
 		var value uint8
@@ -3707,6 +3873,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint8Float32MapDeterministic", t, func() {
 		var keys = make([]uint8, 0, n)
 		var value float32
@@ -3729,6 +3896,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint8Float64MapDeterministic", t, func() {
 		var keys = make([]uint8, 0, n)
 		var value float64
@@ -3751,6 +3919,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint8IntMapDeterministic", t, func() {
 		var keys = make([]uint8, 0, n)
 		var value int
@@ -3773,6 +3942,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint8Int16MapDeterministic", t, func() {
 		var keys = make([]uint8, 0, n)
 		var value int16
@@ -3795,6 +3965,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint8Int32MapDeterministic", t, func() {
 		var keys = make([]uint8, 0, n)
 		var value int32
@@ -3817,6 +3988,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint8Int64MapDeterministic", t, func() {
 		var keys = make([]uint8, 0, n)
 		var value int64
@@ -3839,6 +4011,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint8Int8MapDeterministic", t, func() {
 		var keys = make([]uint8, 0, n)
 		var value int8
@@ -3861,6 +4034,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint8InterfaceMapDeterministic", t, func() {
 		var keys = make([]uint8, 0, n)
 		var value interface{}
@@ -3883,6 +4057,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint8StringMapDeterministic", t, func() {
 		var keys = make([]uint8, 0, n)
 		var value string
@@ -3905,6 +4080,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint8UintMapDeterministic", t, func() {
 		var keys = make([]uint8, 0, n)
 		var value uint
@@ -3927,6 +4103,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint8Uint16MapDeterministic", t, func() {
 		var keys = make([]uint8, 0, n)
 		var value uint16
@@ -3949,6 +4126,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint8Uint32MapDeterministic", t, func() {
 		var keys = make([]uint8, 0, n)
 		var value uint32
@@ -3971,6 +4149,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint8Uint64MapDeterministic", t, func() {
 		var keys = make([]uint8, 0, n)
 		var value uint64
@@ -3993,6 +4172,7 @@ func TestWalkMapDeterministic(t *testing.T) {
 			So(v, ShouldEqual, dest[k])
 		}
 	})
+
 	Convey("WalkUint8Uint8MapDeterministic", t, func() {
 		var keys = make([]uint8, 0, n)
 		var value uint8
@@ -4014,16 +4194,5 @@ func TestWalkMapDeterministic(t *testing.T) {
 		for k, v := range keys {
 			So(v, ShouldEqual, dest[k])
 		}
-
-		var tm1 = make(map[string]string)
-		tm1["b"] = "c"
-		tm1["a"] = "b"
-		tm1["1"] = "2"
-		tm1["c"] = "d"
-
-		WalkStringStringMapDeterministic(tm1, func(k string, v string) bool {
-			fmt.Println("key:", k, "value:", v)
-			return true
-		})
 	})
 }

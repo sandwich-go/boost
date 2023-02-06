@@ -2,22 +2,6 @@ package xmath
 
 import "strconv"
 
-// Integer limit values.
-const (
-	ConstMaxInt8   = 1<<7 - 1
-	ConstMinInt8   = -1 << 7
-	ConstMaxInt16  = 1<<15 - 1
-	ConstMinInt16  = -1 << 15
-	ConstMaxInt32  = 1<<31 - 1
-	ConstMinInt32  = -1 << 31
-	ConstMaxInt64  = 1<<63 - 1
-	ConstMinInt64  = -1 << 63
-	ConstMaxUint8  = 1<<8 - 1
-	ConstMaxUint16 = 1<<16 - 1
-	ConstMaxUint32 = 1<<32 - 1
-	ConstMaxUint64 = 1<<64 - 1
-)
-
 // ParseUint64 parses s as an integer in decimal or hexadecimal syntax.
 // Leading zeros are accepted. The empty string parses as zero.
 func ParseUint64(s string) (uint64, bool) {
