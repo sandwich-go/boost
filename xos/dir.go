@@ -1,6 +1,7 @@
 package xos
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -9,31 +10,35 @@ import (
 	"github.com/sandwich-go/boost/xslice"
 )
 
+// MkdirAll 创建 path 的目录
 func MkdirAll(path string) error {
 	return Mkdir(filepath.Dir(path))
 }
 
+// Mkdir 创建目录
 func Mkdir(dir string) error {
-	if FileExists(dir) {
+	if ExistsFile(dir) {
 		return nil
 	}
 	return os.MkdirAll(dir, 0775)
 }
 
-// IsEmpty 检测目录是否为空
+// IsEmpty 检测目录或文件是否为空
 func IsEmpty(path string) bool {
 	stat, err := os.Stat(path)
 	if err != nil {
 		return true
 	}
 	if stat.IsDir() {
-		file, err := os.Open(path)
-		if err != nil {
+		file, err0 := os.Open(path)
+		if err0 != nil {
 			return true
 		}
-		defer file.Close()
-		names, err := file.Readdirnames(-1)
-		if err != nil {
+		defer func() {
+			_ = file.Close()
+		}()
+		names, err1 := file.Readdirnames(-1)
+		if err1 != nil {
 			return true
 		}
 		return len(names) == 0
@@ -44,7 +49,7 @@ func IsEmpty(path string) bool {
 
 // RemoveSubDirsUnderDir 删除指定目录下的子目录
 func RemoveSubDirsUnderDir(dir string, filter func(dir string) bool) error {
-	if !DirExists(dir) {
+	if !ExistsDir(dir) {
 		return nil
 	}
 	fs, err := ioutil.ReadDir(dir)
@@ -72,45 +77,43 @@ func RemoveSubDirsUnderDir(dir string, filter func(dir string) bool) error {
 	return nil
 }
 
-func removEmptyDir(path string, info os.FileInfo) {
+func removeEmptyDir(path string) error {
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
-		panic(err)
+		return err
 	}
-
 	if len(files) != 0 {
-		return
+		return fmt.Errorf("not empty dir, %s", path)
 	}
-
-	err = os.Remove(path)
-	if err != nil {
-		panic(err)
-	}
+	return os.Remove(path)
 }
 
 // RemoveEmptyDirs 删除空目录
+// 若目录不为空，则报错
 func RemoveEmptyDirs(root string) error {
 	return filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 		if info.IsDir() {
-			removEmptyDir(path, info)
+			err = removeEmptyDir(path)
 		}
-		return nil
+		return err
 	})
 }
 
-// RemoveDirs 删除指定目录
+// RemoveDirs 删除指定目录下所有内容
 func RemoveDirs(dir string) error {
 	d, err := os.Open(dir)
 	if err != nil {
 		return err
 	}
-	defer d.Close()
-	names, err := d.Readdirnames(-1)
-	if err != nil {
-		return err
+	defer func() {
+		_ = d.Close()
+	}()
+	names, err0 := d.Readdirnames(-1)
+	if err0 != nil {
+		return err0
 	}
 	for _, name := range names {
 		err = os.RemoveAll(filepath.Join(dir, name))
@@ -185,21 +188,25 @@ func FileWalkFuncWithExcludeFilter(files *[]string, excluded func(f string) bool
 
 // FilePathWalkFollowLink 遍历目录
 func FilePathWalkFollowLink(root string, walkFn filepath.WalkFunc) error {
-	return filepath.Walk(GetActuallyDir(root), walkFn)
+	dir, err := GetActuallyDir(root)
+	if err != nil {
+		return err
+	}
+	return filepath.Walk(dir, walkFn)
 }
 
 // GetActuallyDir 获取真实目录，如果root为一个link则寻找link的真实目录
-func GetActuallyDir(root string) string {
+func GetActuallyDir(root string) (string, error) {
 	dirInfo, err := os.Lstat(root)
 	if err != nil {
-		return root
+		return root, err
 	}
 	if dirInfo.Mode()&os.ModeSymlink != 0 {
-		dirLinkTo, err := os.Readlink(root)
-		if err != nil {
-			return root
+		dirLinkTo, err0 := os.Readlink(root)
+		if err0 != nil {
+			return root, err0
 		}
-		return dirLinkTo
+		return dirLinkTo, nil
 	}
-	return root
+	return root, nil
 }
