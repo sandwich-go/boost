@@ -26,10 +26,11 @@ func IsGoRun() bool {
 	return isGoRun
 }
 
+// MustGetBinaryFilePath returns binary path if the binary is run from a go run command.
 func MustGetBinaryFilePath() (ret string) {
 	ex, err := os.Executable()
 	xpanic.WhenErrorAsFmtFirst(err, "Executable got error:%w")
-	realPath, err := filepath.EvalSymlinks(ex)
-	xpanic.WhenErrorAsFmtFirst(err, "EvalSymlinks got error:%w")
+	realPath, err0 := filepath.EvalSymlinks(ex)
+	xpanic.WhenErrorAsFmtFirst(err0, "EvalSymlinks got error:%w")
 	return realPath
 }

@@ -9,7 +9,7 @@ import (
 var ExistsTreatErrorAsExist = true
 
 // Exists 指定的文件或者目录是否存在
-// 如果发生了非os.ErrNotExist错误，则认为存在
+// 如果发生了非 os.ErrNotExist 错误，则认为存在
 func Exists(fileOrDirPath string) bool {
 	_, err := os.Stat(fileOrDirPath)
 	if err == nil {
@@ -21,13 +21,8 @@ func Exists(fileOrDirPath string) bool {
 	return ExistsTreatErrorAsExist
 }
 
-// FileExists 参考ExistsFile
-//
-// Deprecated: 使用ExistsFile
-func FileExists(fileName string) bool { return ExistsFile(fileName) }
-
-// ExistsFile 给定的fileName是否存在且是一个文件,如果fileName存在但是是一个目录也会返回false
-// 如果发生了非os.ErrNotExist错误，则认为存在
+// ExistsFile 给定的 fileName 是否存在且是一个文件,如果 fileName 存在但是是一个目录也会返回 false
+// 如果发生了非 os.ErrNotExist 错误，则认为存在
 func ExistsFile(fileName string) bool {
 	info, err := os.Stat(fileName)
 	if os.IsNotExist(err) {
@@ -39,13 +34,8 @@ func ExistsFile(fileName string) bool {
 	return !info.IsDir()
 }
 
-// DirExists 参考ExistsDir
-//
-// Deprecated: 使用ExistsDir
-func DirExists(filePath string) bool { return ExistsDir(filePath) }
-
-// ExistsDir 给定的filePath是否存在且是一个目录,如果filePath存在但是是一个文件也会返回错误
-// 如果发生了非os.ErrNotExist错误，则认为存在
+// ExistsDir 给定的 filePath 是否存在且是一个目录,如果 filePath 存在但是是一个文件也会返回错误
+// 如果发生了非 os.ErrNotExist 错误，则认为存在
 func ExistsDir(filePath string) bool {
 	info, err := os.Stat(filePath)
 	if os.IsNotExist(err) {

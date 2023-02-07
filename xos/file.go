@@ -17,22 +17,26 @@ func FileCopyToDir(src, dstDir string) error {
 	if err != nil {
 		return err
 	}
-	defer in.Close()
+	defer func() {
+		_ = in.Close()
+	}()
 
-	out, err := os.Create(filepath.Join(dstDir, filepath.Base(src)))
-	if err != nil {
-		return err
+	out, err0 := os.Create(filepath.Join(dstDir, filepath.Base(src)))
+	if err0 != nil {
+		return err0
 	}
-	defer out.Close()
+	defer func() {
+		_ = out.Close()
+	}()
 
 	_, err = io.Copy(out, in)
 	if err != nil {
 		return err
 	}
-	return out.Close()
+	return nil
 }
 
-// Ext 返回后缀
+// Ext 返回后缀，例如 'xxx.go' => '.go'
 func Ext(path string) string {
 	ext := filepath.Ext(path)
 	if p := strings.IndexByte(ext, '?'); p != -1 {
@@ -64,18 +68,19 @@ func FilePutContents(filename string, content []byte) error {
 }
 
 // MustGetFileWriter 获取写文件句柄
+// filePath 指定文件
+// prepend 是否保留源数据，如果保留，则源数据会被追加到文件尾
 func MustGetFileWriter(filePath string, prepend bool) (writer io.Writer, deferFunc func()) {
 	var prependData []byte
 	if prepend {
-		if FileExists(filePath) {
+		if ExistsFile(filePath) {
 			fileContent, err := FileGetContents(filePath)
 			xpanic.WhenErrorAsFmtFirst(err, "got error:%w while FileGetContents:%s", filePath)
 			prependData = fileContent
 		}
 	}
 	dirParent := filepath.Dir(filePath)
-	err := os.MkdirAll(dirParent, os.ModePerm)
-	xpanic.WhenErrorAsFmtFirst(err, "got error:%w while MkdirAll:%s", dirParent)
+	xpanic.WhenErrorAsFmtFirst(os.MkdirAll(dirParent, os.ModePerm), "got error:%w while MkdirAll:%s", dirParent)
 	output, err := os.Create(filePath)
 	xpanic.WhenErrorAsFmtFirst(err, "got error:%w while Create:%s", filePath)
 	return output, func() {

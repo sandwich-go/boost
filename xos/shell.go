@@ -2,7 +2,7 @@ package xos
 
 import "runtime"
 
-// getShell returns the shell command depending on current working operation system.
+// GetShell returns the shell command depending on current working operation system.
 // It returns "cmd.exe" for windows, and "bash" or "sh" for others.
 func GetShell() string {
 	switch runtime.GOOS {
@@ -10,10 +10,10 @@ func GetShell() string {
 		return SearchBinary("cmd.exe")
 	default:
 		// Check the default binary storage path.
-		if FileExists("/bin/bash") {
+		if ExistsFile("/bin/bash") {
 			return "/bin/bash"
 		}
-		if FileExists("/bin/sh") {
+		if ExistsFile("/bin/sh") {
 			return "/bin/sh"
 		}
 		// Else search the env PATH.
@@ -25,7 +25,7 @@ func GetShell() string {
 	}
 }
 
-// getShellOption returns the shell option depending on current working operating system.
+// GetShellOption returns the shell option depending on current working operating system.
 // It returns "/c" for windows, and "-c" for others.
 // -c string
 //      If the -c option is present, then commands are read from string.
