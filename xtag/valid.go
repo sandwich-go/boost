@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-var checkTagSpaces = map[string]bool{"json": true, "xml": true, "asn1": true}
 var (
+	checkTagSpaces    = map[string]bool{"json": true, "xml": true, "asn1": true}
 	errTagSyntax      = errors.New("bad syntax for struct tag pair")
 	errTagKeySyntax   = errors.New("bad syntax for struct tag key")
 	errTagValueSyntax = errors.New("bad syntax for struct tag value")
@@ -15,12 +15,11 @@ var (
 	errTagSpace       = errors.New("key:\"value\" pairs not separated by spaces")
 )
 
-// validateStructTag parses the struct tag and returns an error if it is not
+// ValidateStructTag parses the struct tag and returns an error if it is not
 // in the canonical format, which is a space-separated list of key:"value"
 // settings. The value may contain spaces.
 func ValidateStructTag(tag string) error {
 	// This code is based on the StructTag.Get code in package reflect.
-
 	n := 0
 	for ; tag != ""; n++ {
 		if n > 0 && tag != "" && tag[0] != ' ' {
@@ -99,7 +98,6 @@ func ValidateStructTag(tag string) error {
 			if comma < 0 {
 				continue
 			}
-
 			// If the character before a comma is a space, this is suspicious.
 			if comma > 0 && value[comma-1] == ' ' {
 				return errTagValueSpace
