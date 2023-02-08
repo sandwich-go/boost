@@ -50,7 +50,7 @@ func (tc *Cop) check() {
 			systemTime := tc.nowProvider().Unix()
 			copTime := tc.Unix()
 			if int64(math.Abs(float64(systemTime-copTime))) > CopToleranceSecond {
-				log.Warn(fmt.Sprintf("stime cop tolerance, system: %d, cop: %s, tolerance: %d", systemTime, copTime, CopToleranceSecond))
+				log.Warn(fmt.Sprintf("stime cop tolerance, system: %d, cop: %d, tolerance: %d", systemTime, copTime, CopToleranceSecond))
 				tc.unhealthy <- struct{}{}
 			}
 			return
