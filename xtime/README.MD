@@ -2,20 +2,26 @@
 
 `time` 辅助函数
 
-- 模板中支持 `github.com/Masterminds/sprig.FuncMap` 返回的函数
-- 支持生成指定文件
-- 支持 `go` 文件格式化
+- 时间函数
+- 时间模拟
+- `timewheel`
 
 # 例子
 ```go
-s := `a {{ .val1 }} {{ .val2 }}`
-s1, err := Execute(s, map[string]interface{}{"val1": "b", "val2": 2})
-if err!= nil {
-    panic(err)
-}
-fmt.Println(string(s1))
+w := NewWheel(time.Second, 3)
+defer w.Stop()
+
+time.Sleep(500 * time.Millisecond)
+t1 := time.Now()
+
+go func() {
+    select {
+    case <-w.After(1 * time.Second):
+        fmt.Printf("expected 1s, got %s\n", time.Since(t1))
+    }
+}()
 ```
 Output:
 ```text
-a b 2
+expected 1s, got 1.498680893s
 ```
