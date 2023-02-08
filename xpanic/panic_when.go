@@ -2,19 +2,19 @@ package xpanic
 
 import "fmt"
 
-// WhenErrorAsFmtFirst err不为nil则wrap并panic，将err作为第一个fmt的参数
-// xpanic.WhenErrorAsFmtFirst(err,"got error:%w while reading file:%s",filePath)
+// WhenErrorAsFmtFirst err 不为 nil 则 wrap 并 panic，将 err 作为第一个 fmt 的参数
+// xpanic.WhenErrorAsFmtFirst(err, "got error: %w while reading file: %s", filePath)
 func WhenErrorAsFmtFirst(err error, fmtStr string, args ...interface{}) {
 	if err == nil {
 		return
 	}
-	var argList []interface{}
+	var argList = make([]interface{}, 0, len(args)+1)
 	argList = append(argList, err)
 	argList = append(argList, args...)
 	panic(fmt.Errorf(fmtStr, argList...))
 }
 
-// WhenError err不为nil则panic
+// WhenError err 不为 nil 则 panic
 func WhenError(err error) {
 	if err == nil {
 		return
@@ -22,9 +22,9 @@ func WhenError(err error) {
 	panic(err)
 }
 
-// WhenTrue 当condation为true时panic
-func WhenTrue(condation bool, fmtStr string, args ...interface{}) {
-	if !condation {
+// WhenTrue 当 condition 为 true 时 panic
+func WhenTrue(condition bool, fmtStr string, args ...interface{}) {
+	if !condition {
 		return
 	}
 	panic(fmt.Errorf(fmtStr, args...))
