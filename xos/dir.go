@@ -137,7 +137,7 @@ func RemoveFilesUnderDir(pathStr string, filter func(filePath string) bool) {
 func FileWalkFunc(files *[]string, ext ...string) filepath.WalkFunc {
 	return func(path string, info os.FileInfo, err error) error {
 		if len(ext) > 0 {
-			if xslice.ContainString(ext, filepath.Ext(path)) {
+			if xslice.StringsContain(ext, filepath.Ext(path)) {
 				*files = append(*files, path)
 			}
 		} else {
@@ -158,7 +158,7 @@ func FileWalkFuncWithIncludeFilter(files *[]string, include func(f string) bool,
 		}
 		if include == nil || include(path) {
 			if len(ext) > 0 {
-				if xslice.ContainString(ext, filepath.Ext(path)) {
+				if xslice.StringsContain(ext, filepath.Ext(path)) {
 					*files = append(*files, path)
 				}
 			} else {
@@ -176,7 +176,7 @@ func FileWalkFuncWithExcludeFilter(files *[]string, excluded func(f string) bool
 			return err
 		}
 		if len(ext) > 0 {
-			if xslice.ContainString(ext, filepath.Ext(path)) {
+			if xslice.StringsContain(ext, filepath.Ext(path)) {
 				*files = append(*files, path)
 			}
 		} else {
