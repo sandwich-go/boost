@@ -2,12 +2,12 @@ package xstrings
 
 import "strings"
 
-// Is c an ASCII lower-case letter?
+// IsASCIILower Is c an ASCII lower-case letter?
 func IsASCIILower(c byte) bool {
 	return 'a' <= c && c <= 'z'
 }
 
-// Is c an ASCII digit?
+// IsASCIIDigit Is c an ASCII digit?
 func IsASCIIDigit(c byte) bool {
 	return '0' <= c && c <= '9'
 }
