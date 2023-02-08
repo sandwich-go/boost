@@ -105,23 +105,27 @@ func Test{{ $camelCaseName }}(t *testing.T) {
 			So(src[i]+1, ShouldEqual, dest[i])
 		}
 {{- end }}
-		tooManyElement = 4
-		for _, test := range []struct {
-			src      []{{ $sliceConfig.Key }}
-			dest     []{{ $sliceConfig.Key }}
-			contains bool
-		}{
-{{- if eq $sliceConfig.Key "string" }}
-			{src: []{{ $sliceConfig.Key }}{"abc", "b", "b"}, dest: []{{ $sliceConfig.Key }}{"abc", "b"}},
-			{src: []{{ $sliceConfig.Key }}{"abc", "abc", "b"}, dest: []{{ $sliceConfig.Key }}{"abc", "b"}},
-			{src: []{{ $sliceConfig.Key }}{"abc", "abc", "b", "b", "b"}, dest: []{{ $sliceConfig.Key }}{"abc", "b"}},
-{{- else }}
-			{src: []{{ $sliceConfig.Key }}{1, 2, 2}, dest: []{{ $sliceConfig.Key }}{1, 2}},
-			{src: []{{ $sliceConfig.Key }}{1, 1, 2}, dest: []{{ $sliceConfig.Key }}{1, 2}},
-			{src: []{{ $sliceConfig.Key }}{1, 1, 2, 2, 2}, dest: []{{ $sliceConfig.Key }}{1, 2}},
-{{- end }}
-		} {
-			So({{ $camelCaseName }}RemoveRepeated(test.src), ShouldResemble, test.dest)
+		for i := 0; i {{ "<" | Unescaped }} 2; i ++ {
+			if i > 0 { 
+				tooManyElement = 4 
+			}
+			for _, test := range []struct {
+				src      []{{ $sliceConfig.Key }}
+				dest     []{{ $sliceConfig.Key }}
+				contains bool
+			}{
+	{{- if eq $sliceConfig.Key "string" }}
+				{src: []{{ $sliceConfig.Key }}{"abc", "b", "b"}, dest: []{{ $sliceConfig.Key }}{"abc", "b"}},
+				{src: []{{ $sliceConfig.Key }}{"abc", "abc", "b"}, dest: []{{ $sliceConfig.Key }}{"abc", "b"}},
+				{src: []{{ $sliceConfig.Key }}{"abc", "abc", "b", "b", "b"}, dest: []{{ $sliceConfig.Key }}{"abc", "b"}},
+	{{- else }}
+				{src: []{{ $sliceConfig.Key }}{1, 2, 2}, dest: []{{ $sliceConfig.Key }}{1, 2}},
+				{src: []{{ $sliceConfig.Key }}{1, 1, 2}, dest: []{{ $sliceConfig.Key }}{1, 2}},
+				{src: []{{ $sliceConfig.Key }}{1, 1, 2, 2, 2}, dest: []{{ $sliceConfig.Key }}{1, 2}},
+	{{- end }}
+			} {
+				So({{ $camelCaseName }}RemoveRepeated(test.src), ShouldResemble, test.dest)
+			}
 		}
 
 		for _, test := range []struct {

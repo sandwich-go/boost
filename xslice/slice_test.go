@@ -31,17 +31,21 @@ func TestInts(t *testing.T) {
 		for i := 0; i < len(src); i++ {
 			So(src[i]+1, ShouldEqual, dest[i])
 		}
-		tooManyElement = 4
-		for _, test := range []struct {
-			src      []int
-			dest     []int
-			contains bool
-		}{
-			{src: []int{1, 2, 2}, dest: []int{1, 2}},
-			{src: []int{1, 1, 2}, dest: []int{1, 2}},
-			{src: []int{1, 1, 2, 2, 2}, dest: []int{1, 2}},
-		} {
-			So(IntsRemoveRepeated(test.src), ShouldResemble, test.dest)
+		for i := 0; i < 2; i++ {
+			if i > 0 {
+				tooManyElement = 4
+			}
+			for _, test := range []struct {
+				src      []int
+				dest     []int
+				contains bool
+			}{
+				{src: []int{1, 2, 2}, dest: []int{1, 2}},
+				{src: []int{1, 1, 2}, dest: []int{1, 2}},
+				{src: []int{1, 1, 2, 2, 2}, dest: []int{1, 2}},
+			} {
+				So(IntsRemoveRepeated(test.src), ShouldResemble, test.dest)
+			}
 		}
 
 		for _, test := range []struct {
@@ -83,17 +87,21 @@ func TestInt16s(t *testing.T) {
 		for i := 0; i < len(src); i++ {
 			So(src[i]+1, ShouldEqual, dest[i])
 		}
-		tooManyElement = 4
-		for _, test := range []struct {
-			src      []int16
-			dest     []int16
-			contains bool
-		}{
-			{src: []int16{1, 2, 2}, dest: []int16{1, 2}},
-			{src: []int16{1, 1, 2}, dest: []int16{1, 2}},
-			{src: []int16{1, 1, 2, 2, 2}, dest: []int16{1, 2}},
-		} {
-			So(Int16sRemoveRepeated(test.src), ShouldResemble, test.dest)
+		for i := 0; i < 2; i++ {
+			if i > 0 {
+				tooManyElement = 4
+			}
+			for _, test := range []struct {
+				src      []int16
+				dest     []int16
+				contains bool
+			}{
+				{src: []int16{1, 2, 2}, dest: []int16{1, 2}},
+				{src: []int16{1, 1, 2}, dest: []int16{1, 2}},
+				{src: []int16{1, 1, 2, 2, 2}, dest: []int16{1, 2}},
+			} {
+				So(Int16sRemoveRepeated(test.src), ShouldResemble, test.dest)
+			}
 		}
 
 		for _, test := range []struct {
@@ -135,17 +143,21 @@ func TestInt32s(t *testing.T) {
 		for i := 0; i < len(src); i++ {
 			So(src[i]+1, ShouldEqual, dest[i])
 		}
-		tooManyElement = 4
-		for _, test := range []struct {
-			src      []int32
-			dest     []int32
-			contains bool
-		}{
-			{src: []int32{1, 2, 2}, dest: []int32{1, 2}},
-			{src: []int32{1, 1, 2}, dest: []int32{1, 2}},
-			{src: []int32{1, 1, 2, 2, 2}, dest: []int32{1, 2}},
-		} {
-			So(Int32sRemoveRepeated(test.src), ShouldResemble, test.dest)
+		for i := 0; i < 2; i++ {
+			if i > 0 {
+				tooManyElement = 4
+			}
+			for _, test := range []struct {
+				src      []int32
+				dest     []int32
+				contains bool
+			}{
+				{src: []int32{1, 2, 2}, dest: []int32{1, 2}},
+				{src: []int32{1, 1, 2}, dest: []int32{1, 2}},
+				{src: []int32{1, 1, 2, 2, 2}, dest: []int32{1, 2}},
+			} {
+				So(Int32sRemoveRepeated(test.src), ShouldResemble, test.dest)
+			}
 		}
 
 		for _, test := range []struct {
@@ -187,17 +199,21 @@ func TestInt64s(t *testing.T) {
 		for i := 0; i < len(src); i++ {
 			So(src[i]+1, ShouldEqual, dest[i])
 		}
-		tooManyElement = 4
-		for _, test := range []struct {
-			src      []int64
-			dest     []int64
-			contains bool
-		}{
-			{src: []int64{1, 2, 2}, dest: []int64{1, 2}},
-			{src: []int64{1, 1, 2}, dest: []int64{1, 2}},
-			{src: []int64{1, 1, 2, 2, 2}, dest: []int64{1, 2}},
-		} {
-			So(Int64sRemoveRepeated(test.src), ShouldResemble, test.dest)
+		for i := 0; i < 2; i++ {
+			if i > 0 {
+				tooManyElement = 4
+			}
+			for _, test := range []struct {
+				src      []int64
+				dest     []int64
+				contains bool
+			}{
+				{src: []int64{1, 2, 2}, dest: []int64{1, 2}},
+				{src: []int64{1, 1, 2}, dest: []int64{1, 2}},
+				{src: []int64{1, 1, 2, 2, 2}, dest: []int64{1, 2}},
+			} {
+				So(Int64sRemoveRepeated(test.src), ShouldResemble, test.dest)
+			}
 		}
 
 		for _, test := range []struct {
@@ -239,17 +255,21 @@ func TestInt8s(t *testing.T) {
 		for i := 0; i < len(src); i++ {
 			So(src[i]+1, ShouldEqual, dest[i])
 		}
-		tooManyElement = 4
-		for _, test := range []struct {
-			src      []int8
-			dest     []int8
-			contains bool
-		}{
-			{src: []int8{1, 2, 2}, dest: []int8{1, 2}},
-			{src: []int8{1, 1, 2}, dest: []int8{1, 2}},
-			{src: []int8{1, 1, 2, 2, 2}, dest: []int8{1, 2}},
-		} {
-			So(Int8sRemoveRepeated(test.src), ShouldResemble, test.dest)
+		for i := 0; i < 2; i++ {
+			if i > 0 {
+				tooManyElement = 4
+			}
+			for _, test := range []struct {
+				src      []int8
+				dest     []int8
+				contains bool
+			}{
+				{src: []int8{1, 2, 2}, dest: []int8{1, 2}},
+				{src: []int8{1, 1, 2}, dest: []int8{1, 2}},
+				{src: []int8{1, 1, 2, 2, 2}, dest: []int8{1, 2}},
+			} {
+				So(Int8sRemoveRepeated(test.src), ShouldResemble, test.dest)
+			}
 		}
 
 		for _, test := range []struct {
@@ -315,17 +335,21 @@ func TestStrings(t *testing.T) {
 		for i := 0; i < len(src); i++ {
 			So(","+src[i], ShouldEqual, dest[i])
 		}
-		tooManyElement = 4
-		for _, test := range []struct {
-			src      []string
-			dest     []string
-			contains bool
-		}{
-			{src: []string{"abc", "b", "b"}, dest: []string{"abc", "b"}},
-			{src: []string{"abc", "abc", "b"}, dest: []string{"abc", "b"}},
-			{src: []string{"abc", "abc", "b", "b", "b"}, dest: []string{"abc", "b"}},
-		} {
-			So(StringsRemoveRepeated(test.src), ShouldResemble, test.dest)
+		for i := 0; i < 2; i++ {
+			if i > 0 {
+				tooManyElement = 4
+			}
+			for _, test := range []struct {
+				src      []string
+				dest     []string
+				contains bool
+			}{
+				{src: []string{"abc", "b", "b"}, dest: []string{"abc", "b"}},
+				{src: []string{"abc", "abc", "b"}, dest: []string{"abc", "b"}},
+				{src: []string{"abc", "abc", "b", "b", "b"}, dest: []string{"abc", "b"}},
+			} {
+				So(StringsRemoveRepeated(test.src), ShouldResemble, test.dest)
+			}
 		}
 
 		for _, test := range []struct {
@@ -367,17 +391,21 @@ func TestUints(t *testing.T) {
 		for i := 0; i < len(src); i++ {
 			So(src[i]+1, ShouldEqual, dest[i])
 		}
-		tooManyElement = 4
-		for _, test := range []struct {
-			src      []uint
-			dest     []uint
-			contains bool
-		}{
-			{src: []uint{1, 2, 2}, dest: []uint{1, 2}},
-			{src: []uint{1, 1, 2}, dest: []uint{1, 2}},
-			{src: []uint{1, 1, 2, 2, 2}, dest: []uint{1, 2}},
-		} {
-			So(UintsRemoveRepeated(test.src), ShouldResemble, test.dest)
+		for i := 0; i < 2; i++ {
+			if i > 0 {
+				tooManyElement = 4
+			}
+			for _, test := range []struct {
+				src      []uint
+				dest     []uint
+				contains bool
+			}{
+				{src: []uint{1, 2, 2}, dest: []uint{1, 2}},
+				{src: []uint{1, 1, 2}, dest: []uint{1, 2}},
+				{src: []uint{1, 1, 2, 2, 2}, dest: []uint{1, 2}},
+			} {
+				So(UintsRemoveRepeated(test.src), ShouldResemble, test.dest)
+			}
 		}
 
 		for _, test := range []struct {
@@ -419,17 +447,21 @@ func TestUint16s(t *testing.T) {
 		for i := 0; i < len(src); i++ {
 			So(src[i]+1, ShouldEqual, dest[i])
 		}
-		tooManyElement = 4
-		for _, test := range []struct {
-			src      []uint16
-			dest     []uint16
-			contains bool
-		}{
-			{src: []uint16{1, 2, 2}, dest: []uint16{1, 2}},
-			{src: []uint16{1, 1, 2}, dest: []uint16{1, 2}},
-			{src: []uint16{1, 1, 2, 2, 2}, dest: []uint16{1, 2}},
-		} {
-			So(Uint16sRemoveRepeated(test.src), ShouldResemble, test.dest)
+		for i := 0; i < 2; i++ {
+			if i > 0 {
+				tooManyElement = 4
+			}
+			for _, test := range []struct {
+				src      []uint16
+				dest     []uint16
+				contains bool
+			}{
+				{src: []uint16{1, 2, 2}, dest: []uint16{1, 2}},
+				{src: []uint16{1, 1, 2}, dest: []uint16{1, 2}},
+				{src: []uint16{1, 1, 2, 2, 2}, dest: []uint16{1, 2}},
+			} {
+				So(Uint16sRemoveRepeated(test.src), ShouldResemble, test.dest)
+			}
 		}
 
 		for _, test := range []struct {
@@ -471,17 +503,21 @@ func TestUint32s(t *testing.T) {
 		for i := 0; i < len(src); i++ {
 			So(src[i]+1, ShouldEqual, dest[i])
 		}
-		tooManyElement = 4
-		for _, test := range []struct {
-			src      []uint32
-			dest     []uint32
-			contains bool
-		}{
-			{src: []uint32{1, 2, 2}, dest: []uint32{1, 2}},
-			{src: []uint32{1, 1, 2}, dest: []uint32{1, 2}},
-			{src: []uint32{1, 1, 2, 2, 2}, dest: []uint32{1, 2}},
-		} {
-			So(Uint32sRemoveRepeated(test.src), ShouldResemble, test.dest)
+		for i := 0; i < 2; i++ {
+			if i > 0 {
+				tooManyElement = 4
+			}
+			for _, test := range []struct {
+				src      []uint32
+				dest     []uint32
+				contains bool
+			}{
+				{src: []uint32{1, 2, 2}, dest: []uint32{1, 2}},
+				{src: []uint32{1, 1, 2}, dest: []uint32{1, 2}},
+				{src: []uint32{1, 1, 2, 2, 2}, dest: []uint32{1, 2}},
+			} {
+				So(Uint32sRemoveRepeated(test.src), ShouldResemble, test.dest)
+			}
 		}
 
 		for _, test := range []struct {
@@ -523,17 +559,21 @@ func TestUint64s(t *testing.T) {
 		for i := 0; i < len(src); i++ {
 			So(src[i]+1, ShouldEqual, dest[i])
 		}
-		tooManyElement = 4
-		for _, test := range []struct {
-			src      []uint64
-			dest     []uint64
-			contains bool
-		}{
-			{src: []uint64{1, 2, 2}, dest: []uint64{1, 2}},
-			{src: []uint64{1, 1, 2}, dest: []uint64{1, 2}},
-			{src: []uint64{1, 1, 2, 2, 2}, dest: []uint64{1, 2}},
-		} {
-			So(Uint64sRemoveRepeated(test.src), ShouldResemble, test.dest)
+		for i := 0; i < 2; i++ {
+			if i > 0 {
+				tooManyElement = 4
+			}
+			for _, test := range []struct {
+				src      []uint64
+				dest     []uint64
+				contains bool
+			}{
+				{src: []uint64{1, 2, 2}, dest: []uint64{1, 2}},
+				{src: []uint64{1, 1, 2}, dest: []uint64{1, 2}},
+				{src: []uint64{1, 1, 2, 2, 2}, dest: []uint64{1, 2}},
+			} {
+				So(Uint64sRemoveRepeated(test.src), ShouldResemble, test.dest)
+			}
 		}
 
 		for _, test := range []struct {
@@ -575,17 +615,21 @@ func TestUint8s(t *testing.T) {
 		for i := 0; i < len(src); i++ {
 			So(src[i]+1, ShouldEqual, dest[i])
 		}
-		tooManyElement = 4
-		for _, test := range []struct {
-			src      []uint8
-			dest     []uint8
-			contains bool
-		}{
-			{src: []uint8{1, 2, 2}, dest: []uint8{1, 2}},
-			{src: []uint8{1, 1, 2}, dest: []uint8{1, 2}},
-			{src: []uint8{1, 1, 2, 2, 2}, dest: []uint8{1, 2}},
-		} {
-			So(Uint8sRemoveRepeated(test.src), ShouldResemble, test.dest)
+		for i := 0; i < 2; i++ {
+			if i > 0 {
+				tooManyElement = 4
+			}
+			for _, test := range []struct {
+				src      []uint8
+				dest     []uint8
+				contains bool
+			}{
+				{src: []uint8{1, 2, 2}, dest: []uint8{1, 2}},
+				{src: []uint8{1, 1, 2}, dest: []uint8{1, 2}},
+				{src: []uint8{1, 1, 2, 2, 2}, dest: []uint8{1, 2}},
+			} {
+				So(Uint8sRemoveRepeated(test.src), ShouldResemble, test.dest)
+			}
 		}
 
 		for _, test := range []struct {
