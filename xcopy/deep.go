@@ -13,30 +13,33 @@ type DeepCopyInterface interface {
 	DeepCopy() interface{}
 }
 
-type pbCopy1 interface {
-	Clone() proto1.Message
-}
-
-type pbCopy2 interface {
-	Clone() proto2.Message
+func fastDeepCopy(src interface{}) (interface{}, bool) {
+	switch v := src.(type) {
+	case interface{ Clone() proto1.Message }:
+		// protokitgo 激活 golang.proto_enable_clone 属性加速拷贝
+		return v.Clone(), true
+	case interface{ Clone() proto2.Message }:
+		// protokitgo 激活 golang.proto_enable_clone 属性加速拷贝
+		return v.Clone(), true
+	case DeepCopyInterface:
+		return v.DeepCopy(), true
+	}
+	return nil, false
 }
 
 // DeepCopy creates a deep copy of whatever is passed to it and returns the copy
 // in an interface{}.  The returned value will need to be asserted to the
 // correct type.
+// 1. if src has 'Clone() proto1.Message' function, use src.Clone()
+// 2. if src has 'Clone() proto2.Message' function, use src.Clone()
+// 3. if src has 'DeepCopy() interface{}' function, use src.DeepCopy()
 func DeepCopy(src interface{}) interface{} {
 	if src == nil {
 		return nil
 	}
 
-	switch v := src.(type) {
-	case pbCopy1:
-		// protokitgo激活golang.proto_enable_clone属性加速拷贝
-		return v.Clone()
-	case pbCopy2:
-		// protokitgo激活golang.proto_enable_clone属性加速拷贝
-		return v.Clone()
-	default:
+	if dest, ok := fastDeepCopy(src); ok {
+		return dest
 	}
 
 	// Make the interface a reflect.Value
@@ -57,8 +60,8 @@ func DeepCopy(src interface{}) interface{} {
 func copyRecursive(original, cpy reflect.Value) {
 	// check for implement deepcopy.Interface
 	if original.CanInterface() {
-		if copier, ok := original.Interface().(DeepCopyInterface); ok {
-			cpy.Set(reflect.ValueOf(copier.DeepCopy()))
+		if dest, ok := fastDeepCopy(original.Interface()); ok {
+			cpy.Set(reflect.ValueOf(dest))
 			return
 		}
 	}

@@ -26,10 +26,13 @@ func Trim(str string, characterMask ...string) string {
 
 // SplitAndTrim 将给定字符串分割并trim每一个子元素
 func SplitAndTrim(str, delimiter string, characterMask ...string) []string {
-	array := make([]string, 0)
-	for _, v := range strings.Split(str, delimiter) {
-		v = Trim(v, characterMask...)
-		if v != "" {
+	ss := strings.Split(str, delimiter)
+	array := make([]string, 0, len(ss))
+	for _, v := range ss {
+		if len(characterMask) > 0 {
+			v = Trim(v, characterMask...)
+		}
+		if len(v) > 0 {
 			array = append(array, v)
 		}
 	}

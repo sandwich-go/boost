@@ -11,7 +11,7 @@ import (
 // SearchBinary 查找二进制文件
 func SearchBinary(file string) string {
 	// Check if it's absolute path of exists at current working directory.
-	if FileExists(file) {
+	if ExistsFile(file) {
 		return file
 	}
 	return SearchBinaryPath(file)
@@ -38,7 +38,7 @@ func SearchBinaryPath(file string) string {
 		path := ""
 		for _, v := range array {
 			path = v + string(filepath.Separator) + file
-			if FileExists(path) {
+			if ExistsFile(path) {
 				return path
 			}
 		}

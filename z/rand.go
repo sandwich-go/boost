@@ -8,8 +8,7 @@ import (
 //go:linkname FastRand runtime.fastrand
 func FastRand() uint32
 
-// Uint32n returns pseudorandom uint32 in the range [0..maxN).
-//
+// FastRandUint32n returns pseudorandom uint32 in the range [0..maxN).
 // It is safe calling this function from concurrent goroutines.
 func FastRandUint32n(maxN uint32) uint32 {
 	x := FastRand()

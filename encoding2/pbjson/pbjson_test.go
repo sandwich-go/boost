@@ -9,6 +9,18 @@ import (
 	"github.com/sandwich-go/boost/encoding2/protobuf/test_perf"
 )
 
+func TestEmitUnpopulated(t *testing.T) {
+	p := &test_perf.Buffer{}
+	EmitUnpopulated(true)
+	marshalledBytes, err := Codec.Marshal(p)
+	if err != nil {
+		t.Errorf("codec.Marshal(_) returned an error:%v", err)
+	}
+	if string(marshalledBytes) != `{"body":null}` {
+		t.Errorf("codec.Marshal(_) returned empty on emit unpopulated")
+	}
+}
+
 func marshalAndUnmarshal(t *testing.T, codec encoding2.Codec, expectedBody []byte) {
 	p := &test_perf.Buffer{}
 	p.Body = expectedBody
@@ -17,7 +29,7 @@ func marshalAndUnmarshal(t *testing.T, codec encoding2.Codec, expectedBody []byt
 	if err != nil {
 		t.Errorf("codec.Marshal(_) returned an error:%v", err)
 	}
-	if err := codec.Unmarshal(marshalledBytes, p); err != nil {
+	if err = codec.Unmarshal(marshalledBytes, p); err != nil {
 		t.Errorf("codec.Unmarshal(_) returned an error:%v", err)
 	}
 
@@ -27,14 +39,14 @@ func marshalAndUnmarshal(t *testing.T, codec encoding2.Codec, expectedBody []byt
 }
 
 func TestBasicJsonCodecMarshalAndUnmarshal(t *testing.T) {
-	marshalAndUnmarshal(t, jsonCodec{}, []byte{1, 2, 3})
+	marshalAndUnmarshal(t, codec{}, []byte{1, 2, 3})
 }
 
 // Try to catch possible race conditions around use of pools
 func TestConcurrentUsage(t *testing.T) {
 	const (
-		numGoRoutines   = 100
-		numMarshUnmarsh = 1000
+		numGoRoutines     = 100
+		numMarshUnmarshal = 1000
 	)
 
 	// small, arbitrary byte slices
@@ -47,13 +59,13 @@ func TestConcurrentUsage(t *testing.T) {
 	}
 
 	var wg sync.WaitGroup
-	codec := jsonCodec{}
+	codec := codec{}
 
 	for i := 0; i < numGoRoutines; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			for k := 0; k < numMarshUnmarsh; k++ {
+			for k := 0; k < numMarshUnmarshal; k++ {
 				marshalAndUnmarshal(t, codec, protoBodies[k%len(protoBodies)])
 			}
 		}()
@@ -65,8 +77,8 @@ func TestConcurrentUsage(t *testing.T) {
 // TestStaggeredMarshalAndUnmarshalUsingSamePool tries to catch potential errors in which slices get
 // stomped on during reuse of a proto.Buffer.
 func TestStaggeredMarshalAndUnmarshalUsingSamePool(t *testing.T) {
-	codec1 := jsonCodec{}
-	codec2 := jsonCodec{}
+	codec1 := codec{}
+	codec2 := codec{}
 
 	expectedBody1 := []byte{1, 2, 3}
 	expectedBody2 := []byte{4, 5, 6}
@@ -78,11 +90,11 @@ func TestStaggeredMarshalAndUnmarshalUsingSamePool(t *testing.T) {
 	var err error
 
 	if m1, err = codec1.Marshal(&proto1); err != nil {
-		t.Errorf("codec.Marshal(%v) failed", proto1)
+		t.Errorf("codec.Marshal proto1 failed")
 	}
 
 	if m2, err = codec2.Marshal(&proto2); err != nil {
-		t.Errorf("codec.Marshal(%v) failed", proto2)
+		t.Errorf("codec.Marshal proto2 failed")
 	}
 
 	if err = codec1.Unmarshal(m1, &proto1); err != nil {

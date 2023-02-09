@@ -43,8 +43,3 @@ func TrimPrefixIgnoreCase(str, prefix string) string {
 	}
 	return strings.TrimSpace(str[len(prefix):])
 }
-
-// CompareIgnoreCase 比较字符串相等，不区分大小写
-func CompareIgnoreCase(s1, s2 string) bool {
-	return strings.EqualFold(s1, s2)
-}

@@ -49,7 +49,7 @@ func NewDispatcher(l int) Dispatcher {
 	return d
 }
 
-// for skeleton restart the dispatcher
+// Start for skeleton restart the dispatcher
 func (d *dispatcher) Start() {
 	if d.closeFlag.CompareAndSwap(1, 0) {
 		d.stopChan = make(chan struct{})

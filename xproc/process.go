@@ -56,9 +56,9 @@ func NewProcess(path string, opt ...ProcessOption) *Process {
 // NewProcessShellCmdWithOptions creates and returns a process with given command and optional environment variable array.
 func NewProcessShellCmdWithOptions(cmd string, cc *ProcessOptions) *Process {
 	argsLen := len(cc.Args)
-	cc.Args = xslice.StringSetAdd(parseCommand(cmd), cc.Args...)
+	cc.Args = xslice.StringsSetAdd(parseCommand(cmd), cc.Args...)
 	if argsLen == 0 {
-		cc.Args = xslice.StringSetAdd([]string{xos.GetShellOption()}, cc.Args...)
+		cc.Args = xslice.StringsSetAdd([]string{xos.GetShellOption()}, cc.Args...)
 	}
 	return NewProcessWithOptions(xos.GetShell(), cc)
 }

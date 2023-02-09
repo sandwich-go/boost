@@ -3,12 +3,18 @@
 
 package paniccatcher
 
-import "time"
+import (
+	"fmt"
+	"time"
+
+	"github.com/sandwich-go/boost/internal/log"
+)
 
 // AutoRecoverOptions should use NewAutoRecoverOptions to initialize it
 type AutoRecoverOptions struct {
 	// annotation@DelayTime(comment="每次panic后重启delay的时间 Note: 这里应该可以直接对接到retry package，复用重试逻辑")
 	DelayTime time.Duration
+	// annotation@OnRecover(comment="如果指定了该函数，recover panic的时候，会执行该函数，默认输出error日志")
 	OnRecover OnRecover
 }
 
@@ -41,7 +47,7 @@ func WithAutoRecoverOptionDelayTime(v time.Duration) AutoRecoverOption {
 	}
 }
 
-// WithAutoRecoverOptionOnRecover option func for filed OnRecover
+// WithAutoRecoverOptionOnRecover 如果指定了该函数，recover panic的时候，会执行该函数，默认输出error日志
 func WithAutoRecoverOptionOnRecover(v OnRecover) AutoRecoverOption {
 	return func(cc *AutoRecoverOptions) {
 		cc.OnRecover = v
@@ -62,7 +68,9 @@ func newDefaultAutoRecoverOptions() *AutoRecoverOptions {
 
 	for _, opt := range [...]AutoRecoverOption{
 		WithAutoRecoverOptionDelayTime(0),
-		WithAutoRecoverOptionOnRecover(nil),
+		WithAutoRecoverOptionOnRecover(func(tag string, reason interface{}) {
+			log.Error(fmt.Sprintf("%s panic with err, reason: %v", tag, reason))
+		}),
 	} {
 		opt(cc)
 	}

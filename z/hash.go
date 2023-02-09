@@ -57,6 +57,8 @@ func KeyToHash(key interface{}) uint64 {
 		return uint64(k)
 	case int:
 		return uint64(k)
+	case uint:
+		return uint64(k)
 	case int8:
 		return uint64(k)
 	case int16:

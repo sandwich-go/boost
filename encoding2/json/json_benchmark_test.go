@@ -10,7 +10,7 @@ import (
 	"github.com/golang/protobuf/proto"
 )
 
-func setupBenchmarkProtoCodecInputs(payloadBaseSize uint32) []proto.Message {
+func setupBenchmarkCodecInputs(payloadBaseSize uint32) []proto.Message {
 	payloadBase := make([]byte, payloadBaseSize)
 	// arbitrary byte slices
 	payloadSuffixes := [][]byte{
@@ -47,20 +47,20 @@ func BenchmarkProtoCodec(b *testing.B) {
 	}
 	for _, s := range payloadBaseSizes {
 		for _, p := range parallelisms {
-			protoStructs := setupBenchmarkProtoCodecInputs(s)
+			protoStructs := setupBenchmarkCodecInputs(s)
 			name := fmt.Sprintf("MinPayloadSize:%v/SetParallelism(%v)", s, p)
 			b.Run(name, func(b *testing.B) {
-				codec := &jsonCodec{}
+				codec := &codec{}
 				b.SetParallelism(p)
 				b.RunParallel(func(pb *testing.PB) {
-					benchmarkProtoCodec(codec, protoStructs, pb, b)
+					benchmarkCodec(codec, protoStructs, pb, b)
 				})
 			})
 		}
 	}
 }
 
-func benchmarkProtoCodec(codec *jsonCodec, protoStructs []proto.Message, pb *testing.PB, b *testing.B) {
+func benchmarkCodec(codec *codec, protoStructs []proto.Message, pb *testing.PB, b *testing.B) {
 	counter := 0
 	for pb.Next() {
 		counter++

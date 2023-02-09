@@ -8,79 +8,58 @@ import (
 	"strings"
 )
 
-var FlagPrefix = "xcmd_"
-
-func SetFlagPrefix(prefix string) {
-	FlagPrefix = prefix
-}
-
 var (
+	flagPrefix    = "xcmd_"
 	parsedOptions = make(map[string]string)
 	argumentRegex = regexp.MustCompile(`^\-{1,2}([\w\?\.\-]+)(=){0,1}(.*)$`)
 	formal        = make(map[string]string)
+	invalidChars  = ".-/\\"
 )
 
-func cleanParsedOptions() { parsedOptions = make(map[string]string) }
+// SetFlagPrefix 设置 flag 的前缀
+func SetFlagPrefix(prefix string) { flagPrefix = prefix }
 
-// Empty strings.
-var emptyStringMap = map[string]struct{}{
-	"":      {},
-	"0":     {},
-	"no":    {},
-	"off":   {},
-	"false": {},
-}
+// GetFlagPrefix 获取 flag 的前缀
+func GetFlagPrefix() string { return flagPrefix }
 
-// IsFalse 判断command解析获取的数据是否为false
-func IsFalse(v string) bool {
-	_, ok := emptyStringMap[strings.ToLower(string(v))]
-	return ok
-}
-
-// IsTrue 判断command解析获取的数据是否为true
-func IsTrue(v string) bool { return !IsFalse(v) }
-
-const defaultSliceSeparator = ","
-
-// Slice 将 defaultSliceSeparator 分割的字符获取slice
-func Slice(v string) []string {
-	r := strings.Split(v, defaultSliceSeparator)
-	var ss []string
-	for _, s := range r {
-		if s != "" {
-			ss = append(ss, s)
-		}
+func addFlagIfNotExists(fs *flag.FlagSet, name string, value string) {
+	if fs.Lookup(name) == nil {
+		usage := fmt.Sprintf("%sbase_command flag:%s default:%s", flagPrefix, name, value)
+		_ = fs.String(name, value, usage)
 	}
-	return ss
 }
 
-// DeclareInto 将command预留的flag定义添加到指定的FlagSet中
+// DeclareInto 将 command 预留的 flag 定义添加到指定的 FlagSet 中
 func DeclareInto(fs *flag.FlagSet) {
 	for name, val := range formal {
-		// 防止使用默认的flag set报错: flag provided but not defined
-		if fs.Lookup(name) == nil {
-			fs.String(name, val, fmt.Sprintf("%sbase_command flag:%s default:%s", FlagPrefix, name, val))
-		}
+		addFlagIfNotExists(fs, name, val)
 	}
 }
 
-// AddFlag 添加框架内默认的Flag数据，默认的Flag数据可以通过调用AutoFlag添加到指定的FlagSet以防止出现flag provided but not defined
-// 默认会在Init调用的时候对flag.CommandLine调用AutoFlag
-func AddFlag(name, defaultVal string) {
-	if !strings.HasPrefix(name, FlagPrefix) {
-		panic("command flag must has prefix: " + FlagPrefix)
+// AddFlag 添加框架内默认的 flag 数据
+// name 必须有 flagPrefix 前缀，不能包含.-/\字符
+func AddFlag(name, defaultVal string) error {
+	if !strings.HasPrefix(name, flagPrefix) {
+		return fmt.Errorf("command flag must has prefix: %s", flagPrefix)
 	}
-	if strings.ContainsAny(name, ".-/\\") {
-		panic(fmt.Sprintf("command flag should only use _ as world separator, format must be:%s<package name>_<variable name>", FlagPrefix))
+	if strings.ContainsAny(name, invalidChars) {
+		return fmt.Errorf("command flag should only use _ as world separator, format must be:%s<package name>_<variable name>", flagPrefix)
 	}
 	_, alreadyThere := formal[name]
 	if alreadyThere {
-		panic(fmt.Sprintf("flag redefined: %s", name))
+		return fmt.Errorf("flag redefined: %s", name)
 	}
 	formal[name] = defaultVal
-	// 添加到默认flag
-	if flag.CommandLine.Lookup(name) == nil {
-		flag.CommandLine.String(name, defaultVal, fmt.Sprintf("%sbase_command flag:%s default:%s", FlagPrefix, name, defaultVal))
+	addFlagIfNotExists(flag.CommandLine, name, defaultVal)
+	return nil
+}
+
+// MustAddFlag 添加框架内默认的 flag 数据，若失败，则panic
+// name 必须有 flagPrefix 前缀，不能包含特殊的字符
+func MustAddFlag(name, defaultVal string) {
+	err := AddFlag(name, defaultVal)
+	if err != nil {
+		panic(err)
 	}
 }
 

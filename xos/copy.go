@@ -2,6 +2,7 @@ package xos
 
 import (
 	"io"
+	"io/fs"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -39,7 +40,7 @@ func switchboard(src, dest string, info os.FileInfo, opt *CopyOptions) error {
 // copy decide if this src should be copied or not.
 // Because this "copy" could be called recursively,
 // "info" MUST be given here, NOT nil.
-func copy(src, dest string, info os.FileInfo, opt *CopyOptions) error {
+func _copy(src, dest string, info os.FileInfo, opt *CopyOptions) error {
 	skip, err := opt.Skip(src)
 	if err != nil {
 		return err
@@ -53,72 +54,60 @@ func copy(src, dest string, info os.FileInfo, opt *CopyOptions) error {
 // fcopy is for just a file,
 // with considering existence of parent directory
 // and file permission.
-func fcopy(src, dest string, info os.FileInfo, opt *CopyOptions) (err error) {
-
-	if err = os.MkdirAll(filepath.Dir(dest), os.ModePerm); err != nil {
-		return
+func fcopy(src, dest string, info os.FileInfo, opt *CopyOptions) error {
+	if err := os.MkdirAll(filepath.Dir(dest), os.ModePerm); err != nil {
+		return err
 	}
-
 	f, err := os.Create(dest)
 	if err != nil {
-		return
+		return err
 	}
 	defer fclose(f, &err)
-
 	if err = os.Chmod(f.Name(), info.Mode()|opt.AddPermission); err != nil {
-		return
+		return err
 	}
-
-	s, err := os.Open(src)
+	var s *os.File
+	s, err = os.Open(src)
 	if err != nil {
-		return
+		return err
 	}
 	defer fclose(s, &err)
-
 	if _, err = io.Copy(f, s); err != nil {
-		return
+		return err
 	}
-
 	if opt.Sync {
 		err = f.Sync()
 	}
-
-	return
+	return err
 }
 
 // dcopy is for a directory,
 // with scanning contents inside the directory
 // and pass everything to "copy" recursively.
 func dcopy(srcdir, destdir string, info os.FileInfo, opt *CopyOptions) (err error) {
-
 	originalMode := info.Mode()
-
 	// Make dest dir with 0755 so that everything writable.
 	if err = os.MkdirAll(destdir, tmpPermissionForDirectory); err != nil {
 		return
 	}
 	// Recover dir mode with original one.
 	defer chmod(destdir, originalMode|opt.AddPermission, &err)
-
-	contents, err := ioutil.ReadDir(srcdir)
+	var contents []fs.FileInfo
+	contents, err = ioutil.ReadDir(srcdir)
 	if err != nil {
 		return
 	}
-
 	for _, content := range contents {
 		cs, cd := filepath.Join(srcdir, content.Name()), filepath.Join(destdir, content.Name())
-
-		if err = copy(cs, cd, content, opt); err != nil {
+		if err = _copy(cs, cd, content, opt); err != nil {
 			// If any error, exit immediately
 			return
 		}
 	}
-
 	return
 }
 
 func onsymlink(src, dest string, info os.FileInfo, opt *CopyOptions) error {
-
 	switch opt.OnSymlink(src) {
 	case Shallow:
 		return lcopy(src, dest)
@@ -131,7 +120,7 @@ func onsymlink(src, dest string, info os.FileInfo, opt *CopyOptions) error {
 		if err != nil {
 			return err
 		}
-		return copy(orig, dest, info, opt)
+		return _copy(orig, dest, info, opt)
 	case Skip:
 		fallthrough
 	default:
@@ -142,11 +131,11 @@ func onsymlink(src, dest string, info os.FileInfo, opt *CopyOptions) error {
 // lcopy is for a symlink,
 // with just creating a new symlink by replicating src symlink.
 func lcopy(src, dest string) error {
-	src, err := os.Readlink(src)
+	linkSrc, err := os.Readlink(src)
 	if err != nil {
 		return err
 	}
-	return os.Symlink(src, dest)
+	return os.Symlink(linkSrc, dest)
 }
 
 // fclose ANYHOW closes file,

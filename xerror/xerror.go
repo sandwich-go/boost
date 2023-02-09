@@ -15,7 +15,7 @@ type Error struct {
 // Logic 是否为逻辑层错误
 func (cc *Error) Logic() bool { return cc.logic }
 
-// SetLogic 设定为逻辑层错误
+// WithStack 设置堆栈
 func (cc *Error) WithStack() *Error {
 	cc.callStack = callers()
 	return cc
@@ -27,17 +27,16 @@ func (cc *Error) SetLogic() *Error {
 	return cc
 }
 
-// UnsetLogic 设定为非逻辑层凑无
+// UnsetLogic 设定为非逻辑层错误
 func (cc *Error) UnsetLogic() *Error {
 	cc.logic = false
 	return cc
 }
 
-// Unwrap 兼容errors.Unwrap
-func (cc *Error) Unwrap() error {
-	return cc.err
-}
+// Unwrap 兼容 errors.Unwrap
+func (cc *Error) Unwrap() error { return cc.err }
 
+// New 新建 Error 对象
 func New(opts ...ErrorOption) *Error {
 	e := &Error{callStack: nil}
 	for _, opt := range opts {
@@ -55,8 +54,9 @@ func WithErr(v error) ErrorOption   { return func(cc *Error) { cc.err = v } }
 func WithText(v string) ErrorOption { return func(cc *Error) { cc.text = v } }
 func WithCode(v int32) ErrorOption  { return func(cc *Error) { cc.code = v } }
 func WithLogic(v bool) ErrorOption  { return func(cc *Error) { cc.logic = v } }
+func WithSkip(v int) ErrorOption    { return func(cc *Error) { cc.skip = v } }
 
-// WithText option func for text
+// WithStack option func for stack
 func WithStack() ErrorOption {
 	return func(cc *Error) {
 		if cc.callStack != nil {

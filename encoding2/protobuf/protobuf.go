@@ -14,21 +14,34 @@ import (
 	"github.com/golang/protobuf/proto"
 )
 
-var Codec = &protoCodec{usingPool: false, name: "proto"}
-var CodecUsingPool = &protoCodec{usingPool: true, name: "proto_pool"}
+var (
+	Codec          = codec{usingPool: false, name: CodecName}
+	CodecUsingPool = codec{usingPool: true, name: UsingPoolCodecName}
+)
+
+const (
+	// CodecName proto 压缩效果名称，可以通过 encoding2.GetCodec(CodecName) 获取对应的 Codec
+	CodecName = "proto"
+	// UsingPoolCodecName 带对象池的 proto 压缩效果名称，可以通过 encoding2.GetCodec(UsingPoolCodecName) 获取对应的 Codec
+	UsingPoolCodecName = "proto_using_pool"
+)
 
 func init() {
 	encoding2.RegisterCodec(Codec)
 	encoding2.RegisterCodec(CodecUsingPool)
 }
 
-// protoCodec is a Codec implementation with protobuf. It is the default codec.
-type protoCodec struct {
+// codec is a Codec implementation with protobuf. It is the default codec.
+type codec struct {
 	usingPool bool
 	name      string
 }
 
-func (p *protoCodec) Marshal(v interface{}) ([]byte, error) {
+// Name 返回 Codec 名
+func (p codec) Name() string { return p.name }
+
+// Marshal 编码
+func (p codec) Marshal(v interface{}) ([]byte, error) {
 	if pm, ok := v.(proto.Marshaler); ok {
 		// object can marshal itself, no need for buffer
 		return pm.Marshal()
@@ -47,10 +60,14 @@ func (p *protoCodec) Marshal(v interface{}) ([]byte, error) {
 	return nil, xerror.NewText("%T is not a proto.Marshaler", v)
 }
 
-func (protoCodec) Uri(t interface{}) string     { return proto.MessageName(t.(proto.Message)) }
-func (protoCodec) Type(uri string) reflect.Type { return proto.MessageType(uri) }
+// Uri 获取 Message Name
+func (codec) Uri(t interface{}) string { return proto.MessageName(t.(proto.Message)) }
 
-func (p *protoCodec) Unmarshal(data []byte, v interface{}) error {
+// Type 获取 Message Type
+func (codec) Type(uri string) reflect.Type { return proto.MessageType(uri) }
+
+// Unmarshal 解码
+func (p codec) Unmarshal(data []byte, v interface{}) error {
 	if pu, ok := v.(proto.Unmarshaler); ok {
 		// object can unmarshal itself, no need for buffer
 		return pu.Unmarshal(data)
@@ -72,7 +89,7 @@ func (p *protoCodec) Unmarshal(data []byte, v interface{}) error {
 	return xerror.NewText("%T is not a proto.Unmarshaler", v)
 }
 
-func (protoCodec) JSONMarshal(obj interface{}) ([]byte, error) {
+func (codec) JSONMarshal(obj interface{}) ([]byte, error) {
 	if pm, ok := obj.(proto.Message); ok {
 		m := jsonpb.Marshaler{EmitDefaults: false}
 		var buf bytes.Buffer
@@ -80,8 +97,6 @@ func (protoCodec) JSONMarshal(obj interface{}) ([]byte, error) {
 	}
 	return nil, errors.New("not proto message")
 }
-
-func (p *protoCodec) Name() string { return p.name }
 
 func marshal(pm proto.Message, cb *cachedProtoBuffer) ([]byte, error) {
 	newSlice := make([]byte, 0, cb.lastMarshaledSize)

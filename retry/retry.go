@@ -8,9 +8,8 @@ import (
 	"github.com/sandwich-go/boost/xerror"
 )
 
-type RetryableFunc func(attempt uint) error
-
-func Do(retryableFunc RetryableFunc, opts ...Option) error {
+// Do 执行 retryableFunc 函数，若执行失败，则会重新尝试执行
+func Do(retryableFunc func(attempt uint) error, opts ...Option) error {
 	cc := NewOptions(opts...)
 	if err := cc.Context.Err(); err != nil {
 		return err
@@ -83,8 +82,6 @@ func unpackUnrecoverable(err error) error {
 	return err
 }
 
-type IfFunc func(error) bool
-type OnRetryFunc func(n uint, err error)
 type DelayTypeFunc func(n uint, err error, opts *Options) time.Duration
 
 // BackOffDelay 指数级增长重试的推迟时长

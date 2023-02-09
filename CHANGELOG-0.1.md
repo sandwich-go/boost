@@ -1,3 +1,119 @@
+### v0.1.0-beta.1 (2022-12-26 23:27:58)
+
+#### 🛠  Refactor
+  * ignore wait error ([1f1cae4](https://github.com/sandwich-go/boost/commit/1f1cae4f74d434bb54b9d23ba67ae321d2351427) , [b139f29](https://github.com/sandwich-go/boost/commit/b139f29ec23ed1cf4a620ae4487ea4ffc5a30009)) (<small>[hui.wang](hui.wang@centurygame.com)@2022-12-26 23:27:27 &#43;0800 &#43;0800</small>)
+
+#### 💪  Commit
+  * Merge branch 'version/0.1' of github.com:sandwich-go/boost into version/0.1 ([bf6a091](https://github.com/sandwich-go/boost/commit/bf6a091c556a1d79ce0b51f5cea2b9ed4f3ab951)) (<small>[hui.wang](hui.wang@centurygame.com)@2022-12-26 23:27:58 &#43;0800 &#43;0800</small>)
+
+### v0.1.0-alpha.22 (2022-12-23 15:44:04)
+
+#### 🛠  Refactor
+  * 移除encoding2.init ([ad108eb](https://github.com/sandwich-go/boost/commit/ad108ebc249b511f94e55c8ad8015f3808f57537)) (<small>[祝黄清](huangqing.zhu@centurygame.com)@2022-12-23 15:44:04 &#43;0800 &#43;0800</small>)
+
+### v0.1.0-alpha.21 (2022-12-23 15:36:50)
+
+#### 🚀  New Feature
+  * 增加 compressor和encrypt codec ([d968222](https://github.com/sandwich-go/boost/commit/d96822241d12923898a1b592312b9b987037c411)) (<small>[祝黄清](huangqing.zhu@centurygame.com)@2022-12-23 15:36:50 &#43;0800 &#43;0800</small>)
+
+### v0.1.0-alpha.20 (2022-12-23 14:08:19)
+
+#### 🚀  New Feature
+  * 增加zip压缩compressor，以及加解密功能 ([5ccc265](https://github.com/sandwich-go/boost/commit/5ccc265ec85840ae5fdfd632e81ce6a2032ea9bc)) (<small>[祝黄清](huangqing.zhu@centurygame.com)@2022-12-23 14:08:19 &#43;0800 &#43;0800</small>)
+
+### v0.1.0-alpha.19 (2022-11-24 16:34:28)
+
+#### 💪  Commit
+  * feat ([3a5ff31](https://github.com/sandwich-go/boost/commit/3a5ff314be02a903ea71e92c6cdf4ac5c433c130) , [3655a3e](https://github.com/sandwich-go/boost/commit/3655a3e97933160f8d360ee5db4fbb0d460b1083)) (<small>[祝黄清](huangqing.zhu@centurygame.com)@2022-11-24 16:34:28 &#43;0800 &#43;0800</small>)
+
+### v0.1.0-alpha.18 (2022-11-24 13:52:24)
+
+#### 🚀  New Feature
+  * 增加encoding2 ([5676e88](https://github.com/sandwich-go/boost/commit/5676e885c25d7d3599e613fab948d3773a4d4829)) (<small>[祝黄清](huangqing.zhu@centurygame.com)@2022-11-24 13:52:24 &#43;0800 &#43;0800</small>)
+
+### v0.1.0-alpha.17 (2022-11-24 11:19:02)
+
+#### 🚀  New Feature
+  * 增加jenkins hash ([2b89e80](https://github.com/sandwich-go/boost/commit/2b89e80f5e6b35a629d36a60fa13ee430fe2f128)) (<small>[祝黄清](huangqing.zhu@centurygame.com)@2022-11-24 11:19:02 &#43;0800 &#43;0800</small>)
+
+### v0.1.0-alpha.16 (2022-11-24 11:12:22)
+
+#### 🚀  New Feature
+  * 增加jenkins hash ([d85e1ce](https://github.com/sandwich-go/boost/commit/d85e1ce28c809b35d1cc1de269016524c9738b6c)) (<small>[祝黄清](huangqing.zhu@centurygame.com)@2022-11-24 11:12:22 &#43;0800 &#43;0800</small>)
+
+### v0.1.0-alpha.15 (2022-11-23 11:42:14)
+
+#### 🚀  New Feature
+  * 增加goformat格式化 ([cc7bff9](https://github.com/sandwich-go/boost/commit/cc7bff90f806922ff6fcd3fa396bf50027fa5b9e)) (<small>[祝黄清](huangqing.zhu@centurygame.com)@2022-11-23 11:42:14 &#43;0800 &#43;0800</small>)
+
+### v0.1.0-alpha.14 (2022-11-23 11:35:20)
+
+#### 🚀  New Feature
+  * xos增加隐藏文件的判断 ([ea50e3a](https://github.com/sandwich-go/boost/commit/ea50e3a70730576508056f6aed6607ec01eb8a88)) (<small>[祝黄清](huangqing.zhu@centurygame.com)@2022-11-23 11:35:20 &#43;0800 &#43;0800</small>)
+
+#### 🛠  Refactor
+  * xpanic test ([885ed62](https://github.com/sandwich-go/boost/commit/885ed626cd7df5ada8b5005f630d27bc0392a2e9) , [ab6ae75](https://github.com/sandwich-go/boost/commit/ab6ae75bff7d601ba7d033e3b4d1a4addb31d898)) (<small>[hui.wang](hui.wang@centurygame.com)@2022-11-22 20:24:21 &#43;0800 &#43;0800</small>)
+  * move sandwich z to boost/xz ([6a96002](https://github.com/sandwich-go/boost/commit/6a96002d011ef118a158d50bc5421d2dc6c739c7)) (<small>[biyongze](yongze.bi@centurygame.com)@2022-11-16 12:35:01 &#43;0800 &#43;0800</small>)
+
+#### 🔙  Revert
+  * refactor: move sandwich z to boost/xz ([85276a7](https://github.com/sandwich-go/boost/commit/85276a7b9e17b0374417d2fac9fd97d278807351)) (<small>[biyongze](yongze.bi@centurygame.com)@2022-11-16 14:33:34 &#43;0800 &#43;0800</small>)
+
+#### 💪  Commit
+  * Update README.md ([84b5774](https://github.com/sandwich-go/boost/commit/84b577444283dac53379a18b5ba23ffcb504b49c)) (<small>[timestee](19310233&#43;timestee@users.noreply.github.com)@2022-11-22 20:23:30 &#43;0800 &#43;0800</small>)
+
+### v0.1.0-alpha.13 (2022-11-11 19:32:37)
+
+#### 🚀  New Feature
+  * 增加paniccather, xcmd, xip, xsync, xtime等包 ([f56a7b4](https://github.com/sandwich-go/boost/commit/f56a7b45d6f4a729fcca41dfe14f31420a0613b9)) (<small>[祝黄清](huangqing.zhu@centurygame.com)@2022-11-11 19:32:37 &#43;0800 &#43;0800</small>)
+  * 增加hash运算 ([1543806](https://github.com/sandwich-go/boost/commit/154380608334347ad9812c4491e3a87f3a9ee757)) (<small>[祝黄清](huangqing.zhu@centurygame.com)@2022-11-11 14:13:37 &#43;0800 &#43;0800</small>)
+
+#### 🛠  Refactor
+  * xerror 兼容errors ([3a59f0f](https://github.com/sandwich-go/boost/commit/3a59f0f352778abb325551d522d588453bb41e4f)) (<small>[Daming Yang](daming.yang@centurygame.com)@2022-11-11 13:06:47 &#43;0800 &#43;0800</small>)
+
+#### 💪  Commit
+  * Merge branch 'version/0.1' of github.com:sandwich-go/boost into version/0.1 ([5cda455](https://github.com/sandwich-go/boost/commit/5cda4556e7322ae021050a71125b0834c997510e)) (<small>[祝黄清](huangqing.zhu@centurygame.com)@2022-11-11 14:13:50 &#43;0800 &#43;0800</small>)
+
+### v0.1.0-alpha.12 (2022-11-11 11:45:23)
+
+#### 🚀  New Feature
+  * 增加httputil ([ec8c1e7](https://github.com/sandwich-go/boost/commit/ec8c1e77a83f6595236ef06369c6b66ccc6a5552)) (<small>[祝黄清](huangqing.zhu@centurygame.com)@2022-11-11 11:45:23 &#43;0800 &#43;0800</small>)
+
+### v0.1.0-alpha.11 (2022-11-11 10:50:54)
+
+#### 🚀  New Feature
+  * z增加StringToBytes,BytesToString接口 ([e2a5dfb](https://github.com/sandwich-go/boost/commit/e2a5dfbfa624a0196950a4d32c3e661dc32e9dc0)) (<small>[祝黄清](huangqing.zhu@centurygame.com)@2022-11-11 10:50:54 &#43;0800 &#43;0800</small>)
+
+#### 🛠  Refactor
+  * add z and xrand lib ([1be1971](https://github.com/sandwich-go/boost/commit/1be1971b8f2d44799e29e7d0707b8b356d81cd76) , [c7ac222](https://github.com/sandwich-go/boost/commit/c7ac222b2ff991167a58c1bbfb5d5fd5b6b1986e)) (<small>[hui.wang](hui.wang@centurygame.com)@2022-11-02 20:34:57 &#43;0800 &#43;0800</small>)
+
+### v0.1.0-alpha.10 (2022-10-18 14:38:25)
+
+#### 🚀  New Feature
+  * 增加retry,xerror库 ([7919a51](https://github.com/sandwich-go/boost/commit/7919a51e0b6fb26d603c5b6aed0578bbc6693ddc)) (<small>[祝黄清](huangqing.zhu@centurygame.com)@2022-10-18 14:36:14 &#43;0800 &#43;0800</small>)
+
+#### 💪  Commit
+  * no message ([d0c937b](https://github.com/sandwich-go/boost/commit/d0c937b5b90ccd1d8f7d65757a648d66b0ea73cc)) (<small>[祝黄清](huangqing.zhu@centurygame.com)@2022-10-18 14:38:25 &#43;0800 &#43;0800</small>)
+  * Merge branch 'main' into version/0.1 ([28a861a](https://github.com/sandwich-go/boost/commit/28a861a4cfe54357dd16c4688cc1367d2fb73c84)) (<small>[祝黄清](huangqing.zhu@centurygame.com)@2022-10-18 14:38:17 &#43;0800 &#43;0800</small>)
+
+### v0.1.0-alpha.9 (2022-09-07 20:07:31)
+
+#### 🐛  Bug Fixed
+  * try cache ([07d4be7](https://github.com/sandwich-go/boost/commit/07d4be745fb3e7e4b3e3feca0a9172b1bb9528b2)) (<small>[hui.wang](hui.wang@centurygame.com)@2022-09-07 20:07:09 &#43;0800 &#43;0800</small>)
+
+#### 💪  Commit
+  * Merge branch 'version/0.1' of github.com:sandwich-go/boost into version/0.1 ([f90b068](https://github.com/sandwich-go/boost/commit/f90b06828c8e5bf3325484c6f89303ec1e80c9b2)) (<small>[hui.wang](hui.wang@centurygame.com)@2022-09-07 20:07:31 &#43;0800 &#43;0800</small>)
+
+### v0.1.0-alpha.8 (2022-07-18 18:44:51)
+
+#### 🐛  Bug Fixed
+  * 修复FileCopyToDir windos路径错误 ([1f3b1cf](https://github.com/sandwich-go/boost/commit/1f3b1cfad99129c743ff91b6a348e03fbd8c9adf) , [7500338](https://github.com/sandwich-go/boost/commit/750033864107f52568e629b638cb0222c301d176)) (<small>[祝黄清](huangqing.zhu@centurygame.com)@2022-07-18 18:44:51 &#43;0800 &#43;0800</small>)
+
+#### 🤖  Tools
+  * **sem**: make changelog ([2fa02b4](https://github.com/sandwich-go/boost/commit/2fa02b42a35d4a85391a787008d07fd91243864e)) (<small>[hui.wang](hui.wang@funplus.com)@2022-05-07 18:32:07 &#43;0800 &#43;0800</small>)
+
+#### 💪  Commit
+  * is valid json ([1da44e2](https://github.com/sandwich-go/boost/commit/1da44e285d76e7a13980123d86ea5a5d163fe5f6)) (<small>[hui.wang](hui.wang@funplus.com)@2022-05-12 06:45:18 &#43;0800 &#43;0800</small>)
+
 ### v0.1.0-alpha.7 (2022-05-07 18:24:17)
 
 #### 🐛  Bug Fixed

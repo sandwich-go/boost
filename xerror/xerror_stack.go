@@ -36,7 +36,7 @@ func (cc *Error) Stack() string {
 		buffer = bytes.NewBuffer(nil)
 	)
 	for curr != nil {
-		buffer.WriteString(fmt.Sprintf("%d: %-v\n", index, curr))
+		_, _ = buffer.WriteString(fmt.Sprintf("%d: %-v\n", index, curr))
 		index++
 		formatSubStack(curr.callStack, buffer)
 		if curr.err == nil {
@@ -45,7 +45,7 @@ func (cc *Error) Stack() string {
 		if e, ok := curr.err.(*Error); ok {
 			curr = e
 		} else {
-			buffer.WriteString(fmt.Sprintf("%d. %s\n", index, curr.err.Error()))
+			_, _ = buffer.WriteString(fmt.Sprintf("%d. %s\n", index, curr.err.Error()))
 			index++
 			break
 		}

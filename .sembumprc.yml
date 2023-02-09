@@ -3,6 +3,8 @@ name: boost
 make_step:
   - bump
   - clog
+lifestyle_step: #自定义执行脚本,参数为curr_version,命令规范：before/after_step
+  before_bump: make.sh
 latest_version_name: Unreleased
 commit_filters:
   - all
