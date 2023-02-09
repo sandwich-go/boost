@@ -20,16 +20,12 @@
 ```go
 line := `// annotation@A( AK=127, AV="AAAAA" )`
 ann, err0 := Default.Resolve(line)
-if err0 != nil {
-    panic(err0)
-}
+xpanic.WhenError(err0)
 fmt.Println("Name:", ann.Name())
 fmt.Println("Line:", ann.Line())
-if akVal, err1 := ann.Int("AK"); err1 != nil {
-    fmt.Println("AK:", akVal)
-} else {
-    panic(err1)
-}
+akVal, err1 := ann.Int("AK")
+xpanic.WhenError(err1)
+fmt.Println("AK:", akVal)
 fmt.Println("AV:", ann.String("AV"))
 ```
 

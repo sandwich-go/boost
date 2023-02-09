@@ -8,9 +8,7 @@
 # 例子
 ```go
 str, err := String("https://www.baidu.com/")
-if err != nil {
-    panic(err)	
-}
+xpanic.WhenError(err)
 fmt.Println(str)
 
 dc := dns.NewCache()
@@ -21,8 +19,6 @@ client := &http.Client{
 }
 c := New(client)
 str, err = c.String("https://www.baidu.com/")
-if err != nil {
-    panic(err)
-}
+xpanic.WhenError(err)
 fmt.Println(str)
 ```

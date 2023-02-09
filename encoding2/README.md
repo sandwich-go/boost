@@ -21,27 +21,19 @@ frame := []byte("time.Duration,[]time.Duration,map[string]*Redis此类的非基�
 for _, n := Codecs() {
     codec := GetCodec(nn)
     bs, err := codec.Marshal(frame)
-    if err != nil {
-        panic(err)
-    }
+    xpanic.WhenError(err)
     var raw []byte
     err = codec.Unmarshal(bs, &raw)
-    if err != nil {
-        panic(err)
-    }
-	fmt.Println(string(raw))
+    xpanic.WhenError(err)
+    fmt.Println(string(raw))
 }
 
 ctx = WithContext(ctx, GetCodec(encrypt.AESCodecName))
 _, err0 := FromContext(ctx).Marshal(frame)
-if err0 != nil {
-    panic(err0)
-}
+xpanic.WhenError(err0)
 
 var raw1 []byte
 err0 = FromContext(ctx).Unmarshal(bs, &raw1)
-if err0 != nil {
-    panic(err0)
-}
+xpanic.WhenError(err0)
 fmt.Println(string(raw1))
 ```

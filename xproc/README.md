@@ -9,14 +9,10 @@
 ```go
 tmpFile := filepath.Join(os.TempDir(), "test.sh")
 err := xos.FilePutContents(tmpFile, []byte("echo \"GOT ME $1\""))
-if err != nil {
-    panic(err)	
-}
+xpanic.WhenError(err)
 var stdOut string
 stdOut, err = ShellRun(tmpFile, WithArgs("1.2.0"))
-if err != nil {
-    panic(err)
-}
+xpanic.WhenError(err)
 fmt.Println(stdOut)
 ```
 Output:

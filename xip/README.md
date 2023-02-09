@@ -9,9 +9,7 @@
 # 例子
 ```go
 port, err := GetFreePort()
-if err != nil {
-    panic(er)
-}
+xpanic.WhenError(err)
 fmt.Println("free port:", port)
 
 localIP := GetLocalIP()

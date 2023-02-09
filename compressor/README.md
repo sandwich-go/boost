@@ -13,20 +13,12 @@
 ```go
 frame := []byte("time.Duration,[]time.Duration,map[string]*Redis此类的非基础类型的slice或者map都需要辅助指明类型")
 c, err0 := New(WithType(GZIP), WithLevel(BestSpeed))
-if err0 != nil {
-    panic(err0)
-}
+xpanic.WhenError(err0)
 flatFrame, err1 := c.Flat(frame)
-if err1 != nil {
-    panic(err1)
-}
+xpanic.WhenError(err1)
 inflateFrame, err2 := c.Inflate(flatFrame)
-if err2 != nil {
-    panic(err2)
-}
-if string(frame) != string(inflateFrame) {
-    panic("flat/inflate fail")
-}
+xpanic.WhenError(err2)
+xpanic.WhenTrue(string(frame) != string(inflateFrame), "flat/inflate fail")
 fmt.Println("OK")
 ```
 

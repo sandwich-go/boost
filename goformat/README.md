@@ -7,9 +7,7 @@
 ```go
 var code = `func a(     ) {return}`
 out, err := ProcessCode([]byte(code), WithFragment(true))
-if err != nil {
-    panic(err)
-}
+xpanic.WhenError(err)
 fmt.Println(string(out))
 ```
 

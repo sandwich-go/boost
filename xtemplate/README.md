@@ -10,9 +10,7 @@
 ```go
 s := `a {{ .val1 }} {{ .val2 }}`
 s1, err := Execute(s, map[string]interface{}{"val1": "b", "val2": 2})
-if err!= nil {
-    panic(err)
-}
+xpanic.WhenError(err)
 fmt.Println(string(s1))
 ```
 Output:

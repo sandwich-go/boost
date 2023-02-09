@@ -9,9 +9,7 @@
 # 例子
 ```go
 s, err := md5.Buffer(bytes.NewReader([]byte("aaaaaaaa")))
-if err != nil {
-    panic(er)
-}
+xpanic.WhenError(err)
 fmt.Println(s)
 
 hint, _ := jenkins.HashString("aaaaaaaa", 0, 0)

@@ -9,4 +9,5 @@ ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 r = NewReader(ctx, bytes.NewReader(buf))
 defer cancel()
 _, err := r.Read(buf2)
+xpanic.WhenError(err)
 ```
