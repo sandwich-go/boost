@@ -35,6 +35,7 @@
 通过 `boost.InstallLogger` 来设置自定义的 `logger`
 
 自定义的 `logger` 需要实现以下接口
+
 ```go
 type Logger interface {
     Debug(string)
