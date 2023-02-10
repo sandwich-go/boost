@@ -9,9 +9,9 @@ require (
 	github.com/coreos/pkg v0.0.0-20220810130054-c7d1c02cb6cf
 	github.com/golang/protobuf v1.5.2
 	github.com/golang/snappy v0.0.4
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/huandu/xstrings v1.4.0 // indirect
 	github.com/imdario/mergo v0.3.13 // indirect
+	github.com/minio/minio-go/v7 v7.0.47
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/smartystreets/goconvey v1.7.2
 	github.com/vmihailenco/msgpack/v5 v5.3.5
