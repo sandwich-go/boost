@@ -45,3 +45,17 @@ func TestCRUD(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestParse(t *testing.T) {
+	key := os.Getenv("RELEASE_CLOUD_KEY")
+	secret := os.Getenv("RELEASE_CLOUD_SECRET")
+	if len(key) == 0 || len(secret) == 0 {
+		return
+	}
+	sb := MustNew(StorageTypeS3, key, secret, "zhongtai", WithRegion("us-east-2"))
+	s, err := sb.ResolveObjectName("https://fsadfdsa.com/zhongtai/ddd")
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(s)
+}
