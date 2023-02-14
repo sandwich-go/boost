@@ -9,7 +9,7 @@ import (
 )
 
 func TestInt(t *testing.T) {
-	Convey("test array", t, func() {
+	Convey("test sync array", t, func() {
 		for _, tr := range []*Int{NewInt(), NewSyncInt()} {
 			So(tr.Len(), ShouldBeZeroValue)
 			_, exists := tr.Get(0)

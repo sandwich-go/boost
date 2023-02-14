@@ -390,7 +390,7 @@ func (mu *localRWMutexVType) RUnlock() {
 var __formatTo func(interface{}) VType
 
 func TestSyncArray(t *testing.T) {
-	Convey("test array", t, func() {
+	Convey("test sync array", t, func() {
 		for _, tr := range []*SyncArray{New(), NewSync()} {
 			So(tr.Len(), ShouldBeZeroValue)
 			_, exists := tr.Get(0)

@@ -2,7 +2,9 @@ package slist
 
 import (
 	"container/list"
+	. "github.com/smartystreets/goconvey/convey"
 	"sync"
+	"testing"
 )
 
 //template type SyncList(VType)
@@ -477,4 +479,20 @@ func (mu *localRWMutexVType) RUnlock() {
 	if mu.RWMutex != nil {
 		mu.RWMutex.RUnlock()
 	}
+}
+
+//template format
+var __formatTo func(interface{}) VType
+
+func TestSyncList(t *testing.T) {
+	Convey("test sync list", t, func() {
+		for _, tr := range []*SyncList{New(), NewSync()} {
+			So(tr.Len(), ShouldBeZeroValue)
+			var e0 = __formatTo(3)
+			tr.PushBack(e0)
+			So(tr.Len(), ShouldEqual, 1)
+			e := tr.PopBack()
+			So(e, ShouldEqual, e0)
+		}
+	})
 }

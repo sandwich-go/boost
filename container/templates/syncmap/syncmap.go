@@ -1,8 +1,10 @@
 package syncmap
 
 import (
+	. "github.com/smartystreets/goconvey/convey"
 	"sort"
 	"sync"
+	"testing"
 )
 
 //template type SyncMap(KType,VType)
@@ -128,4 +130,24 @@ func (s *SyncMap) RangeDeterministic(f func(key KType, value VType) bool, sortab
 			}
 		}
 	}
+}
+
+//template format
+var __formatKTypeTo func(interface{}) KType
+
+//template format
+var __formatVTypeTo func(interface{}) VType
+
+func TestSyncMap(t *testing.T) {
+	Convey("test sync map", t, func() {
+		for _, tr := range []*SyncMap{NewSyncMap()} {
+			So(tr.Len(), ShouldBeZeroValue)
+			var k, v = __formatKTypeTo(3), __formatVTypeTo(4)
+			So(tr.Len(), ShouldEqual, 0)
+			tr.Store(k, v)
+			v1, ok := tr.Load(k)
+			So(ok, ShouldBeTrue)
+			So(v1, ShouldEqual, v)
+		}
+	})
 }

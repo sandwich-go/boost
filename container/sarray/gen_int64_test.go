@@ -9,7 +9,7 @@ import (
 )
 
 func TestInt64(t *testing.T) {
-	Convey("test array", t, func() {
+	Convey("test sync array", t, func() {
 		for _, tr := range []*Int64{NewInt64(), NewSyncInt64()} {
 			So(tr.Len(), ShouldBeZeroValue)
 			_, exists := tr.Get(0)

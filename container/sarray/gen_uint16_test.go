@@ -9,7 +9,7 @@ import (
 )
 
 func TestUint16(t *testing.T) {
-	Convey("test array", t, func() {
+	Convey("test sync array", t, func() {
 		for _, tr := range []*Uint16{NewUint16(), NewSyncUint16()} {
 			So(tr.Len(), ShouldBeZeroValue)
 			_, exists := tr.Get(0)

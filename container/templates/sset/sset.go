@@ -1,30 +1,32 @@
 package sset
 
 import (
+	. "github.com/smartystreets/goconvey/convey"
 	"sync"
+	"testing"
 )
 
-//template type SandwichSet(VType)
+//template type SyncSet(VType)
 
 type VType interface{}
 
-type SandwichSet struct {
+type SyncSet struct {
 	mu   *localRWMutexVType
 	data map[VType]struct{}
 }
 
 // New 创建非协程安全版本
-func New() *SandwichSet { return newWithSafe(false) }
+func New() *SyncSet { return newWithSafe(false) }
 
 // NewSync 创建协程安全版本
-func NewSync() *SandwichSet { return newWithSafe(true) }
+func NewSync() *SyncSet { return newWithSafe(true) }
 
-func newWithSafe(safe bool) *SandwichSet {
-	return &SandwichSet{data: make(map[VType]struct{}), mu: newLocalRWMutexVType(safe)}
+func newWithSafe(safe bool) *SyncSet {
+	return &SyncSet{data: make(map[VType]struct{}), mu: newLocalRWMutexVType(safe)}
 }
 
 // Iterator 遍历
-func (set *SandwichSet) Iterator(f func(v VType) bool) {
+func (set *SyncSet) Iterator(f func(v VType) bool) {
 	set.mu.RLock()
 	defer set.mu.RUnlock()
 	for k := range set.data {
@@ -35,7 +37,7 @@ func (set *SandwichSet) Iterator(f func(v VType) bool) {
 }
 
 // Add 添加元素
-func (set *SandwichSet) Add(items ...VType) {
+func (set *SyncSet) Add(items ...VType) {
 	set.mu.Lock()
 	if set.data == nil {
 		set.data = make(map[VType]struct{})
@@ -47,7 +49,7 @@ func (set *SandwichSet) Add(items ...VType) {
 }
 
 // AddIfNotExist 如果元素不存在则添加，如添加成功则返回true
-func (set *SandwichSet) AddIfNotExist(item VType) (addOK bool) {
+func (set *SyncSet) AddIfNotExist(item VType) (addOK bool) {
 	if !set.Contains(item) {
 		set.mu.Lock()
 		defer set.mu.Unlock()
@@ -64,7 +66,7 @@ func (set *SandwichSet) AddIfNotExist(item VType) (addOK bool) {
 
 // AddIfNotExistFunc 如果元素不存在且f返回true则添加，如添加成功则返回true
 // f函数运行在lock之外
-func (set *SandwichSet) AddIfNotExistFunc(item VType, f func() bool) bool {
+func (set *SyncSet) AddIfNotExistFunc(item VType, f func() bool) bool {
 	if !set.Contains(item) {
 		if f() {
 			set.mu.Lock()
@@ -83,7 +85,7 @@ func (set *SandwichSet) AddIfNotExistFunc(item VType, f func() bool) bool {
 
 // AddIfNotExistFuncLock 如果元素不存在且f返回true则添加，如添加成功则返回true
 // f函数运行在lock之内
-func (set *SandwichSet) AddIfNotExistFuncLock(item VType, f func() bool) bool {
+func (set *SyncSet) AddIfNotExistFuncLock(item VType, f func() bool) bool {
 	if !set.Contains(item) {
 		set.mu.Lock()
 		defer set.mu.Unlock()
@@ -101,7 +103,7 @@ func (set *SandwichSet) AddIfNotExistFuncLock(item VType, f func() bool) bool {
 }
 
 // Contains 是否存在元素
-func (set *SandwichSet) Contains(item VType) bool {
+func (set *SyncSet) Contains(item VType) bool {
 	var ok bool
 	set.mu.RLock()
 	if set.data != nil {
@@ -112,7 +114,7 @@ func (set *SandwichSet) Contains(item VType) bool {
 }
 
 // Remove 移除指定元素
-func (set *SandwichSet) Remove(item VType) {
+func (set *SyncSet) Remove(item VType) {
 	set.mu.Lock()
 	if set.data != nil {
 		delete(set.data, item)
@@ -121,7 +123,7 @@ func (set *SandwichSet) Remove(item VType) {
 }
 
 // Size 返回长度
-func (set *SandwichSet) Size() int {
+func (set *SyncSet) Size() int {
 	set.mu.RLock()
 	l := len(set.data)
 	set.mu.RUnlock()
@@ -129,14 +131,14 @@ func (set *SandwichSet) Size() int {
 }
 
 // Clear 清理元素
-func (set *SandwichSet) Clear() {
+func (set *SyncSet) Clear() {
 	set.mu.Lock()
 	set.data = make(map[VType]struct{})
 	set.mu.Unlock()
 }
 
 // Slice 返回元素slice
-func (set *SandwichSet) Slice() []VType {
+func (set *SyncSet) Slice() []VType {
 	set.mu.RLock()
 	var i = 0
 	var ret = make([]VType, len(set.data))
@@ -149,21 +151,21 @@ func (set *SandwichSet) Slice() []VType {
 }
 
 // LockFunc 锁住当前set调用方法f
-func (set *SandwichSet) LockFunc(f func(m map[VType]struct{})) {
+func (set *SyncSet) LockFunc(f func(m map[VType]struct{})) {
 	set.mu.Lock()
 	defer set.mu.Unlock()
 	f(set.data)
 }
 
 // RLockFunc 读锁住当前set调用方法f
-func (set *SandwichSet) RLockFunc(f func(m map[VType]struct{})) {
+func (set *SyncSet) RLockFunc(f func(m map[VType]struct{})) {
 	set.mu.RLock()
 	defer set.mu.RUnlock()
 	f(set.data)
 }
 
 // Equal 是否相等
-func (set *SandwichSet) Equal(other *SandwichSet) bool {
+func (set *SyncSet) Equal(other *SyncSet) bool {
 	if set == other {
 		return true
 	}
@@ -183,7 +185,7 @@ func (set *SandwichSet) Equal(other *SandwichSet) bool {
 }
 
 // Merge 合并set，发布会当前set
-func (set *SandwichSet) Merge(others ...*SandwichSet) *SandwichSet {
+func (set *SyncSet) Merge(others ...*SyncSet) *SyncSet {
 	set.mu.Lock()
 	defer set.mu.Unlock()
 	for _, other := range others {
@@ -201,7 +203,7 @@ func (set *SandwichSet) Merge(others ...*SandwichSet) *SandwichSet {
 }
 
 // Walk 对每个元素作用f方法
-func (set *SandwichSet) Walk(f func(item VType) VType) *SandwichSet {
+func (set *SyncSet) Walk(f func(item VType) VType) *SyncSet {
 	set.mu.Lock()
 	defer set.mu.Unlock()
 	m := make(map[VType]struct{}, len(set.data))
@@ -250,4 +252,20 @@ func (mu *localRWMutexVType) RUnlock() {
 	if mu.RWMutex != nil {
 		mu.RWMutex.RUnlock()
 	}
+}
+
+//template format
+var __formatTo func(interface{}) VType
+
+func TestSyncSet(t *testing.T) {
+	Convey("test sync set", t, func() {
+		for _, tr := range []*SyncSet{New(), NewSync()} {
+			So(tr.Size(), ShouldBeZeroValue)
+			var e0 = __formatTo(3)
+			tr.Add(e0)
+			So(tr.Size(), ShouldEqual, 1)
+			tr.Add(e0)
+			So(tr.Size(), ShouldEqual, 1)
+		}
+	})
 }
