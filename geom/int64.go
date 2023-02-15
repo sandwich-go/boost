@@ -3,6 +3,7 @@ package geom
 
 import "strconv"
 
+// PointInt64 point wrapper
 type PointInt64 struct {
 	X, Y int64
 }
@@ -50,6 +51,7 @@ func PtInt64(X, Y int64) PointInt64 {
 	return PointInt64{X, Y}
 }
 
+// RectangleInt64 rectangle wrapper, contain two point.
 type RectangleInt64 struct {
 	Min, Max PointInt64
 }
@@ -59,6 +61,8 @@ func (r RectangleInt64) String() string {
 	return r.Min.String() + "-" + r.Max.String()
 }
 
+// RangePoints range all points in rectangle.
+// if with return false, aborted range.
 func (r RectangleInt64) RangePoints(with func(p PointInt64) bool) {
 	if with == nil || r == ZRInt64 {
 		return
@@ -72,6 +76,8 @@ func (r RectangleInt64) RangePoints(with func(p PointInt64) bool) {
 	}
 }
 
+// RangePointsMinClosedMaxOpen range all points in rectangle except min x, y.
+// if with return false, aborted range.
 func (r RectangleInt64) RangePointsMinClosedMaxOpen(with func(p PointInt64) bool) {
 	if with == nil || r == ZRInt64 {
 		return
@@ -85,6 +91,7 @@ func (r RectangleInt64) RangePointsMinClosedMaxOpen(with func(p PointInt64) bool
 	}
 }
 
+// IntersectionWithLine check line intersection, if intersection, return true
 func (r RectangleInt64) IntersectionWithLine(s PointInt64, e PointInt64) bool {
 	if s.X <= r.Min.X && e.X <= r.Min.X || s.X >= r.Max.X && e.X >= r.Max.X || s.Y <= r.Min.Y && e.Y <= r.Min.Y || s.Y >= r.Max.Y && e.Y >= r.Max.Y {
 		return false
@@ -98,6 +105,8 @@ func (r RectangleInt64) IntersectionWithLine(s PointInt64, e PointInt64) bool {
 	return false
 }
 
+// RangePointsMinMaxClosed range all points in rectangle except min/max x, y.
+// if with return false, aborted range.
 func (r RectangleInt64) RangePointsMinMaxClosed(with func(p PointInt64) bool) {
 	if with == nil || r == ZRInt64 {
 		return
@@ -111,6 +120,8 @@ func (r RectangleInt64) RangePointsMinMaxClosed(with func(p PointInt64) bool) {
 	}
 }
 
+// RangePointsMinOpenMaxClosed range all points in rectangle except max x, y.
+// if with return false, aborted range.
 func (r RectangleInt64) RangePointsMinOpenMaxClosed(with func(p PointInt64) bool) {
 	if with == nil || r == ZRInt64 {
 		return
@@ -256,6 +267,7 @@ func (r RectangleInt64) In(s RectangleInt64) bool {
 		s.Min.Y <= r.Min.Y && r.Max.Y <= s.Max.Y
 }
 
+// Bounds returns a rectangle bounds
 func (r RectangleInt64) Bounds() RectangleInt64 {
 	return r
 }
@@ -269,6 +281,8 @@ func (r RectangleInt64) Expanded(margin PointInt64) RectangleInt64 {
 	}
 }
 
+// ExpandedByMargin returns a rectangle that has been expanded in the x-direction
+// by margin, and in y-direction by margin. The resulting rectangle may be empty.
 func (r RectangleInt64) ExpandedByMargin(margin int64) RectangleInt64 {
 	return r.Expanded(PtInt64(margin, margin))
 }
