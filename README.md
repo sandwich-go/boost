@@ -24,6 +24,7 @@
 - `xmap` [map辅助函数](https://github.com/sandwich-go/boost/tree/main/xmap/README.md)
 - `xmath` [math辅助函数](https://github.com/sandwich-go/boost/tree/main/xmath/README.md)
 - `xpanic` [panic辅助函数](https://github.com/sandwich-go/boost/tree/main/xpanic/README.md)
+- `xpool` [pool辅助函数](https://github.com/sandwich-go/boost/tree/main/xpool/README.md)
 - `xproc` [command辅助函数](https://github.com/sandwich-go/boost/tree/main/xproc/README.md)
 - `xrand` [随机辅助函数](https://github.com/sandwich-go/boost/tree/main/xrand/README.md)
 - `xslice` [切片辅助函数](https://github.com/sandwich-go/boost/tree/main/xslice/README.md)

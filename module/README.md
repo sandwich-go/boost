@@ -37,5 +37,4 @@ func main() {
     module.Register(newInfrastructure(handler))
     module.Run()
 }
-
 ```
