@@ -16,6 +16,7 @@
 - `retry` [重试](https://github.com/sandwich-go/boost/tree/main/retry/README.md)
 - `version` [程序版本](https://github.com/sandwich-go/boost/tree/main/version/README.md)
 - `xcmd` [命令行/ENV参数](https://github.com/sandwich-go/boost/tree/main/xcmd/README.md)
+- `xconv` [内置类型转换辅助工具](https://github.com/sandwich-go/boost/tree/main/xconv/README.md)
 - `xcopy` [深拷贝](https://github.com/sandwich-go/boost/tree/main/xcopy/README.md)
 - `xerror` [error wrapper](https://github.com/sandwich-go/boost/tree/main/xerror/README.md)
 - `xhash` [hash算法](https://github.com/sandwich-go/boost/tree/main/xhash/README.md)
