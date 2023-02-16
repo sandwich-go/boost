@@ -11,6 +11,7 @@
 - `goformat` [Golang格式化](https://github.com/sandwich-go/boost/tree/main/goformat/README.md)
 - `hrff` [Human Readable Flags and Formatting](https://github.com/sandwich-go/boost/tree/main/hrff/README.md)
 - `httputil` [HTTP工具](https://github.com/sandwich-go/boost/tree/main/httputil/README.md)
+- `module` [Module工具](https://github.com/sandwich-go/boost/tree/main/module/README.md)
 - `paniccatcher` [panic工具](https://github.com/sandwich-go/boost/tree/main/paniccatcher/README.md)
 - `retry` [重试](https://github.com/sandwich-go/boost/tree/main/retry/README.md)
 - `version` [程序版本](https://github.com/sandwich-go/boost/tree/main/version/README.md)
