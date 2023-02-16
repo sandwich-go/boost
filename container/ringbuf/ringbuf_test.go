@@ -10,6 +10,7 @@ var buf = New(10)
 
 func TestRingbuf(t *testing.T) {
 	Convey("ring buf test", t, func() {
+		So(buf.Capacity(), ShouldEqual, 10)
 		err := buf.Write([]byte("helloworld"))
 		//helloworld
 		So(err, ShouldBeNil)
@@ -39,5 +40,14 @@ func TestRingbuf(t *testing.T) {
 		So(string(tmp), ShouldEqual, "worlo")
 		So(buf.Size(), ShouldEqual, 5)
 		So(buf.start, ShouldEqual, 9)
+
+		So(len(buf.PreUse(5)), ShouldEqual, 5)
+		buf.Read(tmp, 3)
+		So(string(tmp), ShouldEqual, "d12lo")
+
+		buf.RealUse(1)
+		buf.Read(tmp, 3)
+		So(string(tmp), ShouldEqual, "34olo")
+
 	})
 }

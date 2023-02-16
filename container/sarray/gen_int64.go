@@ -303,6 +303,7 @@ func (a *Int64) Rand() (value int64, found bool) {
 	return a.array[rand.Intn(len(a.array))], true
 }
 
+// WalkAsc 按照index从小到大的顺序进行遍历，并将k,v作为参数执行f。如果f执行返回false则中止
 func (a *Int64) WalkAsc(f func(k int, v int64) bool) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
@@ -313,6 +314,7 @@ func (a *Int64) WalkAsc(f func(k int, v int64) bool) {
 	}
 }
 
+// WalkDesc 按照index从大到小的顺序进行遍历，并将k,v作为参数执行f。如果f执行返回false则中止
 func (a *Int64) WalkDesc(f func(k int, v int64) bool) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
