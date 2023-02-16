@@ -20,18 +20,18 @@ type Converter interface {
 	ToV(Id) V
 }
 
-// Global is global hash14v converter, must goroutine safe, do not change inner properties while running
-var Global Converter
+// global is global hash14v converter, must goroutine safe, do not change inner properties while running
+var global Converter
 
 func init() {
-	Global = New()
+	global = New()
 }
 
 // ToV 对 Id 进行转换，转换为 V
-func ToV(id Id) V { return Global.ToV(id) }
+func ToV(id Id) V { return global.ToV(id) }
 
 // ToId 对 V 进行转换，转换为 Id
-func ToId(v V) Id { return Global.ToId(v) }
+func ToId(v V) Id { return global.ToId(v) }
 
 // Offset 获取 Id 的 offset
-func Offset() Id { return Global.Offset() }
+func Offset() Id { return global.Offset() }

@@ -69,7 +69,7 @@ func BenchmarkFromUInt64(b *testing.B) {
 	b.ResetTimer()
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
-		Global.ToV(123456789)
+		ToV(123456789)
 	}
 }
 
@@ -77,6 +77,6 @@ func BenchmarkToUInt64(b *testing.B) {
 	b.ResetTimer()
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
-		Global.ToId([]byte("YESTTES"))
+		ToId([]byte("YESTTES"))
 	}
 }
