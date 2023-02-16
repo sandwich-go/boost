@@ -3,6 +3,7 @@
 加密
 
 - 支持 `aes` 加解密
+- 支持 `vigenere` 加解密
 - 支持生成 `SecretKey`、`PublicKey`、`SharedKey`
 
 
