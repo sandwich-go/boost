@@ -2,6 +2,8 @@ package xos
 
 import (
 	"fmt"
+	"github.com/sandwich-go/boost"
+	"github.com/sandwich-go/boost/xerror"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -209,4 +211,77 @@ func GetActuallyDir(root string) (string, error) {
 		return dirLinkTo, nil
 	}
 	return root, nil
+}
+
+// ReadDir returns the filenames in the given directory in sorted order.
+func ReadDir(root string) ([]string, error) {
+	return ReadDirWithExt(root, "")
+}
+
+// ReadDirWithExt returns the filenames in the given directory in sorted order.
+func ReadDirWithExt(root, ext string) ([]string, error) {
+	dir, err := os.Open(root)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		boost.LogErrorAndEatError(dir.Close())
+	}()
+	names, err0 := dir.Readdirnames(-1)
+	if err0 != nil {
+		return nil, err0
+	}
+	sort.Strings(names)
+
+	if len(ext) > 0 {
+		tss := make([]string, 0, len(names))
+		for _, v := range names {
+			if filepath.Ext(v) == ext {
+				tss = append(tss, v)
+			}
+		}
+		names = tss
+	}
+	return names, nil
+}
+
+// IsDirWriteable checks if dir is writable by writing and removing a file
+// to dir. It returns nil if dir is writable.
+func IsDirWriteable(dir string) error {
+	f := filepath.Join(dir, ".touch")
+	if err := ioutil.WriteFile(f, []byte(""), 0600); err != nil {
+		return err
+	}
+	return os.Remove(f)
+}
+
+// TouchDirAll is similar to os.MkdirAll. It creates directories with 0700 permission if any directory
+// does not exists. TouchDirAll also ensures the given directory is writable.
+func TouchDirAll(dir string) error {
+	// If path is already a directory, MkdirAll does nothing
+	// and returns nil.
+	err := os.MkdirAll(dir, 0700)
+	if err != nil {
+		// if mkdirAll("a/text") and "text" is not
+		// a directory, this will return syscall.ENOTDIR
+		return err
+	}
+	return IsDirWriteable(dir)
+}
+
+// CreateDirAll is similar to TouchDirAll but returns error
+// if the deepest directory was not empty.
+func CreateDirAll(dir string) error {
+	err := TouchDirAll(dir)
+	if err == nil {
+		var ns []string
+		ns, err = ReadDir(dir)
+		if err != nil {
+			return err
+		}
+		if len(ns) != 0 {
+			err = xerror.NewText("expected %q to be empty, got %q", dir, ns)
+		}
+	}
+	return err
 }

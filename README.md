@@ -7,6 +7,7 @@
 - `compressor` [解压缩器](https://github.com/sandwich-go/boost/tree/main/compressor/README.md)
 - `encoding2` [编码解码器](https://github.com/sandwich-go/boost/tree/main/encoding2/README.md)
 - `encryption` [加密](https://github.com/sandwich-go/boost/tree/main/encryption/README.md)
+- `geom` [地理位置](https://github.com/sandwich-go/boost/tree/main/geom/README.md)
 - `goformat` [Golang格式化](https://github.com/sandwich-go/boost/tree/main/goformat/README.md)
 - `hrff` [Human Readable Flags and Formatting](https://github.com/sandwich-go/boost/tree/main/hrff/README.md)
 - `httputil` [HTTP工具](https://github.com/sandwich-go/boost/tree/main/httputil/README.md)

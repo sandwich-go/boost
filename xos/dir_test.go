@@ -89,6 +89,22 @@ func TestDir(t *testing.T) {
 		So(len(fileList), ShouldEqual, 1)
 		So(fileList[0], ShouldEqual, filepath.Join(destDir1, "b.go"))
 
+		So(FilePutContents(filepath.Join(destDir1, "c.txt"), nil), ShouldBeNil)
+
+		fileNames, err := ReadDir(destDir1)
+		So(err, ShouldBeNil)
+		So(len(fileNames), ShouldEqual, 2)
+
+		fileNames, err = ReadDirWithExt(destDir1, ".go")
+		So(err, ShouldBeNil)
+		So(len(fileNames), ShouldEqual, 1)
+		So(fileNames[0], ShouldEqual, "b.go")
+
+		So(IsDirWriteable(destDir1), ShouldBeNil)
+		So(TouchDirAll(filepath.Join(destDir1, "c.txt")), ShouldNotBeNil)
+		So(TouchDirAll(destDir1), ShouldBeNil)
+		So(CreateDirAll(destDir1), ShouldNotBeNil)
+
 		So(os.RemoveAll(dest), ShouldBeNil)
 	})
 }
