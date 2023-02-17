@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-var GlobalLogger Logger = &dummyLogger{log.New(os.Stdout, "", log.LstdFlags)}
+var Default Logger = &dummyLogger{log.New(os.Stdout, "", log.LstdFlags)}
 
 type Logger interface {
 	Debug(string)
@@ -15,11 +15,11 @@ type Logger interface {
 	Fatal(string)
 }
 
-func Debug(msg string) { GlobalLogger.Debug(msg) }
-func Info(msg string)  { GlobalLogger.Info(msg) }
-func Warn(msg string)  { GlobalLogger.Warn(msg) }
-func Error(msg string) { GlobalLogger.Error(msg) }
-func Fatal(msg string) { GlobalLogger.Fatal(msg) }
+func Debug(msg string) { Default.Debug(msg) }
+func Info(msg string)  { Default.Info(msg) }
+func Warn(msg string)  { Default.Warn(msg) }
+func Error(msg string) { Default.Error(msg) }
+func Fatal(msg string) { Default.Fatal(msg) }
 
 type dummyLogger struct {
 	*log.Logger

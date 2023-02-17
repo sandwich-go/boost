@@ -18,6 +18,7 @@ require (
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/smartystreets/goconvey v1.7.2
 	github.com/vmihailenco/msgpack/v5 v5.3.5
+	go.uber.org/zap v1.24.0 // indirect
 	golang.org/x/crypto v0.5.0
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect

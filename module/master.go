@@ -30,9 +30,9 @@ func (a *agent) run() {
 func (a *agent) close() {
 	paniccatcher.Do(func() {
 		a.OnClose()
-		boost.LogInfo(fmt.Sprintf("ModuleName %s closed", a.Name()))
+		boost.LogInfof("ModuleName %s closed", a.Name())
 	}, func(p *paniccatcher.Panic) {
-		boost.LogInfo(fmt.Sprintf("ModuleName %s closed with reason:%s", a.Name(), p.Reason))
+		boost.LogInfof("ModuleName %s closed with reason: %v", a.Name(), p.Reason)
 	})
 }
 
@@ -105,10 +105,10 @@ func (m *master) runAll() {
 	}
 
 	for i := 0; i < len(m.allAgents); i++ {
-		boost.LogInfo(fmt.Sprintf("ModuleName %s starting ...", m.allAgents[i].Name()))
+		boost.LogInfof("ModuleName %s starting ...", m.allAgents[i].Name())
 		m.allAgents[i].wg.Add(1)
 		go m.allAgents[i].run()
-		boost.LogInfo(fmt.Sprintf("ModuleName %s started ...", m.allAgents[i].Name()))
+		boost.LogInfof("ModuleName %s started ...", m.allAgents[i].Name())
 	}
 }
 
@@ -118,23 +118,23 @@ func (m *master) RunModule(md Module) {
 	if !m.masterStarted.Get() {
 		return
 	}
-	boost.LogInfo(fmt.Sprintf("ModuleName %s starting ...", s.Name()))
+	boost.LogInfof("ModuleName %s starting ...", s.Name())
 	s.wg.Add(1)
 	s.OnInit()
 	go s.run()
-	boost.LogInfo(fmt.Sprintf("ModuleName %s started", s.Name()))
+	boost.LogInfof("ModuleName %s started", s.Name())
 }
 
 func (m *master) closeAll(ctx context.Context) {
 	for i := len(m.allAgents) - 1; i >= 0; i-- {
 		a := m.allAgents[i]
-		boost.LogInfo(fmt.Sprintf("ModuleName %s closing ...", a.Name()))
+		boost.LogInfof("ModuleName %s closing ...", a.Name())
 		close(a.closeChan)
 		if m.timeoutDuration == 0 {
 			a.wg.Wait()
 		} else {
 			if xsync.WaitContext(&a.wg, ctx) {
-				boost.LogInfo(fmt.Sprintf("ModuleName %s close with timeout %v ...", a.Name(), m.timeoutDuration))
+				boost.LogInfof("ModuleName %s close with timeout %v ...", a.Name(), m.timeoutDuration)
 			}
 		}
 		a.close()
@@ -169,7 +169,7 @@ func (m *master) Run(ms ...Module) {
 		reason = fmt.Sprintf("sig(%s)", processShutdownSignal.String())
 	}
 
-	boost.LogInfo(fmt.Sprintf("progress closing down by signal, pid: %d, reason: %s", os.Getpid(), reason))
+	boost.LogInfof("progress closing down by signal, pid: %d, reason: %s", os.Getpid(), reason)
 
 	m.masterStarted.Set(false)
 
