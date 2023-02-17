@@ -1,3 +1,7 @@
+// sarray 包提供了一个同步的数组实现
+// 可以产生一个带读写锁的线程安全的SyncArray，也可以产生一个非线程安全的SyncArray
+// New 产生非协程安全的版本
+// NewSync 产生协程安全的版本
 package sarray
 
 import (
@@ -14,6 +18,7 @@ import (
 
 type VType interface{}
 
+// SyncArray 包含一个读写锁和一个切片，根据不同需求可提供对切片协程安全版本或者非协程安全版本的实例
 type SyncArray struct {
 	mu    *localRWMutexVType
 	array []VType
@@ -126,7 +131,7 @@ func (a *SyncArray) Contains(value VType) bool {
 	return a.Search(value) != -1
 }
 
-// Search 查找元素，不存在返回-1
+// Search 查找元素，如果存在则返回index，不存在返回-1
 func (a *SyncArray) Search(value VType) int {
 	a.mu.RLock()
 	defer a.mu.RUnlock()

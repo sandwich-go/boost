@@ -1,3 +1,7 @@
+// slist 包提供了一个同步的链表实现
+// 可以产生一个带读写锁的线程安全的SyncList，也可以产生一个非线程安全的SyncList
+// New 产生非协程安全的版本
+// NewSync 产生协程安全的版本
 package slist
 
 import (
@@ -12,6 +16,7 @@ import (
 type VType interface{}
 type Element = list.Element
 
+// SyncList 包含一个读写锁和一个双向链表，根据不同需求可提供对切片协程安全版本或者非协程安全版本的实例
 type SyncList struct {
 	mu   *localRWMutexVType
 	list *list.List
@@ -23,7 +28,11 @@ func newWithSafe(safe bool) *SyncList {
 		list: list.New(),
 	}
 }
-func New() *SyncList     { return newWithSafe(false) }
+
+// New 创建非协程安全版本
+func New() *SyncList { return newWithSafe(false) }
+
+// NewSync 创建协程安全版本
 func NewSync() *SyncList { return newWithSafe(true) }
 
 // PushFront 队头添加
