@@ -1,4 +1,4 @@
-package sarray
+package slist
 
 // go get github.com/sandwich-go/gotemplate/...
 //go:generate gotemplate -outfmt gen_%v "../templates/slist" "Int(int)"
