@@ -15,6 +15,7 @@
 - `paniccatcher` [panic工具](https://github.com/sandwich-go/boost/tree/main/paniccatcher/README.md)
 - `retry` [重试](https://github.com/sandwich-go/boost/tree/main/retry/README.md)
 - `singleflight` [SingleFlight](https://github.com/sandwich-go/boost/tree/main/singleflight/README.md)
+- `types` [扩展的数据类型](https://github.com/sandwich-go/boost/tree/main/types/README.md)
 - `validator` [校验器](https://github.com/sandwich-go/boost/tree/main/validator/README.md)
 - `version` [程序版本](https://github.com/sandwich-go/boost/tree/main/version/README.md)
 - `xcmd` [命令行/ENV参数](https://github.com/sandwich-go/boost/tree/main/xcmd/README.md)
