@@ -5,6 +5,7 @@
 - `annotation` [注释解析器](https://github.com/sandwich-go/boost/tree/main/annotation/README.md)
 - `cloud` [对象存储](https://github.com/sandwich-go/boost/tree/main/cloud/README.md)
 - `compressor` [解压缩器](https://github.com/sandwich-go/boost/tree/main/compressor/README.md)
+- `container` [容器](https://github.com/sandwich-go/boost/tree/main/container/README.md)
 - `encoding2` [编码解码器](https://github.com/sandwich-go/boost/tree/main/encoding2/README.md)
 - `encryption` [加密](https://github.com/sandwich-go/boost/tree/main/encryption/README.md)
 - `geom` [地理位置](https://github.com/sandwich-go/boost/tree/main/geom/README.md)

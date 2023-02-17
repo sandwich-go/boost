@@ -1,6 +1,6 @@
 # container
 
-##容器
+# 容器
 包含以下容器：
 - `Ringbuf`环形缓冲区。
 - `SyncArray`提供了多种数据类型的数组实现，包含协程安全和非协程安全的版本。
@@ -11,7 +11,7 @@
 ### Ringbuf
 `Ringbuf`是一个非协程安全的环形缓冲区
 
-####例子
+#### 例子
 ```go
 import "github.com/sandwich-go/boost/container/ringbuf"
 
@@ -47,7 +47,7 @@ import "github.com/sandwich-go/boost/container/sarray"
 
 sarray.NewSyncInt8()
 ```
-####例子
+#### 例子
 
 ```go
 import "github.com/sandwich-go/boost/container/sarray"
