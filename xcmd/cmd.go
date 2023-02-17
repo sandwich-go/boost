@@ -16,6 +16,15 @@ var (
 	invalidChars  = ".-/\\"
 )
 
+const (
+	FlagPrefix              = "sandwich_"
+	DefaultStringFalse      = "false"
+	DefaultStringTrue       = "true"
+	DefaultStringEmpty      = ""
+	cmdEnvSandwichBuildInfo = "sandwich_build_info"
+	DefaultTopologyRender   = "true"
+)
+
 // SetFlagPrefix 设置 flag 的前缀
 func SetFlagPrefix(prefix string) { flagPrefix = prefix }
 
