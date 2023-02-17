@@ -3,11 +3,10 @@ package xerror_test
 import (
 	"errors"
 	"fmt"
+	"github.com/sandwich-go/boost/xerror"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-
-	"github.com/sandwich-go/boost/xerror"
 )
 
 func TestErrors(t *testing.T) {

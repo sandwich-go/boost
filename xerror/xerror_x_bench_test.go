@@ -2,9 +2,8 @@ package xerror_test
 
 import (
 	"errors"
-	"testing"
-
 	"github.com/sandwich-go/boost/xerror"
+	"testing"
 )
 
 var (

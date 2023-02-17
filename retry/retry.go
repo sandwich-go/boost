@@ -1,11 +1,10 @@
 package retry
 
 import (
+	"github.com/sandwich-go/boost/xerror"
 	"math"
 	"math/rand"
 	"time"
-
-	"github.com/sandwich-go/boost/xerror"
 )
 
 // Do 执行 retryableFunc 函数，若执行失败，则会重新尝试执行

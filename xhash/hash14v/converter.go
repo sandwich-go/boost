@@ -2,7 +2,7 @@ package hash14v
 
 import (
 	"bytes"
-	"github.com/sandwich-go/boost/encryption/algorithm/vigenere"
+	"github.com/sandwich-go/boost/xcrypto/algorithm/vigenere"
 	"github.com/sandwich-go/boost/z"
 	"math"
 )

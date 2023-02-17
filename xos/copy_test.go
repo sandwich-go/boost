@@ -30,7 +30,7 @@ func TestCopy(t *testing.T) {
 	Convey("copy a dir", t, func() {
 		var files []string
 		var md5s = make(map[string]string)
-		var dir = "../encoding2/protobuf/test_perf"
+		var dir = "../xencoding/protobuf/test_perf"
 		err := FilePathWalkFollowLink(dir, func(path string, info fs.FileInfo, err error) error {
 			if !info.IsDir() {
 				files = append(files, info.Name())

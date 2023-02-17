@@ -4,10 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/sandwich-go/boost/xerror"
 	"testing"
 	"time"
-
-	"github.com/sandwich-go/boost/xerror"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
