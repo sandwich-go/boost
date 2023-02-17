@@ -4,7 +4,7 @@
 // 可以产生一个带读写锁的线程安全的SyncSet，也可以产生一个非线程安全的SyncSet
 // New 产生非协程安全的版本
 // NewSync 产生协程安全的版本
-package sarray
+package sset
 
 import (
 	. "github.com/smartystreets/goconvey/convey"
