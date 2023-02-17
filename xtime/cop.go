@@ -3,10 +3,10 @@ package xtime
 import (
 	"fmt"
 	"github.com/sandwich-go/boost/internal/log"
+	"github.com/sandwich-go/boost/xpanic"
 	"math"
 	"time"
 
-	"github.com/sandwich-go/boost/paniccatcher"
 	"github.com/sandwich-go/boost/xsync"
 )
 
@@ -37,8 +37,8 @@ func NewCop(nowProvider func() time.Time) *Cop {
 }
 
 func (tc *Cop) run() {
-	go paniccatcher.AutoRecover("stime_cop", tc.start)
-	go paniccatcher.AutoRecover("stime_cop_check", tc.check)
+	go xpanic.AutoRecover("stime_cop", tc.start)
+	go xpanic.AutoRecover("stime_cop_check", tc.check)
 }
 
 func (tc *Cop) check() {
