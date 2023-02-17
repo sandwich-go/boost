@@ -1,3 +1,5 @@
+// ringbuf 包实现了一个环形缓冲区，可以对ringbuf进行读写操作
+// New 返回一个指定缓冲区大小的环形缓冲区实例
 package ringbuf
 
 import (
