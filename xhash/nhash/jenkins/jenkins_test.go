@@ -8,8 +8,8 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/sandwich-go/boost/hrff"
 	"github.com/sandwich-go/boost/xhash/nhash/jenkins"
+	"github.com/sandwich-go/boost/z/hrff"
 )
 
 //import "math"

@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/sandwich-go/boost/internal/log"
 	"github.com/sandwich-go/boost/xmap/internal/template2"
-	"github.com/sandwich-go/boost/xtemplate"
+	"github.com/sandwich-go/boost/z/xtemplate"
 )
 
 func main() {

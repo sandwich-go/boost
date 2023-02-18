@@ -3,9 +3,9 @@ package xtemplate
 import (
 	"bytes"
 	"github.com/Masterminds/sprig"
-	"github.com/sandwich-go/boost/goformat"
 	"github.com/sandwich-go/boost/xos"
 	"github.com/sandwich-go/boost/xstrings"
+	"github.com/sandwich-go/boost/z/goformat"
 	"html/template"
 	"path/filepath"
 )

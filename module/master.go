@@ -6,6 +6,7 @@ import (
 	"github.com/sandwich-go/boost"
 	"github.com/sandwich-go/boost/version"
 	"github.com/sandwich-go/boost/xdebug"
+	"github.com/sandwich-go/boost/xdebug/race"
 	"github.com/sandwich-go/boost/xpanic"
 	"github.com/sandwich-go/boost/xsync"
 	"os"
@@ -157,8 +158,9 @@ func (m *master) Run(ms ...Module) {
 	m.Register(ms...)
 	m.runAll()
 
-	xdebug.CheckDependencies()
-	boost.LogInfof("progress started, pid: %d, version: %s", os.Getpid(), version.String())
+	xdebug.CheckRequireDependencies()
+	boost.LogInfof("progress started, pid: %d, version: %s, race: %t, debug_enabled: %t",
+		os.Getpid(), version.String(), race.Enabled, xdebug.Enabled())
 
 	ctx := context.Background()
 	go func() {
