@@ -6,6 +6,7 @@ require (
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/Masterminds/sprig v2.22.0+incompatible
+	github.com/buger/jsonparser v1.1.1
 	github.com/coreos/go-semver v0.3.1
 	github.com/coreos/pkg v0.0.0-20220810130054-c7d1c02cb6cf
 	github.com/go-playground/locales v0.14.1
