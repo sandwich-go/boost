@@ -17,7 +17,6 @@ require (
 	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/minio/minio-go/v7 v7.0.47
 	github.com/mitchellh/copystructure v1.2.0 // indirect
-	github.com/sandwich-go/gotemplate v0.0.0-20230220032111-2e6e47cb33c6 // indirect
 	github.com/smartystreets/goconvey v1.7.2
 	github.com/stretchr/testify v1.8.0 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5
