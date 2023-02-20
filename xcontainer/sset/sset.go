@@ -1,4 +1,4 @@
-package sarray
+package sset
 
 // go get github.com/sandwich-go/gotemplate/...
 //go:generate gotemplate -outfmt gen_%v "../templates/sset" "Int(int)"

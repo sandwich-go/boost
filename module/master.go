@@ -4,7 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/sandwich-go/boost"
-	"github.com/sandwich-go/boost/paniccatcher"
+	"github.com/sandwich-go/boost/version"
+	"github.com/sandwich-go/boost/xdebug"
+	"github.com/sandwich-go/boost/xdebug/race"
+	"github.com/sandwich-go/boost/xpanic"
 	"github.com/sandwich-go/boost/xsync"
 	"os"
 	"sync"
@@ -28,10 +31,10 @@ func (a *agent) run() {
 }
 
 func (a *agent) close() {
-	paniccatcher.Do(func() {
+	xpanic.Do(func() {
 		a.OnClose()
 		boost.LogInfof("ModuleName %s closed", a.Name())
-	}, func(p *paniccatcher.Panic) {
+	}, func(p *xpanic.Panic) {
 		boost.LogInfof("ModuleName %s closed with reason: %v", a.Name(), p.Reason)
 	})
 }
@@ -154,6 +157,10 @@ func (m *master) ShutdownNotify() chan struct{} { return m.chanHasShutdown }
 func (m *master) Run(ms ...Module) {
 	m.Register(ms...)
 	m.runAll()
+
+	xdebug.CheckRequireDependencies()
+	boost.LogInfof("progress started, pid: %d, version: %s, race: %t, debug_enabled: %t",
+		os.Getpid(), version.String(), race.Enabled, xdebug.Enabled())
 
 	ctx := context.Background()
 	go func() {

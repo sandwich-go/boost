@@ -1,13 +1,12 @@
-package buildinfo
+package xdebug
 
 import (
 	"fmt"
-	"runtime/debug"
-
 	"github.com/sandwich-go/boost/version"
+	"runtime/debug"
 )
 
-// PrintBuildInfo 打印BuildInfo
+// PrintBuildInfo 输出 build info
 func PrintBuildInfo() {
 	fmt.Println("Build Version:")
 	fmt.Printf("\t%s", version.String())
