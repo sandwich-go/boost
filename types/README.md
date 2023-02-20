@@ -7,7 +7,7 @@
 # 例子
 
 ```go
-b, err := Add("100zz", "2zz")
+b, err := bignum.Add("100zz", "2zz")
 if err != nil {
     panic(err)
 }
