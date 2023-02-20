@@ -19,7 +19,6 @@ var DefaultShardCount = uint64(32)
 type KType string
 type VType interface{}
 
-// Concurrent 包含一个分片的带读写锁的对象的数组，用于实现分片的协程安全的映射
 type Concurrent struct {
 	shardedList  []*sharded
 	shardedCount uint64
