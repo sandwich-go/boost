@@ -24,10 +24,16 @@ func New(opts ...Option) Resolver {
 	return v
 }
 
+var EmptyAnnotation = &annotation{}
+
 type annotation struct {
 	name       string
 	line       string
 	attributes map[string]string
+}
+
+func NewAnnotation(name string, attributes map[string]string) Annotation {
+	return &annotation{name: name, attributes: attributes}
 }
 
 func (a annotation) Name() string { return a.name }
