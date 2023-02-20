@@ -4,6 +4,7 @@
 
 - `geom` [地理位置](https://github.com/sandwich-go/boost/tree/main/geom/README.md)
 - `httputil` [HTTP工具](https://github.com/sandwich-go/boost/tree/main/httputil/README.md)
+- `misc` [杂项工具](https://github.com/sandwich-go/boost/tree/main/misc/README.md)
 - `module` [Module工具](https://github.com/sandwich-go/boost/tree/main/module/README.md)
 - `retry` [重试](https://github.com/sandwich-go/boost/tree/main/retry/README.md)
 - `singleflight` [SingleFlight](https://github.com/sandwich-go/boost/tree/main/singleflight/README.md)
@@ -33,7 +34,7 @@
 - `xstrings` [字符串辅助函数](https://github.com/sandwich-go/boost/tree/main/xstrings/README.md)
 - `xsync` [同步辅助函数](https://github.com/sandwich-go/boost/tree/main/xsync/README.md)
 - `xtime` [time辅助函数](https://github.com/sandwich-go/boost/tree/main/xtime/README.md)
-- `z` [辅助函数](https://github.com/sandwich-go/boost/tree/main/z/README.md)
+- `z` [编译期辅助函数](https://github.com/sandwich-go/boost/tree/main/z/README.md)
 
 # 设置 `logger`
 通过 `boost.InstallLogger` 来设置自定义的 `logger`

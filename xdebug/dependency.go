@@ -1,7 +1,6 @@
 package xdebug
 
 import (
-	"fmt"
 	"github.com/coreos/go-semver/semver"
 	"github.com/sandwich-go/boost"
 	"runtime/debug"
@@ -13,27 +12,11 @@ type dependency interface {
 	WarnString() string
 }
 
-type automaxprocs struct {
-	path           string
-	warnInfo       string
-	requireVersion string
-}
-
-func (d automaxprocs) GetPath() string           { return "go.uber.org/automaxprocs" }
-func (d automaxprocs) GetRequireVersion() string { return "v1.5.1" }
-func (d automaxprocs) WarnString() string {
-	return fmt.Sprintf(`for the best performance, please blank import the package '%s@%s'`, d.GetPath(), d.GetRequireVersion())
-}
-
 // dependencies 依赖的包
 var dependencies = make([]dependency, 0)
 
 func registerDependency(d dependency) {
 	dependencies = append(dependencies, d)
-}
-
-func init() {
-	registerDependency(automaxprocs{})
 }
 
 func getDependenciesFromBuildInfo() (map[string]semver.Version, bool) {
