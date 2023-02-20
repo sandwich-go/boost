@@ -2,14 +2,15 @@
 
 # 容器
 包含以下容器：
-- `Ringbuf`环形缓冲区。
-- `SyncArray`提供了多种数据类型的数组实现，包含协程安全和非协程安全的版本。
-- `SyncList`提供了多种数据类型的链表实现，包含协程安全和非协程安全的版本。
-- `SyncSet`提供了多种数据类型的集合的实现，可提供协程安全或者非协程安全的版本。
-- `SyncMap`提供了一个同步的映射实现。
+- `ringbuf`环形缓冲区。
+- `sarray`包提供了多种数据类型的数组实现，包含协程安全和非协程安全的版本。
+- `slist`包提供了多种数据类型的链表实现，包含协程安全和非协程安全的版本。
+- `sset`包提供了多种数据类型的集合的实现，可提供协程安全或者非协程安全的版本。
+- `syncmap`包提供了一个同步的映射实现。
+- `smap`包提供了一个分片的协程安全的映射
 
-### Ringbuf
-`Ringbuf`是一个非协程安全的环形缓冲区
+### ringbuf
+`ringbuf`是一个非协程安全的环形缓冲区
 
 #### 例子
 ```go
@@ -34,8 +35,8 @@ hello
 worlo
 ```
 
-### SyncArray
-`SyncArray`可以创建出非线程安全的数组，
+### sarray
+`sarray`可以创建出非线程安全的数组，
 ```go
 import "github.com/sandwich-go/boost/container/sarray"
 
@@ -76,8 +77,8 @@ false
 0
 ```
 
-### SyncList
-`SyncList`提供了存储多种数据类型的双向链表的实现，包含提供协程安全的版本或非协程安全的版本。
+### slist
+`slist`提供了存储多种数据类型的双向链表的实现，包含提供协程安全的版本或非协程安全的版本。
 
 ```go
 import "github.com/sandwich-go/boost/container/slist"
@@ -106,8 +107,8 @@ Output:
 7 8 9
 ```
 
-### SyncMap
-`SyncMap`提供了一个同步的映射实现。
+### syncmap
+`syncmap`提供了一个同步的映射实现。
 
 #### 例子
 ````go
@@ -125,3 +126,25 @@ Output:
 true
 2
 ```
+
+### smap
+`smap`包提供了一个分片的协程安全的映射
+
+## 例子
+````go
+import "github.com/sanndwich-go/boost/container/smap"
+
+tr := smap.NewInt32String()
+tr.Set(1, "1")
+fmt.Println(tr.Len())
+v, ret := tr.Get(1)
+fmt.Println(v, ret)
+
+tr2 := smap.NewWithSharedCountInt32String(64) //指定分片数量为64
+````
+
+Output:
+````txt
+1
+1 true
+````

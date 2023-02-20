@@ -14,6 +14,7 @@ import (
 
 type VType interface{}
 
+// SyncSet 包含一个读写锁和一个map，根据不同需求可提供对切片协程安全版本或者非协程安全版本的实例
 type SyncSet struct {
 	mu   *localRWMutexVType
 	data map[VType]struct{}

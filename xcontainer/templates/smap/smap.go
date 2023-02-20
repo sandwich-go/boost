@@ -1,3 +1,6 @@
+// smap 包提供了一个分片的协程安全的映射
+// NewWithSharedCount 返回一个线程安全的映射实例
+// New 返回一个线程安全的映射实例
 package smap
 
 import (
@@ -16,6 +19,7 @@ var DefaultShardCount = uint64(32)
 type KType string
 type VType interface{}
 
+// Concurrent 包含一个分片的带读写锁的对象的数组，用于实现分片的协程安全的映射
 type Concurrent struct {
 	shardedList  []*sharded
 	shardedCount uint64

@@ -14,6 +14,7 @@ import (
 type KType string
 type VType interface{}
 
+// SyncMap 定义并发安全的映射，使用 sync.Map 来实现
 type SyncMap struct {
 	sm     sync.Map
 	locker sync.RWMutex
