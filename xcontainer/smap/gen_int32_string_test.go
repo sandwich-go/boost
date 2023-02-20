@@ -20,6 +20,8 @@ func TestSMapInt32String(t *testing.T) {
 		So(tr.Len(), ShouldEqual, 1)
 		tr.Set(__formatKTypeToInt32String(2), __formatVTypeToInt32String(2))
 		So(tr.Len(), ShouldEqual, 2)
+		So(tr.Count(), ShouldEqual, 2)
+		So(tr.Size(), ShouldEqual, 2)
 
 		So(tr.Keys(), ShouldContain, __formatKTypeToInt32String(1))
 		So(tr.Keys(), ShouldContain, __formatKTypeToInt32String(2))
@@ -91,7 +93,27 @@ func TestSMapInt32String(t *testing.T) {
 		_, ret = tr2.GetOrSet(__formatKTypeToInt32String(1), __formatVTypeToInt32String(1))
 		So(ret, ShouldBeFalse)
 		r, ret = tr2.GetOrSet(__formatKTypeToInt32String(10), __formatVTypeToInt32String(10))
-
+		So(r, ShouldEqual, __formatVTypeToInt32String(10))
 		So(ret, ShouldBeTrue)
+
+		So(tr.Has(__formatKTypeToInt32String(1)), ShouldBeTrue)
+
+		tr2.Remove(__formatKTypeToInt32String(1))
+		v, ret := tr2.GetAndRemove(__formatKTypeToInt32String(10))
+		So(v, ShouldEqual, __formatVTypeToInt32String(10))
+		So(ret, ShouldBeTrue)
+
+		for _, f := range []func() <-chan TupleInt32String{
+			tr2.Iter, tr2.IterBuffered,
+		} {
+			cnt := 0
+			for v := range f() {
+				cnt++
+				So(v.Key, ShouldBeIn, []int32{__formatKTypeToInt32String(2), __formatKTypeToInt32String(3), __formatKTypeToInt32String(5)})
+				So(v.Val, ShouldBeIn, []string{__formatVTypeToInt32String(2), __formatVTypeToInt32String(3), __formatVTypeToInt32String(5)})
+			}
+			So(cnt, ShouldEqual, 3)
+		}
+
 	})
 }

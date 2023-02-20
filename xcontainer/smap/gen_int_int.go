@@ -221,6 +221,7 @@ func (m *IntInt) doSetWithLockCheck(key int, val int) (result int, isSet bool) {
 
 	shard.items[key] = val
 	isSet = true
+	result = val
 	shard.Unlock()
 	return
 }
@@ -443,5 +444,3 @@ var __formatVTypeToIntInt = func(i interface{}) int {
 		panic("unknown type")
 	}
 }
-
-//So(r, ShouldEqual, __formatVTypeTo(10))

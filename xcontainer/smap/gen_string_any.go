@@ -221,6 +221,7 @@ func (m *StringAny) doSetWithLockCheck(key string, val interface{}) (result inte
 
 	shard.items[key] = val
 	isSet = true
+	result = val
 	shard.Unlock()
 	return
 }
@@ -382,5 +383,3 @@ var __formatKTypeToStringAny = func(i interface{}) string {
 var __formatVTypeToStringAny = func(i interface{}) interface{} {
 	return i
 }
-
-//So(r, ShouldEqual, __formatVTypeTo(10))

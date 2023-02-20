@@ -227,6 +227,7 @@ func (m *Concurrent) doSetWithLockCheck(key KType, val VType) (result VType, isS
 
 	shard.items[key] = val
 	isSet = true
+	result = val
 	shard.Unlock()
 	return
 }
@@ -392,6 +393,8 @@ func TestSMap(t *testing.T) {
 		So(tr.Len(), ShouldEqual, 1)
 		tr.Set(__formatKTypeTo(2), __formatVTypeTo(2))
 		So(tr.Len(), ShouldEqual, 2)
+		So(tr.Count(), ShouldEqual, 2)
+		So(tr.Size(), ShouldEqual, 2)
 
 		So(tr.Keys(), ShouldContain, __formatKTypeTo(1))
 		So(tr.Keys(), ShouldContain, __formatKTypeTo(2))
@@ -463,7 +466,27 @@ func TestSMap(t *testing.T) {
 		_, ret = tr2.GetOrSet(__formatKTypeTo(1), __formatVTypeTo(1))
 		So(ret, ShouldBeFalse)
 		r, ret = tr2.GetOrSet(__formatKTypeTo(10), __formatVTypeTo(10))
-		//So(r, ShouldEqual, __formatVTypeTo(10))
+		So(r, ShouldEqual, __formatVTypeTo(10))
 		So(ret, ShouldBeTrue)
+
+		So(tr.Has(__formatKTypeTo(1)), ShouldBeTrue)
+
+		tr2.Remove(__formatKTypeTo(1))
+		v, ret := tr2.GetAndRemove(__formatKTypeTo(10))
+		So(v, ShouldEqual, __formatVTypeTo(10))
+		So(ret, ShouldBeTrue)
+
+		for _, f := range []func() <-chan Tuple{
+			tr2.Iter, tr2.IterBuffered,
+		} {
+			cnt := 0
+			for v := range f() {
+				cnt++
+				So(v.Key, ShouldBeIn, []KType{__formatKTypeTo(2), __formatKTypeTo(3), __formatKTypeTo(5)})
+				So(v.Val, ShouldBeIn, []VType{__formatVTypeTo(2), __formatVTypeTo(3), __formatVTypeTo(5)})
+			}
+			So(cnt, ShouldEqual, 3)
+		}
+
 	})
 }

@@ -20,6 +20,8 @@ func TestSMapIntInt(t *testing.T) {
 		So(tr.Len(), ShouldEqual, 1)
 		tr.Set(__formatKTypeToIntInt(2), __formatVTypeToIntInt(2))
 		So(tr.Len(), ShouldEqual, 2)
+		So(tr.Count(), ShouldEqual, 2)
+		So(tr.Size(), ShouldEqual, 2)
 
 		So(tr.Keys(), ShouldContain, __formatKTypeToIntInt(1))
 		So(tr.Keys(), ShouldContain, __formatKTypeToIntInt(2))
@@ -91,7 +93,27 @@ func TestSMapIntInt(t *testing.T) {
 		_, ret = tr2.GetOrSet(__formatKTypeToIntInt(1), __formatVTypeToIntInt(1))
 		So(ret, ShouldBeFalse)
 		r, ret = tr2.GetOrSet(__formatKTypeToIntInt(10), __formatVTypeToIntInt(10))
-
+		So(r, ShouldEqual, __formatVTypeToIntInt(10))
 		So(ret, ShouldBeTrue)
+
+		So(tr.Has(__formatKTypeToIntInt(1)), ShouldBeTrue)
+
+		tr2.Remove(__formatKTypeToIntInt(1))
+		v, ret := tr2.GetAndRemove(__formatKTypeToIntInt(10))
+		So(v, ShouldEqual, __formatVTypeToIntInt(10))
+		So(ret, ShouldBeTrue)
+
+		for _, f := range []func() <-chan TupleIntInt{
+			tr2.Iter, tr2.IterBuffered,
+		} {
+			cnt := 0
+			for v := range f() {
+				cnt++
+				So(v.Key, ShouldBeIn, []int{__formatKTypeToIntInt(2), __formatKTypeToIntInt(3), __formatKTypeToIntInt(5)})
+				So(v.Val, ShouldBeIn, []int{__formatVTypeToIntInt(2), __formatVTypeToIntInt(3), __formatVTypeToIntInt(5)})
+			}
+			So(cnt, ShouldEqual, 3)
+		}
+
 	})
 }

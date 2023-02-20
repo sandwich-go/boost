@@ -222,6 +222,7 @@ func (m *IntString) doSetWithLockCheck(key int, val string) (result string, isSe
 
 	shard.items[key] = val
 	isSet = true
+	result = val
 	shard.Unlock()
 	return
 }
@@ -416,5 +417,3 @@ var __formatVTypeToIntString = func(i interface{}) string {
 		return fmt.Sprintf("%d", i)
 	}
 }
-
-//So(r, ShouldEqual, __formatVTypeTo(10))

@@ -20,6 +20,8 @@ func TestSMapStringAny(t *testing.T) {
 		So(tr.Len(), ShouldEqual, 1)
 		tr.Set(__formatKTypeToStringAny(2), __formatVTypeToStringAny(2))
 		So(tr.Len(), ShouldEqual, 2)
+		So(tr.Count(), ShouldEqual, 2)
+		So(tr.Size(), ShouldEqual, 2)
 
 		So(tr.Keys(), ShouldContain, __formatKTypeToStringAny(1))
 		So(tr.Keys(), ShouldContain, __formatKTypeToStringAny(2))
@@ -91,7 +93,27 @@ func TestSMapStringAny(t *testing.T) {
 		_, ret = tr2.GetOrSet(__formatKTypeToStringAny(1), __formatVTypeToStringAny(1))
 		So(ret, ShouldBeFalse)
 		r, ret = tr2.GetOrSet(__formatKTypeToStringAny(10), __formatVTypeToStringAny(10))
-
+		So(r, ShouldEqual, __formatVTypeToStringAny(10))
 		So(ret, ShouldBeTrue)
+
+		So(tr.Has(__formatKTypeToStringAny(1)), ShouldBeTrue)
+
+		tr2.Remove(__formatKTypeToStringAny(1))
+		v, ret := tr2.GetAndRemove(__formatKTypeToStringAny(10))
+		So(v, ShouldEqual, __formatVTypeToStringAny(10))
+		So(ret, ShouldBeTrue)
+
+		for _, f := range []func() <-chan TupleStringAny{
+			tr2.Iter, tr2.IterBuffered,
+		} {
+			cnt := 0
+			for v := range f() {
+				cnt++
+				So(v.Key, ShouldBeIn, []string{__formatKTypeToStringAny(2), __formatKTypeToStringAny(3), __formatKTypeToStringAny(5)})
+				So(v.Val, ShouldBeIn, []interface{}{__formatVTypeToStringAny(2), __formatVTypeToStringAny(3), __formatVTypeToStringAny(5)})
+			}
+			So(cnt, ShouldEqual, 3)
+		}
+
 	})
 }
