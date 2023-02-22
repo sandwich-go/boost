@@ -128,7 +128,7 @@ func DaysInMonth(tt time.Time) int {
 	}
 }
 
-// LeapYear year is leap year
+// IsLeapYear year is leap year
 func IsLeapYear(year int) bool {
 	return year%4 == 0 && (year%100 != 0 || year%400 == 0)
 }

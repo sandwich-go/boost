@@ -6,6 +6,122 @@ import (
 	"testing"
 )
 
+func TestFloat32s(t *testing.T) {
+	Convey("float32 slice", t, func() {
+		for _, test := range []struct {
+			ss       []float32
+			s        float32
+			contains bool
+		}{
+			{ss: nil, s: 1},
+			{ss: []float32{1, 2}, s: 3, contains: false},
+			{ss: []float32{1, 2}, s: 1, contains: true},
+		} {
+			So(Float32sContain(test.ss, test.s), ShouldEqual, test.contains)
+		}
+		dest := Float32sSetAdd(nil, 1)
+		So(len(dest), ShouldEqual, 1)
+		So(len(Float32sSetAdd(dest, 1)), ShouldEqual, 1)
+
+		src := []float32{1, 2}
+		dest = Float32sWalk(src, func(s float32) (float32, bool) {
+			return s + 1, true
+		})
+		So(len(src), ShouldEqual, len(dest))
+		for i := 0; i < len(src); i++ {
+			So(src[i]+1, ShouldEqual, dest[i])
+		}
+		for i := 0; i < 2; i++ {
+			if i > 0 {
+				tooManyElement = 4
+			}
+			for _, test := range []struct {
+				src      []float32
+				dest     []float32
+				contains bool
+			}{
+				{src: []float32{1, 2, 2}, dest: []float32{1, 2}},
+				{src: []float32{1, 1, 2}, dest: []float32{1, 2}},
+				{src: []float32{1, 1, 2, 2, 2}, dest: []float32{1, 2}},
+			} {
+				So(Float32sRemoveRepeated(test.src), ShouldResemble, test.dest)
+			}
+		}
+
+		for _, test := range []struct {
+			src      []float32
+			dest     []float32
+			contains bool
+		}{
+			{src: []float32{1, 0, 2}, dest: []float32{1, 2}},
+			{src: []float32{1, 1, 0}, dest: []float32{1, 1}},
+			{src: []float32{1, 0, 0, 2, 0}, dest: []float32{1, 2}},
+		} {
+			v := Float32sRemoveEmpty(test.src)
+			So(v, ShouldResemble, test.dest)
+			Float32sShuffle(v)
+		}
+	})
+}
+
+func TestFloat64s(t *testing.T) {
+	Convey("float64 slice", t, func() {
+		for _, test := range []struct {
+			ss       []float64
+			s        float64
+			contains bool
+		}{
+			{ss: nil, s: 1},
+			{ss: []float64{1, 2}, s: 3, contains: false},
+			{ss: []float64{1, 2}, s: 1, contains: true},
+		} {
+			So(Float64sContain(test.ss, test.s), ShouldEqual, test.contains)
+		}
+		dest := Float64sSetAdd(nil, 1)
+		So(len(dest), ShouldEqual, 1)
+		So(len(Float64sSetAdd(dest, 1)), ShouldEqual, 1)
+
+		src := []float64{1, 2}
+		dest = Float64sWalk(src, func(s float64) (float64, bool) {
+			return s + 1, true
+		})
+		So(len(src), ShouldEqual, len(dest))
+		for i := 0; i < len(src); i++ {
+			So(src[i]+1, ShouldEqual, dest[i])
+		}
+		for i := 0; i < 2; i++ {
+			if i > 0 {
+				tooManyElement = 4
+			}
+			for _, test := range []struct {
+				src      []float64
+				dest     []float64
+				contains bool
+			}{
+				{src: []float64{1, 2, 2}, dest: []float64{1, 2}},
+				{src: []float64{1, 1, 2}, dest: []float64{1, 2}},
+				{src: []float64{1, 1, 2, 2, 2}, dest: []float64{1, 2}},
+			} {
+				So(Float64sRemoveRepeated(test.src), ShouldResemble, test.dest)
+			}
+		}
+
+		for _, test := range []struct {
+			src      []float64
+			dest     []float64
+			contains bool
+		}{
+			{src: []float64{1, 0, 2}, dest: []float64{1, 2}},
+			{src: []float64{1, 1, 0}, dest: []float64{1, 1}},
+			{src: []float64{1, 0, 0, 2, 0}, dest: []float64{1, 2}},
+		} {
+			v := Float64sRemoveEmpty(test.src)
+			So(v, ShouldResemble, test.dest)
+			Float64sShuffle(v)
+		}
+	})
+}
+
 func TestInts(t *testing.T) {
 	Convey("int slice", t, func() {
 		for _, test := range []struct {
@@ -57,7 +173,9 @@ func TestInts(t *testing.T) {
 			{src: []int{1, 1, 0}, dest: []int{1, 1}},
 			{src: []int{1, 0, 0, 2, 0}, dest: []int{1, 2}},
 		} {
-			So(IntsRemoveEmpty(test.src), ShouldResemble, test.dest)
+			v := IntsRemoveEmpty(test.src)
+			So(v, ShouldResemble, test.dest)
+			IntsShuffle(v)
 		}
 	})
 }
@@ -113,7 +231,9 @@ func TestInt16s(t *testing.T) {
 			{src: []int16{1, 1, 0}, dest: []int16{1, 1}},
 			{src: []int16{1, 0, 0, 2, 0}, dest: []int16{1, 2}},
 		} {
-			So(Int16sRemoveEmpty(test.src), ShouldResemble, test.dest)
+			v := Int16sRemoveEmpty(test.src)
+			So(v, ShouldResemble, test.dest)
+			Int16sShuffle(v)
 		}
 	})
 }
@@ -169,7 +289,9 @@ func TestInt32s(t *testing.T) {
 			{src: []int32{1, 1, 0}, dest: []int32{1, 1}},
 			{src: []int32{1, 0, 0, 2, 0}, dest: []int32{1, 2}},
 		} {
-			So(Int32sRemoveEmpty(test.src), ShouldResemble, test.dest)
+			v := Int32sRemoveEmpty(test.src)
+			So(v, ShouldResemble, test.dest)
+			Int32sShuffle(v)
 		}
 	})
 }
@@ -225,7 +347,9 @@ func TestInt64s(t *testing.T) {
 			{src: []int64{1, 1, 0}, dest: []int64{1, 1}},
 			{src: []int64{1, 0, 0, 2, 0}, dest: []int64{1, 2}},
 		} {
-			So(Int64sRemoveEmpty(test.src), ShouldResemble, test.dest)
+			v := Int64sRemoveEmpty(test.src)
+			So(v, ShouldResemble, test.dest)
+			Int64sShuffle(v)
 		}
 	})
 }
@@ -281,7 +405,9 @@ func TestInt8s(t *testing.T) {
 			{src: []int8{1, 1, 0}, dest: []int8{1, 1}},
 			{src: []int8{1, 0, 0, 2, 0}, dest: []int8{1, 2}},
 		} {
-			So(Int8sRemoveEmpty(test.src), ShouldResemble, test.dest)
+			v := Int8sRemoveEmpty(test.src)
+			So(v, ShouldResemble, test.dest)
+			Int8sShuffle(v)
 		}
 	})
 }
@@ -361,7 +487,9 @@ func TestStrings(t *testing.T) {
 			{src: []string{"abc", "abc", ""}, dest: []string{"abc", "abc"}},
 			{src: []string{"abc", "", "", "b", ""}, dest: []string{"abc", "b"}},
 		} {
-			So(StringsRemoveEmpty(test.src), ShouldResemble, test.dest)
+			v := StringsRemoveEmpty(test.src)
+			So(v, ShouldResemble, test.dest)
+			StringsShuffle(v)
 		}
 	})
 }
@@ -417,7 +545,9 @@ func TestUints(t *testing.T) {
 			{src: []uint{1, 1, 0}, dest: []uint{1, 1}},
 			{src: []uint{1, 0, 0, 2, 0}, dest: []uint{1, 2}},
 		} {
-			So(UintsRemoveEmpty(test.src), ShouldResemble, test.dest)
+			v := UintsRemoveEmpty(test.src)
+			So(v, ShouldResemble, test.dest)
+			UintsShuffle(v)
 		}
 	})
 }
@@ -473,7 +603,9 @@ func TestUint16s(t *testing.T) {
 			{src: []uint16{1, 1, 0}, dest: []uint16{1, 1}},
 			{src: []uint16{1, 0, 0, 2, 0}, dest: []uint16{1, 2}},
 		} {
-			So(Uint16sRemoveEmpty(test.src), ShouldResemble, test.dest)
+			v := Uint16sRemoveEmpty(test.src)
+			So(v, ShouldResemble, test.dest)
+			Uint16sShuffle(v)
 		}
 	})
 }
@@ -529,7 +661,9 @@ func TestUint32s(t *testing.T) {
 			{src: []uint32{1, 1, 0}, dest: []uint32{1, 1}},
 			{src: []uint32{1, 0, 0, 2, 0}, dest: []uint32{1, 2}},
 		} {
-			So(Uint32sRemoveEmpty(test.src), ShouldResemble, test.dest)
+			v := Uint32sRemoveEmpty(test.src)
+			So(v, ShouldResemble, test.dest)
+			Uint32sShuffle(v)
 		}
 	})
 }
@@ -585,7 +719,9 @@ func TestUint64s(t *testing.T) {
 			{src: []uint64{1, 1, 0}, dest: []uint64{1, 1}},
 			{src: []uint64{1, 0, 0, 2, 0}, dest: []uint64{1, 2}},
 		} {
-			So(Uint64sRemoveEmpty(test.src), ShouldResemble, test.dest)
+			v := Uint64sRemoveEmpty(test.src)
+			So(v, ShouldResemble, test.dest)
+			Uint64sShuffle(v)
 		}
 	})
 }
@@ -641,7 +777,9 @@ func TestUint8s(t *testing.T) {
 			{src: []uint8{1, 1, 0}, dest: []uint8{1, 1}},
 			{src: []uint8{1, 0, 0, 2, 0}, dest: []uint8{1, 2}},
 		} {
-			So(Uint8sRemoveEmpty(test.src), ShouldResemble, test.dest)
+			v := Uint8sRemoveEmpty(test.src)
+			So(v, ShouldResemble, test.dest)
+			Uint8sShuffle(v)
 		}
 	})
 }
