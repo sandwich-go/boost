@@ -11,6 +11,7 @@ import (
 
 //template type SyncMap(KType,VType)
 
+// SyncMap 定义并发安全的映射，使用 sync.Map 来实现
 type Int16Uint16 struct {
 	sm     sync.Map
 	locker sync.RWMutex

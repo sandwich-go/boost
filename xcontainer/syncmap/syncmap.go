@@ -37,3 +37,5 @@ package syncmap
 //go:generate gotemplate -outfmt gen_%v "../templates/syncmap" "Int16Uint64(int16,uint64)"
 //go:generate gotemplate -outfmt gen_%v "../templates/syncmap" "Int16String(int16,string)"
 //go:generate gotemplate -outfmt gen_%v "../templates/syncmap" "Int16Any(int16,interface{})"
+//go:generate gotemplate -outfmt gen_%v "../templates/syncmap" "AnyAny(interface{},interface{})"
+//go:generate gotemplate -outfmt gen_%v "../templates/syncmap" "StringAny(string,interface{})"
