@@ -59,7 +59,10 @@ func (c *gzipCompressor) Flat(data []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return buf.Bytes(), nil
+	dec := buf.Bytes()
+	bs := make([]byte, len(dec))
+	copy(bs, dec)
+	return bs, nil
 }
 
 func (c *gzipCompressor) Inflate(data []byte) ([]byte, error) {
