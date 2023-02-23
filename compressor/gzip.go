@@ -83,5 +83,7 @@ func Zip(data []byte) ([]byte, error) {
 		return nil, err
 	}
 	dec := buf.Bytes()
-	return dec, nil
+	out := make([]byte, len(dec))
+	copy(out, dec)
+	return out, nil
 }
