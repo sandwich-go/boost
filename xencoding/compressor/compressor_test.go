@@ -1,6 +1,7 @@
 package compressor
 
 import (
+	"context"
 	"github.com/sandwich-go/boost/xrand"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
@@ -18,21 +19,21 @@ func getTestFrames() [][]byte {
 func TestCompressor(t *testing.T) {
 	Convey("compress", t, func() {
 		c := NewCodec(SnappyType + 1)
-		_, err := c.Marshal("")
+		_, err := c.Marshal(context.Background(), "")
 		So(err, ShouldEqual, errCodecNoFound)
 
 		c = NewCodec(SnappyType)
-		_, err = c.Marshal("")
+		_, err = c.Marshal(context.Background(), "")
 		So(err, ShouldEqual, errCodecMarshalParam)
 
 		for i := NoneType; i <= SnappyType; i++ {
 			c = NewCodec(i)
 			for _, frame := range getTestFrames() {
-				mf, err0 := c.Marshal(frame)
+				mf, err0 := c.Marshal(context.Background(), frame)
 				So(err0, ShouldBeNil)
 
 				var uf []byte
-				err = c.Unmarshal(mf, &uf)
+				err = c.Unmarshal(context.Background(), mf, &uf)
 				So(err, ShouldBeNil)
 
 				So(frame, ShouldResemble, uf)

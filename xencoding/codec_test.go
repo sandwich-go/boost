@@ -11,9 +11,9 @@ type MockCodec struct {
 	name string
 }
 
-func (mc *MockCodec) Marshal(v interface{}) ([]byte, error)      { return nil, nil }
-func (mc *MockCodec) Unmarshal(data []byte, v interface{}) error { return nil }
-func (mc *MockCodec) Name() string                               { return mc.name }
+func (mc *MockCodec) Marshal(context.Context, interface{}) ([]byte, error) { return nil, nil }
+func (mc *MockCodec) Unmarshal(context.Context, []byte, interface{}) error { return nil }
+func (mc *MockCodec) Name() string                                         { return mc.name }
 
 func TestCodec(t *testing.T) {
 	mc := &MockCodec{name: "mock_test"}

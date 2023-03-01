@@ -1,9 +1,11 @@
 package encrypt
 
 import (
+	"context"
 	"errors"
 	"github.com/sandwich-go/boost/xcrypto/algorithm/aes"
 	"github.com/sandwich-go/boost/xencoding"
+	"github.com/sandwich-go/boost/xpanic"
 )
 
 var (
@@ -18,6 +20,12 @@ const (
 	// AESCodecName aes 加解密名称，可以通过 encoding2.GetCodec(AESCodecName) 获取对应的 Codec
 	AESCodecName = "aes_encrypt"
 )
+
+// KeySetter key 的设置
+// 如果自定义的 Codec 实现了 KeySetter 接口，那么在 NewCodec 的时候，会将 key 设置进去
+type KeySetter interface {
+	SetKey(key []byte)
+}
 
 var (
 	// NoneCodec 无加解密效果
@@ -40,17 +48,25 @@ func init() {
 	}
 }
 
+// Register 注册自定义的加解密 Codec ，该方法非协程安全
+func Register(t Type, codec xencoding.Codec) {
+	_, exists := codecs[t]
+	xpanic.WhenTrue(exists, "register called twice for codec, %d", t)
+	codecs[t] = codec
+	xencoding.RegisterCodec(codec)
+}
+
 type noneCodec struct{}
 
 func (c noneCodec) Name() string { return NoneCodecName }
-func (c noneCodec) Marshal(v interface{}) ([]byte, error) {
+func (c noneCodec) Marshal(_ context.Context, v interface{}) ([]byte, error) {
 	if data, ok := v.([]byte); !ok {
 		return nil, errCodecMarshalParam
 	} else {
 		return data, nil
 	}
 }
-func (c noneCodec) Unmarshal(bytes []byte, v interface{}) error {
+func (c noneCodec) Unmarshal(_ context.Context, bytes []byte, v interface{}) error {
 	v1, ok := v.(*[]byte)
 	if !ok {
 		return errCodecUnmarshalParam
@@ -64,7 +80,7 @@ type aesCodec struct {
 }
 
 func (c aesCodec) Name() string { return AESCodecName }
-func (c aesCodec) Marshal(v interface{}) ([]byte, error) {
+func (c aesCodec) Marshal(_ context.Context, v interface{}) ([]byte, error) {
 	if data, ok := v.([]byte); !ok {
 		return nil, errCodecMarshalParam
 	} else {
@@ -72,7 +88,7 @@ func (c aesCodec) Marshal(v interface{}) ([]byte, error) {
 	}
 }
 
-func (c aesCodec) Unmarshal(bytes []byte, v interface{}) error {
+func (c aesCodec) Unmarshal(_ context.Context, bytes []byte, v interface{}) error {
 	v1, ok := v.(*[]byte)
 	if !ok {
 		return errCodecUnmarshalParam
@@ -98,6 +114,14 @@ func NewCodec(encryptType Type, key []byte) xencoding.Codec {
 		c.Codec = aesCodec{key: key}
 	case NoneType:
 		c.Codec = noneCodec{}
+	default:
+		c.Codec = codecs[encryptType]
+	}
+	if c.Codec == nil {
+		xpanic.WhenError(errCodecNoFound)
+	}
+	if cc, ok := c.Codec.(KeySetter); ok {
+		cc.SetKey(key)
 	}
 	return c
 }
@@ -106,17 +130,17 @@ func NewCodec(encryptType Type, key []byte) xencoding.Codec {
 func (c codec) Name() string { return "encrypt" }
 
 // Marshal 编码
-func (c codec) Marshal(v interface{}) ([]byte, error) {
+func (c codec) Marshal(ctx context.Context, v interface{}) ([]byte, error) {
 	if c.Codec == nil {
 		return nil, errCodecNoFound
 	}
-	return c.Codec.Marshal(v)
+	return c.Codec.Marshal(ctx, v)
 }
 
 // Unmarshal 解码
-func (c codec) Unmarshal(bytes []byte, v interface{}) error {
+func (c codec) Unmarshal(ctx context.Context, bytes []byte, v interface{}) error {
 	if c.Codec == nil {
 		return errCodecNoFound
 	}
-	return c.Codec.Unmarshal(bytes, v)
+	return c.Codec.Unmarshal(ctx, bytes, v)
 }

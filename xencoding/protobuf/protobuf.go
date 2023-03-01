@@ -2,6 +2,7 @@ package protobuf
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"github.com/sandwich-go/boost/xencoding"
 	"github.com/sandwich-go/boost/xerror"
@@ -40,7 +41,7 @@ type codec struct {
 func (p codec) Name() string { return p.name }
 
 // Marshal 编码
-func (p codec) Marshal(v interface{}) ([]byte, error) {
+func (p codec) Marshal(_ context.Context, v interface{}) ([]byte, error) {
 	if pm, ok := v.(proto.Marshaler); ok {
 		// object can marshal itself, no need for buffer
 		return pm.Marshal()
@@ -66,7 +67,7 @@ func (codec) Uri(t interface{}) string { return proto.MessageName(t.(proto.Messa
 func (codec) Type(uri string) reflect.Type { return proto.MessageType(uri) }
 
 // Unmarshal 解码
-func (p codec) Unmarshal(data []byte, v interface{}) error {
+func (p codec) Unmarshal(ctx context.Context, data []byte, v interface{}) error {
 	if pu, ok := v.(proto.Unmarshaler); ok {
 		// object can unmarshal itself, no need for buffer
 		return pu.Unmarshal(data)

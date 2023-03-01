@@ -1,11 +1,11 @@
 package protobuf
 
 import (
+	"context"
 	"fmt"
 	"github.com/sandwich-go/boost/xencoding"
-	"testing"
-
 	"github.com/sandwich-go/boost/xencoding/protobuf/test_perf"
+	"testing"
 
 	"github.com/golang/protobuf/proto"
 )
@@ -70,12 +70,12 @@ func benchmarkProtoCodec(codec *codec, protoStructs []proto.Message, pb *testing
 }
 
 func fastMarshalAndUnmarshal(codec xencoding.Codec, protoStruct proto.Message, b *testing.B) {
-	marshaledBytes, err := codec.Marshal(protoStruct)
+	marshaledBytes, err := codec.Marshal(context.Background(), protoStruct)
 	if err != nil {
 		b.Errorf("codec.Marshal(_) returned an error")
 	}
 	res := test_perf.Buffer{}
-	if err := codec.Unmarshal(marshaledBytes, &res); err != nil {
+	if err := codec.Unmarshal(context.Background(), marshaledBytes, &res); err != nil {
 		b.Errorf("codec.Unmarshal(_) returned an error")
 	}
 }

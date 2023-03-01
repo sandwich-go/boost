@@ -20,20 +20,20 @@ frame := []byte("time.Duration,[]time.Duration,map[string]*Redis此类的非基�
 
 for _, n := Codecs() {
     codec := GetCodec(nn)
-    bs, err := codec.Marshal(frame)
+    bs, err := codec.Marshal(context.Background(), frame)
     xpanic.WhenError(err)
     var raw []byte
-    err = codec.Unmarshal(bs, &raw)
+    err = codec.Unmarshal(context.Background(), bs, &raw)
     xpanic.WhenError(err)
     fmt.Println(string(raw))
 }
 
 ctx = WithContext(ctx, GetCodec(encrypt.AESCodecName))
-_, err0 := FromContext(ctx).Marshal(frame)
+_, err0 := FromContext(ctx).Marshal(context.Background(), frame)
 xpanic.WhenError(err0)
 
 var raw1 []byte
-err0 = FromContext(ctx).Unmarshal(bs, &raw1)
+err0 = FromContext(ctx).Unmarshal(context.Background(), bs, &raw1)
 xpanic.WhenError(err0)
 fmt.Println(string(raw1))
 ```

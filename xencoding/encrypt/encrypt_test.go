@@ -1,7 +1,9 @@
 package encrypt
 
 import (
+	"context"
 	"github.com/sandwich-go/boost/xcrypto/key/curve25519"
+	"github.com/sandwich-go/boost/xencoding"
 	"github.com/sandwich-go/boost/xrand"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
@@ -24,22 +26,23 @@ func getKey() []byte {
 
 func TestEncrypt(t *testing.T) {
 	Convey("encrypt", t, func() {
-		c := NewCodec(AESType+1, getKey())
-		_, err := c.Marshal("")
-		So(err, ShouldEqual, errCodecNoFound)
+		var c xencoding.Codec
+		So(func() {
+			c = NewCodec(AESType+1, getKey())
+		}, ShouldPanicWith, errCodecNoFound)
 
 		c = NewCodec(AESType, getKey())
-		_, err = c.Marshal("")
+		_, err := c.Marshal(context.Background(), "")
 		So(err, ShouldEqual, errCodecMarshalParam)
 
 		for i := NoneType; i <= AESType; i++ {
 			c = NewCodec(i, getKey())
 			for _, frame := range getTestFrames() {
-				mf, err0 := c.Marshal(frame)
+				mf, err0 := c.Marshal(context.Background(), frame)
 				So(err0, ShouldBeNil)
 
 				var uf []byte
-				err = c.Unmarshal(mf, &uf)
+				err = c.Unmarshal(context.Background(), mf, &uf)
 				So(err, ShouldBeNil)
 
 				So(frame, ShouldResemble, uf)

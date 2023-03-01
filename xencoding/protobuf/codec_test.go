@@ -2,6 +2,7 @@ package protobuf
 
 import (
 	"bytes"
+	"context"
 	"github.com/sandwich-go/boost/xencoding"
 	"sync"
 	"testing"
@@ -13,12 +14,12 @@ func marshalAndUnmarshal(t *testing.T, codec xencoding.Codec, expectedBody []byt
 	p := &test_perf.Buffer{}
 	p.Body = expectedBody
 
-	marshalledBytes, err := codec.Marshal(p)
+	marshalledBytes, err := codec.Marshal(context.Background(), p)
 	if err != nil {
 		t.Errorf("codec.Marshal(_) returned an error")
 	}
 
-	if err := codec.Unmarshal(marshalledBytes, p); err != nil {
+	if err := codec.Unmarshal(context.Background(), marshalledBytes, p); err != nil {
 		t.Errorf("codec.Unmarshal(_) returned an error")
 	}
 
@@ -81,19 +82,19 @@ func TestStaggeredMarshalAndUnmarshalUsingSamePool(t *testing.T) {
 	var m1, m2 []byte
 	var err error
 
-	if m1, err = codec1.Marshal(&proto1); err != nil {
+	if m1, err = codec1.Marshal(context.Background(), &proto1); err != nil {
 		t.Errorf("codec.Marshal(%v) failed", proto1)
 	}
 
-	if m2, err = codec2.Marshal(&proto2); err != nil {
+	if m2, err = codec2.Marshal(context.Background(), &proto2); err != nil {
 		t.Errorf("codec.Marshal(%v) failed", proto2)
 	}
 
-	if err = codec1.Unmarshal(m1, &proto1); err != nil {
+	if err = codec1.Unmarshal(context.Background(), m1, &proto1); err != nil {
 		t.Errorf("codec.Unmarshal(%v) failed", m1)
 	}
 
-	if err = codec2.Unmarshal(m2, &proto2); err != nil {
+	if err = codec2.Unmarshal(context.Background(), m2, &proto2); err != nil {
 		t.Errorf("codec.Unmarshal(%v) failed", m2)
 	}
 

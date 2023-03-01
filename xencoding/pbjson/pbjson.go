@@ -2,6 +2,7 @@ package pbjson
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
@@ -42,7 +43,7 @@ type codec struct{}
 func (codec) Name() string { return CodecName }
 
 // Marshal 编码
-func (codec) Marshal(obj interface{}) ([]byte, error) {
+func (codec) Marshal(_ context.Context, obj interface{}) ([]byte, error) {
 	if pm, ok := obj.(proto.Message); ok {
 		var buf bytes.Buffer
 		err := marshaler.Marshal(&buf, pm)
@@ -52,7 +53,7 @@ func (codec) Marshal(obj interface{}) ([]byte, error) {
 }
 
 // Unmarshal 解码
-func (codec) Unmarshal(data []byte, v interface{}) error {
+func (codec) Unmarshal(_ context.Context, data []byte, v interface{}) error {
 	if pm, ok := v.(proto.Message); ok {
 		err := unmarshaler.Unmarshal(bytes.NewBuffer(data), pm)
 		if err == io.EOF {

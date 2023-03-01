@@ -1,6 +1,7 @@
 package compressor
 
 import (
+	"context"
 	"errors"
 	"github.com/sandwich-go/boost/xcompress"
 	"github.com/sandwich-go/boost/xencoding"
@@ -48,6 +49,7 @@ func Register(t Type, codec xencoding.Codec) {
 	_, exists := codecs[t]
 	xpanic.WhenTrue(exists, "register called twice for codec, %d", t)
 	codecs[t] = codec
+	xencoding.RegisterCodec(codec)
 }
 
 type baseCodec struct {
@@ -58,7 +60,7 @@ func newBaseCodec(opts ...xcompress.Option) baseCodec {
 	return baseCodec{Compressor: xcompress.MustNew(opts...)}
 }
 
-func (c baseCodec) Marshal(v interface{}) ([]byte, error) {
+func (c baseCodec) Marshal(_ context.Context, v interface{}) ([]byte, error) {
 	if data, ok := v.([]byte); !ok {
 		return nil, errCodecMarshalParam
 	} else {
@@ -66,7 +68,7 @@ func (c baseCodec) Marshal(v interface{}) ([]byte, error) {
 	}
 }
 
-func (c baseCodec) Unmarshal(bytes []byte, v interface{}) error {
+func (c baseCodec) Unmarshal(_ context.Context, bytes []byte, v interface{}) error {
 	v1, ok := v.(*[]byte)
 	if !ok {
 		return errCodecUnmarshalParam
@@ -102,19 +104,19 @@ func NewCodec(compressType Type) xencoding.Codec {
 func (c codec) Name() string { return "compressor" }
 
 // Marshal 编码
-func (c codec) Marshal(v interface{}) ([]byte, error) {
+func (c codec) Marshal(ctx context.Context, v interface{}) ([]byte, error) {
 	cc, ok1 := codecs[c._type]
 	if !ok1 {
 		return nil, errCodecNoFound
 	}
-	return cc.Marshal(v)
+	return cc.Marshal(ctx, v)
 }
 
 // Unmarshal 解码
-func (c codec) Unmarshal(bytes []byte, v interface{}) error {
+func (c codec) Unmarshal(ctx context.Context, bytes []byte, v interface{}) error {
 	cc, ok1 := codecs[c._type]
 	if !ok1 {
 		return errCodecNoFound
 	}
-	return cc.Unmarshal(bytes, v)
+	return cc.Unmarshal(ctx, bytes, v)
 }

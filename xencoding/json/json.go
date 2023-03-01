@@ -1,6 +1,7 @@
 package json
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/sandwich-go/boost/xencoding"
 )
@@ -23,7 +24,9 @@ type codec struct{}
 func (codec) Name() string { return CodecName }
 
 // Marshal 编码
-func (codec) Marshal(v interface{}) ([]byte, error) { return json.Marshal(v) }
+func (codec) Marshal(_ context.Context, v interface{}) ([]byte, error) { return json.Marshal(v) }
 
 // Unmarshal 解码
-func (codec) Unmarshal(data []byte, v interface{}) error { return json.Unmarshal(data, v) }
+func (codec) Unmarshal(_ context.Context, data []byte, v interface{}) error {
+	return json.Unmarshal(data, v)
+}

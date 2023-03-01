@@ -2,6 +2,7 @@ package xencoding
 
 import (
 	"context"
+	"github.com/sandwich-go/boost/xpanic"
 	"sort"
 	"sync"
 )
@@ -33,9 +34,9 @@ func FromContext(ctx context.Context) Codec {
 // Codec defines the interface link uses to encode and decode messages.
 type Codec interface {
 	// Marshal returns the wire format of v.
-	Marshal(v interface{}) ([]byte, error)
+	Marshal(context.Context, interface{}) ([]byte, error)
 	// Unmarshal parses the wire format into v.
-	Unmarshal(data []byte, v interface{}) error
+	Unmarshal(context.Context, []byte, interface{}) error
 	// Name String returns the name of the Codec implementation.
 	Name() string
 }
@@ -51,16 +52,11 @@ func RegisterCodec(c Codec) {
 	mu.Lock()
 	defer mu.Unlock()
 
-	if c == nil {
-		panic("cannot register a nil Codec")
-	}
+	xpanic.WhenTrue(c == nil, "cannot register a nil Codec")
 	name := c.Name()
-	if len(name) == 0 {
-		panic("cannot register Codec with empty string result for Name()")
-	}
-	if _, dup := codecs[name]; dup {
-		panic("register called twice for codec " + name)
-	}
+	xpanic.WhenTrue(len(name) == 0, "cannot register Codec with empty string result for Name()")
+	_, dup := codecs[name]
+	xpanic.WhenTrue(dup, "register called twice for codec %s", name)
 	codecs[name] = c
 }
 
