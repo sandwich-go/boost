@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/sandwich-go/boost/xcompress"
 	"github.com/sandwich-go/boost/xencoding"
+	"github.com/sandwich-go/boost/xpanic"
 )
 
 var (
@@ -40,6 +41,13 @@ func init() {
 	for _, v := range codecs {
 		xencoding.RegisterCodec(v)
 	}
+}
+
+// Register 注册自定义的解压缩 Codec ，该方法非协程安全
+func Register(t Type, codec xencoding.Codec) {
+	_, exists := codecs[t]
+	xpanic.WhenTrue(exists, "register called twice for codec, %d", t)
+	codecs[t] = codec
 }
 
 type baseCodec struct {
