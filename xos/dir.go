@@ -20,7 +20,7 @@ func Mkdir(dir string) error {
 	return os.MkdirAll(dir, 0775)
 }
 
-// IsEmpty 检测目录是否为空
+// IsEmpty 检测目录是否为空,如目录下存在隐藏文件也会认为是非空目录
 func IsEmpty(path string) bool {
 	stat, err := os.Stat(path)
 	if err != nil {
