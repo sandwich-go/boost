@@ -85,6 +85,7 @@ func IsIntranet(ipStr string) bool {
 }
 
 // GetLocalIP returns the non loopback local IP of the host
+// 该接口在 POD 中可能会获取到空的 local IP
 func GetLocalIP() string {
 	addrs, err := LocalIpv4Addrs()
 	if err != nil || len(addrs) == 0 {
