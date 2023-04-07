@@ -6,7 +6,7 @@ import (
 
 // Encrypt 使用 key 进行加密
 func Encrypt(src []byte, key []byte) ([]byte, error) {
-	if src == nil {
+	if len(src) == 0 {
 		return nil, nil
 	}
 	return cryptoutil.AESEncrypt(src, key)
@@ -14,7 +14,7 @@ func Encrypt(src []byte, key []byte) ([]byte, error) {
 
 // Decrypt 使用 key 进行解密
 func Decrypt(src []byte, key []byte) ([]byte, error) {
-	if src == nil {
+	if len(src) == 0 {
 		return nil, nil
 	}
 	return cryptoutil.AESDecrypt(src, key)
