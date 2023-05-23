@@ -44,6 +44,7 @@ func TestEncrypt(t *testing.T) {
 				var uf []byte
 				err = c.Unmarshal(context.Background(), mf, &uf)
 				So(err, ShouldBeNil)
+
 				So(frame, ShouldResemble, uf)
 			}
 		}
