@@ -1,3 +1,6 @@
+//go:build !windows
+// +build !windows
+
 package xos
 
 import (
@@ -106,5 +109,15 @@ func TestDir(t *testing.T) {
 		So(CreateDirAll(destDir1), ShouldNotBeNil)
 
 		So(os.RemoveAll(dest), ShouldBeNil)
+	})
+	Convey("IsEmpty", t, func() {
+		temDir := os.TempDir()
+		temDirTesting, err := os.MkdirTemp(temDir, "issue")
+		So(err, ShouldBeNil)
+		So(IsEmpty(temDirTesting), ShouldBeTrue)
+		filename := ".config"
+		err = os.WriteFile(filepath.Join(temDirTesting, filename), []byte(filename), 0666)
+		So(err, ShouldBeNil)
+		So(IsEmpty(temDirTesting), ShouldBeFalse)
 	})
 }
