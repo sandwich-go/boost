@@ -15,8 +15,8 @@ type iString interface {
 	String() string
 }
 
-// String [影响性能] converts `any` to string.
-func String(any interface{}) string {
+// From [影响性能] converts `any` to string.
+func From(any interface{}) string {
 	if any == nil {
 		return ""
 	}
@@ -92,7 +92,7 @@ func String(any interface{}) string {
 			return rv.String()
 		}
 		if kind == reflect.Ptr {
-			return String(rv.Elem().Interface())
+			return From(rv.Elem().Interface())
 		}
 		if jsonContent, err := json.Marshal(value); err != nil {
 			return fmt.Sprint(value)
