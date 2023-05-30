@@ -32,5 +32,8 @@ func WhenTrue(condition bool, fmtStr string, args ...interface{}) {
 
 // WhenHereShouldNotError 提供运行到此处返回的error应为nil的语义，避免在框架层吃掉error
 func WhenHereShouldNotError(err error) {
-	WhenError(err)
+	if err == nil {
+		return
+	}
+	panic(fmt.Errorf("err should be nil when here, got:%w", err))
 }
