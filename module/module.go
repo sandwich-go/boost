@@ -58,6 +58,8 @@ type Master interface {
 	ShutdownNotify() chan struct{}
 	// RunModule 运行一个单独的 Module
 	RunModule(md Module)
+	// Modules 获取所有的 Module
+	Modules() []Module
 }
 
 // Module 进程中的所有 Module 都需注册到 module 中并由其管理

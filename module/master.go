@@ -58,6 +58,14 @@ func New() *master {
 	}
 }
 
+func (m *master) Modules() []Module {
+	var out = make([]Module, 0, len(m.allAgents))
+	for i := 0; i < len(m.allAgents); i++ {
+		out = append(out, m.allAgents[i].Module)
+	}
+	return out
+}
+
 func (m *master) AttachPlugin(plugins ...Plugin) {
 	if len(plugins) > 0 {
 		m.plugins = append(m.plugins, plugins...)
