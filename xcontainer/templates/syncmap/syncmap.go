@@ -205,14 +205,14 @@ func TestSyncMap(t *testing.T) {
 			fge := []func(key KType, cf func(key KType) (VType, error)) (value VType, loaded bool, err error){tr.GetOrSetFuncErrorLock}
 			defv, defv2 := __formatVTypeTo(6), __formatVTypeTo(7)
 			for _, f := range fge {
-				v, l, e := f(__formatKTypeTo(6), func(key KType) (VType, error) { // add 6,6 success
+				v, l, e := f(__formatKTypeTo(6), func(key KType) (VType, error) {
 					return defv, nil
 				})
 				So(v, ShouldEqual, defv)
 				So(l, ShouldBeFalse)
 				So(e, ShouldBeNil)
 
-				v, l, e = f(__formatKTypeTo(7), func(key KType) (VType, error) { // add 7, 7 failed
+				v, l, e = f(__formatKTypeTo(7), func(key KType) (VType, error) {
 					return defv2, errors.New("")
 				})
 				So(v, ShouldEqual, defv2)
@@ -221,7 +221,7 @@ func TestSyncMap(t *testing.T) {
 			}
 			fg := []func(key KType, cf func(key KType) VType) (value VType, loaded bool){tr.GetOrSetFuncLock}
 			for _, f := range fg {
-				v, l := f(__formatKTypeTo(7), func(key KType) VType { // add 7, 7 success
+				v, l := f(__formatKTypeTo(7), func(key KType) VType {
 					return defv2
 				})
 				So(v, ShouldEqual, defv2)
