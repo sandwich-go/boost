@@ -1,13 +1,41 @@
 package xerror_test
 
 import (
+	ctx "context"
 	"errors"
 	"fmt"
-	"github.com/sandwich-go/boost/xerror"
+	"os"
 	"testing"
+	"time"
+
+	"github.com/sandwich-go/boost/xerror"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
+
+func TestTimeout(t *testing.T) {
+	Convey("timeout", t, func() {
+		{
+			err := xerror.Wrap(errors.New("1"), "wrap with xerror")
+			So(os.IsTimeout(err), ShouldBeFalse)
+		}
+		{
+			err := xerror.NewText("1").SetTimeout()
+			So(os.IsTimeout(err), ShouldBeTrue)
+			err.UnsetTimeout()
+			So(os.IsTimeout(err), ShouldBeFalse)
+		}
+		{
+			c, _ := ctx.WithTimeout(ctx.Background(), time.Millisecond)
+			time.Sleep(time.Millisecond * 2)
+			err := c.Err()
+			So(err, ShouldNotBeNil)
+			So(os.IsTimeout(err), ShouldBeTrue)
+			err2 := xerror.Wrap(err, "wrap with xerror")
+			So(os.IsTimeout(err2), ShouldBeTrue)
+		}
+	})
+}
 
 func TestErrors(t *testing.T) {
 	Convey("xerror errors", t, func() {
