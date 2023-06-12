@@ -2,6 +2,7 @@ package xip
 
 import (
 	"net"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -92,4 +93,15 @@ func GetLocalIP() string {
 		return ""
 	}
 	return addrs[0]
+}
+
+var ip4Reg = regexp.MustCompile(`^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$`)
+
+// IsValidIP4 是否是合法的 ip4 地址
+func IsValidIP4(ipAddress string) bool {
+	ipAddress = strings.Trim(ipAddress, " ")
+	if i := strings.LastIndex(ipAddress, ":"); i >= 0 {
+		ipAddress = ipAddress[:i] //remove port
+	}
+	return ip4Reg.MatchString(ipAddress)
 }
