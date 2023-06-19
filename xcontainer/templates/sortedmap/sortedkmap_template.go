@@ -19,6 +19,8 @@ type OrderedKMap struct {
 	ll *mlist
 }
 
+// NewOrderedKMap returns an empty OrderedKMap with the specified sort function.
+// Note: sort function must be stable. not safe for concurrent use.
 func NewOrderedKMap() *OrderedKMap {
 	return &OrderedKMap{
 		kv: make(map[KType]VType),
@@ -80,7 +82,11 @@ func (m *OrderedKMap) Keys() (keys []KType) {
 	return keys
 }
 
+// Range will call the passed function for each Key/Value pair in the map.
+// If the function returns false, iteration will stop.
+// Note: Avoid using Set or Delete inside the loop, as it may lead to errors in the loop execution.
 func (m *OrderedKMap) Range(f func(key KType, value VType) bool) {
+	size := m.ll.size
 	for i := 0; i < m.ll.size; i++ {
 		key := m.ll.elements[i]
 		value, ok := m.kv[key]
@@ -89,6 +95,9 @@ func (m *OrderedKMap) Range(f func(key KType, value VType) bool) {
 		}
 		if !f(key, value) {
 			return
+		}
+		if size != m.ll.size {
+			panic(fmt.Sprintf("map was mutated during iteration: %d != %d", size, m.ll.size))
 		}
 	}
 }
