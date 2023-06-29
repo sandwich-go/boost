@@ -19,6 +19,8 @@ type Container interface {
 	MustAdd(Plugin)
 	// Range 遍历所有的 Plugin 并执行函数，若返回 false，则中止遍历
 	Range(func(Plugin) bool)
+	// Size 插件数量
+	Size() int
 }
 
 type container struct {
@@ -28,6 +30,7 @@ type container struct {
 
 func New(types ...interface{}) Container { return &container{types: types} }
 func (p *container) MustAdd(pg Plugin)   { xpanic.WhenError(p.Add(pg)) }
+func (p *container) Size() int           { return len(p.plugins) }
 func (p *container) Add(pg Plugin) error {
 	var pType = reflect.TypeOf(pg)
 	for _, v := range p.types {
