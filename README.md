@@ -4,8 +4,10 @@
 
 - `geom` [地理位置](https://github.com/sandwich-go/boost/tree/main/geom/README.md)
 - `httputil` [HTTP工具](https://github.com/sandwich-go/boost/tree/main/httputil/README.md)
+- `middleware` 中间件
 - `misc` [杂项工具](https://github.com/sandwich-go/boost/tree/main/misc/README.md)
 - `module` [Module工具](https://github.com/sandwich-go/boost/tree/main/module/README.md)
+- `plugin` 插件
 - `retry` [重试](https://github.com/sandwich-go/boost/tree/main/retry/README.md)
 - `singleflight` [SingleFlight](https://github.com/sandwich-go/boost/tree/main/singleflight/README.md)
 - `types` [扩展的数据类型](https://github.com/sandwich-go/boost/tree/main/types/README.md)
@@ -33,6 +35,7 @@
 - `xslice` [切片辅助函数](https://github.com/sandwich-go/boost/tree/main/xslice/README.md)
 - `xstrings` [字符串辅助函数](https://github.com/sandwich-go/boost/tree/main/xstrings/README.md)
 - `xsync` [同步辅助函数](https://github.com/sandwich-go/boost/tree/main/xsync/README.md)
+- `xtest`
 - `xtime` [time辅助函数](https://github.com/sandwich-go/boost/tree/main/xtime/README.md)
 - `z` [编译期辅助函数](https://github.com/sandwich-go/boost/tree/main/z/README.md)
 
