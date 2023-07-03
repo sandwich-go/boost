@@ -16,5 +16,9 @@ func TestXIP(t *testing.T) {
 		So(localIP, ShouldNotBeEmpty)
 		So(localIP, ShouldNotEqual, "127.0.0.1")
 		t.Logf("%s is intranet? %v", localIP, IsIntranet(localIP))
+
+		So(IsValidIP4("127.0"), ShouldBeFalse)
+		So(IsValidIP4("127.0.0.1"), ShouldBeTrue)
+		So(IsValidIP4("127.0.0.1:0"), ShouldBeTrue)
 	})
 }
