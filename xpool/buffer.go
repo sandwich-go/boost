@@ -84,8 +84,8 @@ func (p *SyncBytesPool) Free(mem []byte) {
 					p.freeTimesToPool++
 				}
 				return
-			} else if p.sizes[i] > size && i+1 < len(p.sizes) {
-				p.chunks[i+1].Put(&mem)
+			} else if p.sizes[i] > size && i > 0 {
+				p.chunks[i-1].Put(&mem)
 				if debug {
 					p.freeTimesToPool++
 				}
