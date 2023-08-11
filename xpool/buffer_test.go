@@ -18,5 +18,8 @@ func TestBufferPool(t *testing.T) {
 		So(p.(*SyncBytesPool).freeTimesToPool, ShouldEqual, 1)
 		p.Free(buff1)
 		So(p.(*SyncBytesPool).freeTimesToPool, ShouldEqual, 1)
+		var frame = make([]byte, 7)
+		p.Free(frame)
+		So(func() { _ = p.Alloc(8) }, ShouldNotPanic)
 	})
 }
