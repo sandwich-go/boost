@@ -42,8 +42,8 @@ func (cc *Error) UnsetTimeout() *Error {
 }
 
 // WithStack 设置堆栈
-func (cc *Error) WithStack() *Error {
-	cc.callStack = callers()
+func (cc *Error) WithStack(skip ...int) *Error {
+	cc.callStack = callers(skip...)
 	return cc
 }
 
