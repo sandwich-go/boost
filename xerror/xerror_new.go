@@ -62,6 +62,7 @@ func Wrap(err error, format string, args ...interface{}) error {
 		callStack: callersCheckIsErrorWithStack(1),
 		text:      text,
 		code:      Code(err),
+		logic:     Logic(err),
 	}
 }
 
@@ -79,6 +80,7 @@ func WrapCode(code int32, err error, format string, args ...interface{}) error {
 		callStack: callersCheckIsErrorWithStack(1),
 		text:      text,
 		code:      code,
+		logic:     Logic(err),
 	}
 }
 
@@ -92,5 +94,6 @@ func WrapProtoEnum(code protoEnum, err error) error {
 		callStack: callersCheckIsErrorWithStack(1),
 		text:      code.String(),
 		code:      code.NumberInt32(),
+		logic:     Logic(err),
 	}
 }
