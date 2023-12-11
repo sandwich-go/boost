@@ -4,9 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/sandwich-go/boost/xerror"
+	"log"
 	"testing"
 	"time"
+
+	"github.com/sandwich-go/boost/xerror"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -207,4 +209,14 @@ func TestDoFirstOk(t *testing.T) {
 			So(c.expectedDelay, ShouldEqual, delay)
 		}
 	})
+}
+
+func TestRetryDelay(t *testing.T) {
+	lastMilli := time.Now().UnixMilli()
+	Do(func(attempt uint) error {
+		tt := time.Now().UnixMilli()
+		log.Println(tt, tt-lastMilli)
+		lastMilli = tt
+		return errors.New("some error")
+	}, WithDelay(time.Millisecond*100), WithLimit(3))
 }
