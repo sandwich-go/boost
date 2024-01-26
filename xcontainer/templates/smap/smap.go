@@ -4,9 +4,7 @@
 package smap
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"sync"
-	"testing"
 )
 
 //template type Concurrent(KType,VType,KeyHash)
@@ -112,10 +110,9 @@ func (m *Concurrent) Clear() {
 //
 // Note: 不要在onClear对当前容器做读写操作，容易死锁
 //
-// data.ClearWithFuncLock(func(key string,val string) {
-//		data.Get(...) // 死锁
-// })
-//
+//	data.ClearWithFuncLock(func(key string,val string) {
+//			data.Get(...) // 死锁
+//	})
 func (m *Concurrent) ClearWithFuncLock(onClear func(key KType, val VType)) {
 	for _, shard := range m.shardedList {
 		shard.Lock()
@@ -161,10 +158,9 @@ func (m *Concurrent) SetNX(key KType, value VType) (isSet bool) {
 //
 // Note: 不要对f中对容器的该分片做读写操作，可以直接操作shardData数据源
 //
-//  data.LockFuncWithKey("test",func(shardData map[string]string) {
-//     data.Remove("test")      // 当前分片已被加读锁, 死锁
-//  })
-//
+//	data.LockFuncWithKey("test",func(shardData map[string]string) {
+//	   data.Remove("test")      // 当前分片已被加读锁, 死锁
+//	})
 func (m *Concurrent) LockFuncWithKey(key KType, f func(shardData map[KType]VType)) {
 	shard := m.GetShard(key)
 	shard.Lock()
@@ -176,10 +172,9 @@ func (m *Concurrent) LockFuncWithKey(key KType, f func(shardData map[KType]VType
 //
 // Note: 不要在f内对容器做写操作，否则会引起死锁，可以直接操作shardData数据源
 //
-//  data.RLockFuncWithKey("test",func(shardData map[string]string) {
-//     data.Remove("test")      // 当前分片已被加读锁, 死锁
-//  })
-//
+//	data.RLockFuncWithKey("test",func(shardData map[string]string) {
+//	   data.Remove("test")      // 当前分片已被加读锁, 死锁
+//	})
 func (m *Concurrent) RLockFuncWithKey(key KType, f func(shardData map[KType]VType)) {
 	shard := m.GetShard(key)
 	shard.RLock()
@@ -191,10 +186,9 @@ func (m *Concurrent) RLockFuncWithKey(key KType, f func(shardData map[KType]VTyp
 //
 // Note: 不要在f内对容器做读写操作，否则会引起死锁，可以直接操作shardData数据源
 //
-//  data.LockFunc(func(shardData map[string]string) {
-//     data.Count()             // 当前分片已被加写锁, 死锁
-//  })
-//
+//	data.LockFunc(func(shardData map[string]string) {
+//	   data.Count()             // 当前分片已被加写锁, 死锁
+//	})
 func (m *Concurrent) LockFunc(f func(shardData map[KType]VType)) {
 	for _, shard := range m.shardedList {
 		shard.Lock()
@@ -207,10 +201,9 @@ func (m *Concurrent) LockFunc(f func(shardData map[KType]VType)) {
 //
 // Note: 不要在f内对容器做修改操作，否则会引起死锁，可以直接操作shardData数据源
 //
-//  data.RLockFunc(func(shardData map[string]string) {
-//     data.Remove("test")      // 当前分片已被加读锁, 死锁
-//  })
-//
+//	data.RLockFunc(func(shardData map[string]string) {
+//	   data.Remove("test")      // 当前分片已被加读锁, 死锁
+//	})
 func (m *Concurrent) RLockFunc(f func(shardData map[KType]VType)) {
 	for _, shard := range m.shardedList {
 		shard.RLock()
@@ -262,10 +255,9 @@ func (m *Concurrent) GetOrSetFunc(key KType, f func(key KType) VType) (result VT
 //
 // Note: 不要在f内对容器做操作，否则会死锁
 //
-//  data.GetOrSetFuncLock(“test”,func(key string)string {
-//     data.Count() // 死锁
-//  })
-//
+//	data.GetOrSetFuncLock(“test”,func(key string)string {
+//	   data.Count() // 死锁
+//	})
 func (m *Concurrent) GetOrSetFuncLock(key KType, f func(key KType) VType) (result VType, isSet bool) {
 	if v, ok := m.Get(key); ok {
 		return v, false
@@ -339,10 +331,9 @@ func (m *Concurrent) GetAndRemove(key KType) (VType, bool) {
 //
 // Note: 不要在迭代过程中对当前容器作修改操作(申请写锁)，容易会产生死锁
 //
-//  for v:= data.Iter() {
-//		data.Remove(v.Key) // 尝试删除元素申请分片Lock,但是Iter内部的迭代协程对分片做了RLock，导致死锁
-//  }
-//
+//	 for v:= data.Iter() {
+//			data.Remove(v.Key) // 尝试删除元素申请分片Lock,但是Iter内部的迭代协程对分片做了RLock，导致死锁
+//	 }
 func (m *Concurrent) Iter() <-chan Tuple {
 	ch := make(chan Tuple)
 	go func() {
@@ -376,120 +367,4 @@ func (m *Concurrent) IterBuffered() <-chan Tuple {
 		close(ch)
 	}()
 	return ch
-}
-
-//template format
-var __formatKTypeTo func(interface{}) KType
-
-//template format
-var __formatVTypeTo func(interface{}) VType
-
-func TestSMap(t *testing.T) {
-	Convey("test sync array", t, func() {
-		tr := New()
-		So(tr.Len(), ShouldEqual, 0)
-		So(tr.IsEmpty(), ShouldBeTrue)
-		tr.Set(__formatKTypeTo(1), __formatVTypeTo(1))
-		So(tr.Len(), ShouldEqual, 1)
-
-		tr.Set(__formatKTypeTo(1), __formatVTypeTo(2))
-		So(tr.Len(), ShouldEqual, 1)
-		tr.Set(__formatKTypeTo(2), __formatVTypeTo(2))
-		So(tr.Len(), ShouldEqual, 2)
-		So(tr.Count(), ShouldEqual, 2)
-		So(tr.Size(), ShouldEqual, 2)
-
-		So(tr.Keys(), ShouldContain, __formatKTypeTo(1))
-		So(tr.Keys(), ShouldContain, __formatKTypeTo(2))
-
-		So(tr.GetAll(), ShouldContainKey, __formatKTypeTo(1))
-		So(tr.GetAll(), ShouldContainKey, __formatKTypeTo(2))
-
-		tr.Clear()
-		So(tr.Len(), ShouldEqual, 0)
-
-		tr.Set(__formatKTypeTo(1), __formatVTypeTo(2))
-		tr.Set(__formatKTypeTo(2), __formatVTypeTo(2))
-		So(func() {
-			tr.ClearWithFuncLock(func(key KType, val VType) {
-				return
-			})
-		}, ShouldNotPanic)
-
-		tr.Set(__formatKTypeTo(1), __formatVTypeTo(1))
-		tr.Set(__formatKTypeTo(2), __formatVTypeTo(2))
-		tr.Set(__formatKTypeTo(3), __formatVTypeTo(3))
-		tr.Set(__formatKTypeTo(4), __formatVTypeTo(4))
-		mk := []KType{__formatKTypeTo(1), __formatKTypeTo(2), __formatKTypeTo(3)}
-		m := tr.MGet(mk...)
-		for _, k := range mk {
-			So(m, ShouldContainKey, k)
-		}
-
-		tr2 := New()
-		tr2.MSet(m)
-		So(tr2.Len(), ShouldEqual, len(mk))
-
-		So(tr2.SetNX(__formatKTypeTo(5), __formatVTypeTo(5)), ShouldBeTrue)
-		So(tr2.SetNX(__formatKTypeTo(1), __formatVTypeTo(5)), ShouldBeFalse)
-
-		So(func() {
-			tr2.LockFuncWithKey(__formatKTypeTo(5), func(shardData map[KType]VType) {
-				return
-			})
-		}, ShouldNotPanic)
-		So(func() {
-			tr2.RLockFuncWithKey(__formatKTypeTo(5), func(shardData map[KType]VType) {
-				return
-			})
-		}, ShouldNotPanic)
-		So(func() {
-			tr2.LockFunc(func(shardData map[KType]VType) {
-				return
-			})
-		}, ShouldNotPanic)
-		So(func() {
-			tr2.RLockFunc(func(shardData map[KType]VType) {
-				return
-			})
-		}, ShouldNotPanic)
-
-		dfv := __formatVTypeTo(1)
-		r, ret := tr2.GetOrSetFunc(__formatKTypeTo(1), func(key KType) VType {
-			return dfv
-		})
-		So(r, ShouldEqual, dfv)
-		So(ret, ShouldBeFalse)
-		r, ret = tr2.GetOrSetFuncLock(__formatKTypeTo(1), func(key KType) VType {
-			return dfv
-		})
-		So(r, ShouldEqual, dfv)
-		So(ret, ShouldBeFalse)
-
-		_, ret = tr2.GetOrSet(__formatKTypeTo(1), __formatVTypeTo(1))
-		So(ret, ShouldBeFalse)
-		r, ret = tr2.GetOrSet(__formatKTypeTo(10), __formatVTypeTo(10))
-		So(r, ShouldEqual, __formatVTypeTo(10))
-		So(ret, ShouldBeTrue)
-
-		So(tr.Has(__formatKTypeTo(1)), ShouldBeTrue)
-
-		tr2.Remove(__formatKTypeTo(1))
-		v, ret := tr2.GetAndRemove(__formatKTypeTo(10))
-		So(v, ShouldEqual, __formatVTypeTo(10))
-		So(ret, ShouldBeTrue)
-
-		for _, f := range []func() <-chan Tuple{
-			tr2.Iter, tr2.IterBuffered,
-		} {
-			cnt := 0
-			for v := range f() {
-				cnt++
-				So(v.Key, ShouldBeIn, []KType{__formatKTypeTo(2), __formatKTypeTo(3), __formatKTypeTo(5)})
-				So(v.Val, ShouldBeIn, []VType{__formatVTypeTo(2), __formatVTypeTo(3), __formatVTypeTo(5)})
-			}
-			So(cnt, ShouldEqual, 3)
-		}
-
-	})
 }
