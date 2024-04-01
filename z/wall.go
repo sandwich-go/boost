@@ -18,6 +18,11 @@ func Now() time.Time {
 	return wc.t.Add(offset() - wc.offset)
 }
 
+// NowWithOffset returns the wall clock time with given offset.
+func NowWithOffset(monoOffset time.Duration) time.Time {
+	return wc.t.Add(monoOffset - wc.offset)
+}
+
 func offset() time.Duration {
 	return time.Duration(runtimeNanotime())
 }
