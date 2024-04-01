@@ -5,9 +5,7 @@
 package sset
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"sync"
-	"testing"
 )
 
 //template type SyncSet(VType)
@@ -257,77 +255,4 @@ func (mu *localRWMutexVType) RUnlock() {
 	if mu.RWMutex != nil {
 		mu.RWMutex.RUnlock()
 	}
-}
-
-//template format
-var __formatTo func(interface{}) VType
-
-func TestSyncSet(t *testing.T) {
-	Convey("test sync set", t, func() {
-		for _, tr := range []*SyncSet{New(), NewSync()} {
-			So(tr.Size(), ShouldBeZeroValue)
-			var e0 = __formatTo(30)
-			tr.Add(e0)
-			So(tr.Size(), ShouldEqual, 1)
-			tr.Add(e0)
-			So(tr.Size(), ShouldEqual, 1)
-
-			So(tr.AddIfNotExist(__formatTo(2)), ShouldBeTrue)
-			So(tr.Size(), ShouldEqual, 2)
-
-			tr.AddIfNotExistFunc(__formatTo(3), func() bool {
-				return false
-			})
-			So(tr.Size(), ShouldEqual, 2)
-			tr.AddIfNotExistFunc(__formatTo(3), func() bool {
-				return true
-			})
-			So(tr.Size(), ShouldEqual, 3)
-
-			tr.AddIfNotExistFuncLock(__formatTo(4), func() bool {
-				return false
-			})
-			So(tr.Size(), ShouldEqual, 3)
-			tr.AddIfNotExistFuncLock(__formatTo(4), func() bool {
-				return true
-			})
-			So(tr.Size(), ShouldEqual, 4)
-
-			So(tr.Contains(__formatTo(4)), ShouldBeTrue)
-
-			tr.Remove(__formatTo(4))
-			So(tr.Size(), ShouldEqual, 3)
-
-			So(tr.Slice(), ShouldContain, __formatTo(30))
-			So(tr.Slice(), ShouldContain, __formatTo(2))
-			So(tr.Slice(), ShouldContain, __formatTo(3))
-
-			tr.Clear()
-			So(tr.Size(), ShouldEqual, 0)
-
-			tr.Add(__formatTo(3), __formatTo(2))
-			tr2 := newWithSafe(false)
-			tr2.Add(__formatTo(3), __formatTo(2))
-			So(tr.Equal(tr2), ShouldBeTrue)
-
-			tr3 := newWithSafe(true)
-			tr3.Add(__formatTo(3), __formatTo(2))
-			So(tr.Equal(tr3), ShouldBeTrue)
-
-			tr4, tr5 := newWithSafe(true), newWithSafe(true)
-			tr4.Add(__formatTo(1), __formatTo(4))
-			tr5.Add(__formatTo(1), __formatTo(4))
-			s := tr.Size()
-			tr.Merge(tr4)
-			tr2.Merge(tr5)
-			So(tr.Equal(tr2), ShouldBeTrue)
-			So(tr.Size(), ShouldEqual, s+2)
-
-			So(func() {
-				tr5.Walk(func(item VType) VType {
-					return item
-				})
-			}, ShouldNotPanic)
-		}
-	})
 }

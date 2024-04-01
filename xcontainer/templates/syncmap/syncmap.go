@@ -2,11 +2,8 @@
 package syncmap
 
 import (
-	"errors"
-	. "github.com/smartystreets/goconvey/convey"
 	"sort"
 	"sync"
-	"testing"
 )
 
 //template type SyncMap(KType,VType)
@@ -164,80 +161,4 @@ func (s *SyncMap) RangeDeterministic(f func(key KType, value VType) bool, sortab
 			}
 		}
 	}
-}
-
-//template format
-var __formatKTypeTo func(interface{}) KType
-
-//template format
-var __formatVTypeTo func(interface{}) VType
-
-func TestSyncMap(t *testing.T) {
-	Convey("test sync map", t, func() {
-		for _, tr := range []*SyncMap{NewSyncMap()} {
-			So(tr.Len(), ShouldBeZeroValue)
-			var k, v = __formatKTypeTo(3), __formatVTypeTo(4)
-			So(tr.Len(), ShouldEqual, 0)
-			tr.Store(k, v)
-			v1, ok := tr.Load(k)
-			So(ok, ShouldBeTrue)
-			So(v1, ShouldEqual, v)
-
-			So(tr.Keys(), ShouldResemble, []KType{__formatKTypeTo(3)})
-			So(tr.Get(__formatKTypeTo(3)), ShouldEqual, __formatVTypeTo(4))
-			So(tr.Contains(__formatKTypeTo(3)), ShouldBeTrue)
-
-			tr.Store(__formatKTypeTo(4), __formatVTypeTo(5))
-			tr.Store(__formatKTypeTo(5), __formatVTypeTo(6))
-			ol := tr.Len()
-			tr.DeleteMultiple(__formatKTypeTo(4), __formatKTypeTo(5))
-			So(tr.Len(), ShouldEqual, ol-2)
-
-			ol = tr.Len()
-			tr.Store(__formatKTypeTo(4), __formatVTypeTo(5))
-			tr.Store(__formatKTypeTo(5), __formatVTypeTo(6))
-			vl, ok := tr.LoadAndDelete(__formatKTypeTo(4))
-			So(vl, ShouldEqual, __formatVTypeTo(5))
-			So(ok, ShouldBeTrue)
-			So(tr.Len(), ShouldEqual, ol+1)
-
-			tr.Store(__formatKTypeTo(4), __formatVTypeTo(5))
-			fge := []func(key KType, cf func(key KType) (VType, error)) (value VType, loaded bool, err error){tr.GetOrSetFuncErrorLock}
-			defv, defv2 := __formatVTypeTo(6), __formatVTypeTo(7)
-			for _, f := range fge {
-				v, l, e := f(__formatKTypeTo(6), func(key KType) (VType, error) {
-					return defv, nil
-				})
-				So(v, ShouldEqual, defv)
-				So(l, ShouldBeFalse)
-				So(e, ShouldBeNil)
-
-				v, l, e = f(__formatKTypeTo(7), func(key KType) (VType, error) {
-					return defv2, errors.New("")
-				})
-				So(v, ShouldEqual, defv2)
-				So(l, ShouldBeFalse)
-				So(e, ShouldNotBeNil)
-			}
-			fg := []func(key KType, cf func(key KType) VType) (value VType, loaded bool){tr.GetOrSetFuncLock}
-			for _, f := range fg {
-				v, l := f(__formatKTypeTo(7), func(key KType) VType {
-					return defv2
-				})
-				So(v, ShouldEqual, defv2)
-				So(l, ShouldBeFalse)
-			}
-
-			v, ok = tr.LoadOrStore(__formatKTypeTo(8), __formatVTypeTo(9))
-			So(v, ShouldEqual, __formatVTypeTo(9))
-			So(ok, ShouldBeFalse)
-
-			So(func() {
-				tr.Range(func(key KType, value VType) bool {
-					return true
-				})
-			}, ShouldNotPanic)
-
-		}
-	})
 }
