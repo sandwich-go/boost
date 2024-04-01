@@ -30,7 +30,7 @@ func NewProcessOptions(opts ...ProcessOption) *ProcessOptions {
 	return cc
 }
 
-// ApplyOption apply mutiple new option
+// ApplyOption apply multiple new option
 func (cc *ProcessOptions) ApplyOption(opts ...ProcessOption) {
 	for _, opt := range opts {
 		opt(cc)
