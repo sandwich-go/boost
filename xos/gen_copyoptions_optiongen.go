@@ -29,7 +29,7 @@ func NewCopyOptions(opts ...CopyOption) *CopyOptions {
 	return cc
 }
 
-// ApplyOption apply mutiple new option
+// ApplyOption apply multiple new option
 func (cc *CopyOptions) ApplyOption(opts ...CopyOption) {
 	for _, opt := range opts {
 		opt(cc)
