@@ -19,6 +19,7 @@ const (
 
 type Dispatcher interface {
 	AfterFunc(d time.Duration, cb func()) *Timer
+	AfterFuncWithOwnershipTransfer(td time.Duration, cb func()) *Timer
 	CronFunc(cronExpr *cron.Expression, cb func()) *Cron
 	// TickFunc 注册tick回调，key防止cb重复注册
 	TickFunc(key interface{}, cb TickFunc)
@@ -26,6 +27,7 @@ type Dispatcher interface {
 	RemoveAllTimer()
 	RemoveAllTimerInDomain(domain string)
 	AfterFuncInDomain(td time.Duration, cb func(), domain string) *Timer
+	AfterFuncWithOwnershipTransferInDomain(td time.Duration, cb func(), domain string) *Timer
 
 	TimerNotify() <-chan *Timer
 	Close()
@@ -201,6 +203,38 @@ func (d *dispatcher) RemoveAllTimerInDomain(domain string) {
 	})
 }
 
+// AfterFuncWithOwnershipTransfer 自己管理 *Timer 声明周期, 使用完毕后需要手动调用 xtime Stop() 方法释放资源, 以免内存泄露
+// 可以使用 Reset() 方法重置定时器
+func (d *dispatcher) AfterFuncWithOwnershipTransfer(td time.Duration, cb func()) *Timer {
+	return d.AfterFuncWithOwnershipTransferInDomain(td, cb, DefaultTimerDomain)
+}
+
+func (d *dispatcher) AfterFuncWithOwnershipTransferInDomain(td time.Duration, cb func(), domain string) *Timer {
+	t := new(Timer)
+	t.cb = cb
+	t.lock = new(sync.RWMutex)
+	t.domain = domain
+	t.t = time.AfterFunc(td, func() {
+		// callback from another goroutine
+		select {
+		// FIRST read from no buffer chan, even closed, will return false
+		case <-d.stopChan:
+			return
+		default:
+			// close #174 (走到这里时，Close被执行了，这里的ChanTimer可能被close了)
+			d.timerMutex.RLock()
+			if d.closeFlag.Get() == stateRunning {
+				d.ChanTimer <- t
+			}
+			d.timerMutex.RUnlock()
+		}
+	})
+	log.Debug(fmt.Sprintf("Timer dispatcher add AfterFuncInDomain:%s after:%s", domain, td))
+	return t
+}
+
+// AfterFunc 框架管理 Timer, dispatcher close时自动释放, 无需手动Stop
+// Reset() 方法无效
 func (d *dispatcher) AfterFunc(td time.Duration, cb func()) *Timer {
 	return d.AfterFuncInDomain(td, cb, DefaultTimerDomain)
 }
