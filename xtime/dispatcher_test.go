@@ -20,7 +20,7 @@ func TestTimerDispatcher(t *testing.T) {
 			a++
 			t.Log("AfterFuncInDomain")
 		}, "goconvey")
-		timer.Reset(0)
+		timer.t.Reset(0)
 		dispatcher.RemoveAllTimerInDomain(DefaultTimerDomain)
 		time.Sleep(500 * time.Millisecond)
 		dispatcher.Close()
@@ -55,7 +55,7 @@ func TestTimerResetDispatcher(t *testing.T) {
 			}
 		}()
 		a := 0
-		var tt *Timer
+		var tt *DanglingTimer
 		tt = dp.AfterFuncWithOwnershipTransferInDomain(time.Second, func() {
 			a++
 			t.Log("reset AfterFunc")

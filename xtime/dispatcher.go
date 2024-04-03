@@ -18,18 +18,18 @@ const (
 )
 
 type Dispatcher interface {
-	AfterFunc(d time.Duration, cb func()) *Timer
-	AfterFuncWithOwnershipTransfer(td time.Duration, cb func()) *Timer
+	AfterFunc(d time.Duration, cb func()) *SafeTimer
+	AfterFuncWithOwnershipTransfer(td time.Duration, cb func()) *DanglingTimer
 	CronFunc(cronExpr *cron.Expression, cb func()) *Cron
 	// TickFunc 注册tick回调，key防止cb重复注册
 	TickFunc(key interface{}, cb TickFunc)
 
 	RemoveAllTimer()
 	RemoveAllTimerInDomain(domain string)
-	AfterFuncInDomain(td time.Duration, cb func(), domain string) *Timer
-	AfterFuncWithOwnershipTransferInDomain(td time.Duration, cb func(), domain string) *Timer
+	AfterFuncInDomain(td time.Duration, cb func(), domain string) *SafeTimer
+	AfterFuncWithOwnershipTransferInDomain(td time.Duration, cb func(), domain string) *DanglingTimer
 
-	TimerNotify() <-chan *Timer
+	TimerNotify() <-chan Timer
 	Close()
 	Start()
 }
@@ -43,7 +43,7 @@ type TickFunc func(context.Context)
 
 // dispatcher one dispatcher per goroutine (goroutine not safe)
 type dispatcher struct {
-	ChanTimer     chan *Timer // one receiver, N senders
+	ChanTimer     chan Timer // one receiver, N senders
 	timerMutex    sync.RWMutex
 	runningTimers sync.Map
 	queueLen      int
@@ -82,7 +82,7 @@ func NewDispatcher(l int, opts ...Option) Dispatcher {
 func (d *dispatcher) Start() {
 	if d.closeFlag.CompareAndSwap(stateClosed, stateRunning) {
 		d.stopChan = make(chan struct{})
-		d.ChanTimer = make(chan *Timer, d.queueLen)
+		d.ChanTimer = make(chan Timer, d.queueLen)
 		if d.cc.TickDuration > 0 {
 			d.ticker = time.NewTicker(d.cc.TickDuration)
 			d.cc.TickCount.Inc()
@@ -160,7 +160,7 @@ func (d *dispatcher) TriggerTickFuncs(ctx context.Context) {
 	}
 }
 
-func (d *dispatcher) TimerNotify() <-chan *Timer { return d.ChanTimer }
+func (d *dispatcher) TimerNotify() <-chan Timer { return d.ChanTimer }
 func (d *dispatcher) Close() {
 	if d.closeFlag.CompareAndSwap(stateRunning, stateClosed) {
 		close(d.stopChan)
@@ -181,23 +181,23 @@ func (d *dispatcher) Close() {
 	}
 }
 
-func (d *dispatcher) RemoveTimer(t *Timer) { d.runningTimers.Delete(t) }
+func (d *dispatcher) RemoveTimer(t Timer) { d.runningTimers.Delete(t) }
 
 func (d *dispatcher) RemoveAllTimer() {
 	d.runningTimers.Range(func(key, value interface{}) bool {
-		t := key.(*Timer)
-		t.Stop()
+		t := key.(Timer)
+		t.stop()
 		d.RemoveTimer(t)
 		return true
 	})
 }
 func (d *dispatcher) RemoveAllTimerInDomain(domain string) {
 	d.runningTimers.Range(func(key, value interface{}) bool {
-		t := key.(*Timer)
-		if t.domain != domain {
+		t := key.(Timer)
+		if t.GetDomain() != domain {
 			return true
 		}
-		t.Stop()
+		t.stop()
 		d.RemoveTimer(t)
 		return true
 	})
@@ -205,14 +205,13 @@ func (d *dispatcher) RemoveAllTimerInDomain(domain string) {
 
 // AfterFuncWithOwnershipTransfer 自己管理 *Timer 声明周期, 使用完毕后需要手动调用 xtime Stop() 方法释放资源, 以免内存泄露
 // 可以使用 Reset() 方法重置定时器
-func (d *dispatcher) AfterFuncWithOwnershipTransfer(td time.Duration, cb func()) *Timer {
+func (d *dispatcher) AfterFuncWithOwnershipTransfer(td time.Duration, cb func()) *DanglingTimer {
 	return d.AfterFuncWithOwnershipTransferInDomain(td, cb, DefaultTimerDomain)
 }
 
-func (d *dispatcher) AfterFuncWithOwnershipTransferInDomain(td time.Duration, cb func(), domain string) *Timer {
-	t := new(Timer)
+func (d *dispatcher) AfterFuncWithOwnershipTransferInDomain(td time.Duration, cb func(), domain string) *DanglingTimer {
+	t := new(DanglingTimer)
 	t.cb = cb
-	t.lock = new(sync.RWMutex)
 	t.domain = domain
 	t.t = time.AfterFunc(td, func() {
 		// callback from another goroutine
@@ -235,11 +234,11 @@ func (d *dispatcher) AfterFuncWithOwnershipTransferInDomain(td time.Duration, cb
 
 // AfterFunc 框架管理 Timer, dispatcher close时自动释放, 无需手动Stop
 // Reset() 方法无效
-func (d *dispatcher) AfterFunc(td time.Duration, cb func()) *Timer {
+func (d *dispatcher) AfterFunc(td time.Duration, cb func()) *SafeTimer {
 	return d.AfterFuncInDomain(td, cb, DefaultTimerDomain)
 }
-func (d *dispatcher) AfterFuncInDomain(td time.Duration, cb func(), domain string) *Timer {
-	t := new(Timer)
+func (d *dispatcher) AfterFuncInDomain(td time.Duration, cb func(), domain string) *SafeTimer {
+	t := new(SafeTimer)
 	t.cb = cb
 	t.domain = domain
 	t.t = time.AfterFunc(td, func() {
