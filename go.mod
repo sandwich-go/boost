@@ -1,6 +1,6 @@
 module github.com/sandwich-go/boost
 
-go 1.14
+go 1.18
 
 require (
 	github.com/Masterminds/goutils v1.1.1 // indirect
