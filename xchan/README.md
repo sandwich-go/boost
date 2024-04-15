@@ -1,5 +1,7 @@
 # xchan
 
+https://colobu.com/2021/05/11/unbounded-channel-in-go/
+
 Unbounded chan with ring buffer.
 
 Refer to the below articles and issues:

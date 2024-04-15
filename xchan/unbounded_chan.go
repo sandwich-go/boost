@@ -16,18 +16,12 @@ type UnboundedChan[T any] struct {
 	buffer   *RingBuffer[T] // buffer
 }
 
-// Len returns len of In plus len of Out plus len of buffer.
-// It is not accurate and only for your evaluating approximate number of elements in this chan,
-// see https://github.com/smallnest/chanx/issues/7.
-// 所有待读取的数据的长度
+// Len 所有待读取的数据的长度
 func (c UnboundedChan[T]) Len() int {
 	return len(c.In) + c.BufLen() + len(c.Out)
 }
 
-// BufLen returns len of the buffer.
-// It is not accurate and only for your evaluating approximate number of elements in this chan,
-// see https://github.com/smallnest/chanx/issues/7.
-// 获取缓存中的数据的长度，不包含外发Out channel中数据的长度
+// BufLen 获取缓存中的数据的长度，不包含外发Out channel中数据的长度
 func (c UnboundedChan[T]) BufLen() int {
 	return int(atomic.LoadInt64(&c.bufCount))
 }
@@ -85,6 +79,7 @@ func process[T any](ctx context.Context, in, out chan T, ch *UnboundedChan[T]) {
 				// out is not full
 				select {
 				case out <- val:
+					//放入成功，说明out刚才还没有满，buffer中也没有额外的数据待处理，所以回到loop开始
 					continue
 				default:
 				}
