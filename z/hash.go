@@ -10,14 +10,22 @@ type stringStruct struct {
 	len int
 }
 
-//go:noescape
 //go:linkname memhash runtime.memhash
 func memhash(p unsafe.Pointer, h, s uintptr) uintptr
+
+//go:linkname typehash runtime.typehash
+func typehash(t, p unsafe.Pointer, h uintptr) uintptr
 
 // MemHash 不同进程内同一个值获取的可能不同，不能用作持久化的hash
 func MemHash(data []byte) uint64 {
 	ss := (*stringStruct)(unsafe.Pointer(&data))
 	return uint64(memhash(ss.str, 0, uintptr(ss.len)))
+}
+
+// AnyHash 不同进程内同一个值获取的可能不同，不能用作持久化的hash
+func AnyHash(v any, h uintptr) uintptr {
+	s := (*[2]unsafe.Pointer)(unsafe.Pointer(&v))
+	return typehash(s[0], s[1], h)
 }
 
 // MemHashString 不同进程内同一个值获取的可能不同，不能用作持久化的hash

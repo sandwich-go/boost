@@ -1,4 +1,4 @@
-package rateshaping
+package ratelimiter
 
 import (
 	"sync/atomic"

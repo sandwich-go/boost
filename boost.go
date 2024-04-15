@@ -2,6 +2,7 @@ package boost
 
 import (
 	"fmt"
+
 	"github.com/sandwich-go/boost/internal/log"
 )
 

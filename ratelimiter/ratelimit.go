@@ -1,4 +1,4 @@
-package rateshaping // import "go.uber.org/ratelimit"
+package ratelimiter
 
 import (
 	"time"
