@@ -19,6 +19,7 @@
 - `xconv` [内置类型转换辅助工具](https://github.com/sandwich-go/boost/tree/main/xconv/README.md)
 - `xcopy` [深拷贝](https://github.com/sandwich-go/boost/tree/main/xcopy/README.md)
 - `xcrypto` [加密](https://github.com/sandwich-go/boost/tree/main/xcrypto/README.md)
+- `xchan` [Unbounded chan with ring buffer.](https://github.com/sandwich-go/boost/tree/main/xchan/README.md)
 - `xdebug` [Debug](https://github.com/sandwich-go/boost/tree/main/xdebug/README.md)
 - `xencoding` [编码解码器](https://github.com/sandwich-go/boost/tree/main/xencoding/README.md)
 - `xerror` [error wrapper](https://github.com/sandwich-go/boost/tree/main/xerror/README.md)
