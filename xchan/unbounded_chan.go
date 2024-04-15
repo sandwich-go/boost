@@ -14,6 +14,7 @@ type UnboundedChan[T any] struct {
 	In       chan<- T       // channel for write
 	Out      <-chan T       // channel for read
 	buffer   *RingBuffer[T] // buffer
+	cc       *Options
 }
 
 // Len 所有待读取的数据的长度
@@ -30,15 +31,15 @@ func (c UnboundedChan[T]) BufLen() int {
 // in is used to write without blocking, which supports multiple writers.
 // and out is used to read, which supports multiple readers.
 // You can close the in channel if you want.
-func NewUnboundedChan[T any](ctx context.Context, initCapacity int) *UnboundedChan[T] {
-	return NewUnboundedChanSize[T](ctx, initCapacity, initCapacity, initCapacity)
+func NewUnboundedChan[T any](ctx context.Context, initCapacity int, opts ...Option) *UnboundedChan[T] {
+	return NewUnboundedChanSize[T](ctx, initCapacity, initCapacity, initCapacity, opts...)
 }
 
 // NewUnboundedChanSize is like NewUnboundedChan but you can set initial capacity for In, Out, Buffer.
-func NewUnboundedChanSize[T any](ctx context.Context, initInCapacity, initOutCapacity, initBufCapacity int) *UnboundedChan[T] {
+func NewUnboundedChanSize[T any](ctx context.Context, initInCapacity, initOutCapacity, initBufCapacity int, opts ...Option) *UnboundedChan[T] {
 	in := make(chan T, initInCapacity)
 	out := make(chan T, initOutCapacity)
-	ch := UnboundedChan[T]{In: in, Out: out, buffer: NewRingBuffer[T](initBufCapacity)}
+	ch := UnboundedChan[T]{In: in, Out: out, buffer: NewRingBuffer[T](initBufCapacity), cc: NewOptions(opts...)}
 
 	go process(ctx, in, out, &ch)
 
@@ -74,7 +75,10 @@ func process[T any](ctx context.Context, in, out chan T, ch *UnboundedChan[T]) {
 			// buffer has some values
 			if atomic.LoadInt64(&ch.bufCount) > 0 {
 				ch.buffer.Write(val)
-				atomic.AddInt64(&ch.bufCount, 1)
+				newVal := atomic.AddInt64(&ch.bufCount, 1)
+				if ch.cc.CallbackOnBufCount != 0 && newVal > ch.cc.CallbackOnBufCount {
+					ch.cc.Callback(newVal)
+				}
 			} else {
 				// out is not full
 				select {
@@ -86,7 +90,10 @@ func process[T any](ctx context.Context, in, out chan T, ch *UnboundedChan[T]) {
 
 				// out is full
 				ch.buffer.Write(val)
-				atomic.AddInt64(&ch.bufCount, 1)
+				newVal := atomic.AddInt64(&ch.bufCount, 1)
+				if ch.cc.CallbackOnBufCount != 0 && newVal > ch.cc.CallbackOnBufCount {
+					ch.cc.Callback(newVal)
+				}
 			}
 
 			for !ch.buffer.IsEmpty() {
@@ -99,8 +106,10 @@ func process[T any](ctx context.Context, in, out chan T, ch *UnboundedChan[T]) {
 						return
 					}
 					ch.buffer.Write(val)
-					atomic.AddInt64(&ch.bufCount, 1)
-
+					newVal := atomic.AddInt64(&ch.bufCount, 1)
+					if ch.cc.CallbackOnBufCount != 0 && newVal > ch.cc.CallbackOnBufCount {
+						ch.cc.Callback(newVal)
+					}
 				case out <- ch.buffer.Peek():
 					ch.buffer.Pop()
 					atomic.AddInt64(&ch.bufCount, -1)
