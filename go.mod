@@ -22,9 +22,19 @@ require (
 )
 
 require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/kr/text v0.2.0 // indirect
+	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
+	golang.org/x/net v0.5.0 // indirect
+	golang.org/x/sys v0.4.0 // indirect
+	golang.org/x/text v0.6.0 // indirect
+	gopkg.in/ini.v1 v1.66.6 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
+)
+
+require (
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver v1.5.0 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1 // indirect
@@ -34,7 +44,6 @@ require (
 	github.com/jtolds/gls v4.20.0+incompatible // indirect
 	github.com/klauspost/compress v1.15.9 // indirect
 	github.com/klauspost/cpuid/v2 v2.1.0 // indirect
-	github.com/kr/text v0.2.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
 	github.com/minio/sha256-simd v1.0.0 // indirect
@@ -46,11 +55,4 @@ require (
 	github.com/rs/xid v1.4.0 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/smartystreets/assertions v1.2.0 // indirect
-	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
-	golang.org/x/net v0.5.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
-	golang.org/x/text v0.6.0 // indirect
-	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
-	gopkg.in/ini.v1 v1.66.6 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
