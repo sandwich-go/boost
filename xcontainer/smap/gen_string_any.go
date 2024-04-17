@@ -238,8 +238,10 @@ func (m *StringAny) doSetWithLockCheckWithFunc(key string, f func(key string) in
 		return got, false
 	}
 
-	shard.items[key] = f(key)
+	val := f(key)
+	shard.items[key] = val
 	isSet = true
+	result = val
 	shard.Unlock()
 	return
 }

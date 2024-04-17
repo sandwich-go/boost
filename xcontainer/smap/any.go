@@ -232,9 +232,10 @@ func (m *Concurrent[K, V]) doSetWithLockCheckWithFunc(key K, f func(key K) V) (r
 		shard.Unlock()
 		return got, false
 	}
-
-	shard.items[key] = f(key)
+	val := f(key)
+	shard.items[key] = val
 	isSet = true
+	result = val
 	shard.Unlock()
 	return
 }
