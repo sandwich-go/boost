@@ -238,8 +238,10 @@ func (m *IntAny) doSetWithLockCheckWithFunc(key int, f func(key int) interface{}
 		return got, false
 	}
 
-	shard.items[key] = f(key)
+	val := f(key)
+	shard.items[key] = val
 	isSet = true
+	result = val
 	shard.Unlock()
 	return
 }
