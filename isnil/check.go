@@ -16,5 +16,6 @@ func Check(any interface{}) bool {
 		return checker.IsNil()
 	}
 
-	return reflect.ValueOf(any).Kind() == reflect.Ptr && reflect.ValueOf(any).IsNil()
+	v := reflect.ValueOf(any)
+	return v.Kind() == reflect.Ptr && v.IsNil()
 }
