@@ -2,7 +2,11 @@
 // mechanism.
 package singleflight
 
-import "sync"
+import (
+	"github.com/sandwich-go/boost/xerror"
+	"github.com/sandwich-go/boost/xpanic"
+	"sync"
+)
 
 // call is an in-flight or completed Do call
 type call struct {
@@ -40,7 +44,12 @@ func (g *Group) Do(key string, fn func() (interface{}, error)) (interface{}, err
 	g.m[key] = c
 	g.mu.Unlock()
 
-	c.val, c.err = fn()
+	xpanic.Do(func() {
+		c.val, c.err = fn()
+	}, func(p *xpanic.Panic) {
+		c.err = xerror.NewText("panic with: %v", p)
+	})
+
 	c.wg.Done()
 
 	g.mu.Lock()
