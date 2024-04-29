@@ -56,10 +56,11 @@ func (t *DanglingTimer) Stop() {
 func (t *DanglingTimer) Reset(d time.Duration) bool { return t.t.Reset(d) }
 
 func (t *DanglingTimer) Cb() {
-	t.lock.Lock()
-	defer t.lock.Unlock()
-	if t.cb != nil {
-		t.cb()
+	t.lock.RLock()
+	cb := t.cb
+	t.lock.RUnlock()
+	if cb != nil {
+		cb()
 	}
 }
 
