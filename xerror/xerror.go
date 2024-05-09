@@ -1,6 +1,8 @@
 package xerror
 
-import "os"
+import (
+	"os"
+)
 
 var IsErrorWithStack = false
 
@@ -96,4 +98,38 @@ func WithStack() ErrorOption {
 		}
 		cc.callStack = callers(1)
 	}
+}
+
+func unwrap(err error) *Error {
+	for {
+		if err0, ok := err.(*Error); ok {
+			return err0
+		}
+		switch x := err.(type) {
+		case interface{ Unwrap() error }:
+			if err = x.Unwrap(); err == nil {
+				return nil
+			}
+		case interface{ Unwrap() []error }:
+			for _, err0 := range x.Unwrap() {
+				if err0 == nil {
+					continue
+				}
+				if err1 := unwrap(err0); err1 != nil {
+					return err1
+				}
+			}
+			return nil
+		default:
+			return nil
+		}
+	}
+}
+
+// Unwrap 递归 unwrap err, 如果是 *Error，则返回，否则返回 nil
+func Unwrap(err error) *Error {
+	if err == nil {
+		return nil
+	}
+	return unwrap(err)
 }
