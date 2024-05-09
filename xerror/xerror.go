@@ -100,7 +100,7 @@ func WithStack() ErrorOption {
 	}
 }
 
-func hasCode(err error, code int32) bool {
+func containsCode(err error, code int32) bool {
 	for {
 		if err0, ok := err.(APICode); ok && err0.Code() == code {
 			return true
@@ -115,7 +115,7 @@ func hasCode(err error, code int32) bool {
 				if err0 == nil {
 					continue
 				}
-				if hasCode(err0, code) {
+				if containsCode(err0, code) {
 					return true
 				}
 			}
@@ -126,10 +126,10 @@ func hasCode(err error, code int32) bool {
 	}
 }
 
-// HasCode 是否有某个 code
-func HasCode(err error, code int32) bool {
+// ContainsCode 是否有某个 code
+func ContainsCode(err error, code int32) bool {
 	if err == nil {
 		return false
 	}
-	return hasCode(err, code)
+	return containsCode(err, code)
 }
