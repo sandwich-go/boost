@@ -100,36 +100,36 @@ func WithStack() ErrorOption {
 	}
 }
 
-func unwrap(err error) *Error {
+func hasCode(err error, code int32) bool {
 	for {
-		if err0, ok := err.(*Error); ok {
-			return err0
+		if err0, ok := err.(APICode); ok && err0.Code() == code {
+			return true
 		}
 		switch x := err.(type) {
 		case interface{ Unwrap() error }:
 			if err = x.Unwrap(); err == nil {
-				return nil
+				return false
 			}
 		case interface{ Unwrap() []error }:
 			for _, err0 := range x.Unwrap() {
 				if err0 == nil {
 					continue
 				}
-				if err1 := unwrap(err0); err1 != nil {
-					return err1
+				if hasCode(err0, code) {
+					return true
 				}
 			}
-			return nil
+			return false
 		default:
-			return nil
+			return false
 		}
 	}
 }
 
-// Unwrap 递归 unwrap err, 如果是 *Error，则返回，否则返回 nil
-func Unwrap(err error) *Error {
+// HasCode 是否有某个 code
+func HasCode(err error, code int32) bool {
 	if err == nil {
-		return nil
+		return false
 	}
-	return unwrap(err)
+	return hasCode(err, code)
 }
