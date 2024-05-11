@@ -1,6 +1,8 @@
 package xerror
 
-import "os"
+import (
+	"os"
+)
 
 var IsErrorWithStack = false
 
@@ -96,4 +98,38 @@ func WithStack() ErrorOption {
 		}
 		cc.callStack = callers(1)
 	}
+}
+
+func containsCode(err error, code int32) bool {
+	for {
+		if err0, ok := err.(APICode); ok && err0.Code() == code {
+			return true
+		}
+		switch x := err.(type) {
+		case interface{ Unwrap() error }:
+			if err = x.Unwrap(); err == nil {
+				return false
+			}
+		case interface{ Unwrap() []error }:
+			for _, err0 := range x.Unwrap() {
+				if err0 == nil {
+					continue
+				}
+				if containsCode(err0, code) {
+					return true
+				}
+			}
+			return false
+		default:
+			return false
+		}
+	}
+}
+
+// ContainsCode 是否有某个 code
+func ContainsCode(err error, code int32) bool {
+	if err == nil {
+		return false
+	}
+	return containsCode(err, code)
 }
