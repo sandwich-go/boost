@@ -212,11 +212,33 @@ func TestDoFirstOk(t *testing.T) {
 }
 
 func TestRetryDelay(t *testing.T) {
+	log.Println("TestRetryDelay ==> ")
 	lastMilli := time.Now().UnixMilli()
-	Do(func(attempt uint) error {
+	_ = Do(func(attempt uint) error {
 		tt := time.Now().UnixMilli()
 		log.Println(tt, tt-lastMilli)
 		lastMilli = tt
 		return errors.New("some error")
 	}, WithDelay(time.Millisecond*100), WithLimit(3))
+}
+func TestBackoffDelay(t *testing.T) {
+	log.Println("TestBackoffDelay ==> ")
+	start := time.Now()
+	last := start
+	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Duration(5)*time.Second)
+	defer cancelFunc()
+	_ = Do(
+		func(attempt uint) (errPick error) {
+			tt := time.Now()
+			log.Println(fmt.Sprintf("last:%s start:", time.Now().Sub(last)), time.Now().Sub(start))
+			last = tt
+			return errors.New("some error")
+		},
+		WithLimit(10),
+		WithDelay(time.Duration(30)*time.Millisecond),
+		WithMaxDelay(time.Second*3),
+		WithContext(ctx),
+		WithLastErrorOnly(true),
+	)
+	log.Println("TestBackoffDelay ==> ", fmt.Sprint(time.Now().Sub(start)))
 }
