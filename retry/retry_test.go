@@ -234,9 +234,9 @@ func TestBackoffDelay(t *testing.T) {
 			last = tt
 			return errors.New("some error")
 		},
-		WithLimit(10),
+		WithLimit(30),
 		WithDelay(time.Duration(30)*time.Millisecond),
-		WithMaxDelay(time.Second*3),
+		WithMaxDelay(time.Second),
 		WithContext(ctx),
 		WithLastErrorOnly(true),
 	)
