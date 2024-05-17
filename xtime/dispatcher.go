@@ -17,7 +17,14 @@ const (
 	DefaultTimerDomain = "timer-domain-system"
 )
 
-type Dispatcher interface {
+// Lifecycle manages the start and close lifecycle methods.
+type Lifecycle interface {
+	Start()
+	Close()
+}
+
+// TimerDispatcher manages timer-related functionalities.
+type TimerDispatcher interface {
 	AfterFunc(d time.Duration, cb func()) *SafeTimer
 	AfterFuncWithOwnershipTransfer(td time.Duration, cb func()) *DanglingTimer
 	CronFunc(cronExpr *cron.Expression, cb func()) *Cron
@@ -30,8 +37,11 @@ type Dispatcher interface {
 	AfterFuncWithOwnershipTransferInDomain(td time.Duration, cb func(), domain string) *DanglingTimer
 
 	TimerNotify() <-chan Timer
-	Close()
-	Start()
+}
+
+type Dispatcher interface {
+	TimerDispatcher
+	Lifecycle
 }
 
 type TickerDispatcher interface {
