@@ -1,6 +1,7 @@
 package xerror
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -17,7 +18,7 @@ type Array struct {
 }
 
 // Error 实现 error 接口
-func (e Array) Error() string {
+func (e *Array) Error() string {
 	fn := e.formatFunc
 	if fn == nil {
 		fn = ListFormatFunc
@@ -49,6 +50,19 @@ func (e *Array) Err() error {
 	return e
 }
 
+// Is 对 errors.Is 的支持
+func (e *Array) Is(target error) bool {
+	if e == nil || len(e.errors) == 0 {
+		return false
+	}
+	for _, er := range e.errors {
+		if errors.Is(er, target) {
+			return true
+		}
+	}
+	return false
+}
+
 // String
 func (e *Array) String() string { return fmt.Sprintf("*%#v", *e) }
 
@@ -70,8 +84,9 @@ var DotFormatFunc = func(es []error) string {
 
 // ListFormatFunc 多个 error，列表输出
 // 如输出: 2 errors occurred:
-//		 #1: error 1
-//		 #2: error 2
+//
+//	#1: error 1
+//	#2: error 2
 var ListFormatFunc = func(es []error) string {
 	points := make([]string, len(es))
 	for i, err := range es {

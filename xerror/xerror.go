@@ -1,6 +1,7 @@
 package xerror
 
 import (
+	"errors"
 	"os"
 )
 
@@ -63,6 +64,9 @@ func (cc *Error) UnsetLogic() *Error {
 
 // Unwrap 兼容 errors.Unwrap
 func (cc *Error) Unwrap() error { return cc.err }
+
+// Is 对 errors.Is 的支持
+func (cc *Error) Is(target error) bool { return cc.err != nil && errors.Is(cc.err, target) }
 
 // New 新建 Error 对象
 func New(opts ...ErrorOption) *Error {
