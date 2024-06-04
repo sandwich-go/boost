@@ -80,6 +80,6 @@ func KeyToHash(key interface{}) uint64 {
 	case int64:
 		return uint64(k)
 	default:
-		panic("Key type not supported")
+		return uint64(AnyHash(key, 0))
 	}
 }

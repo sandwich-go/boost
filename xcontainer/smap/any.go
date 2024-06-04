@@ -13,27 +13,23 @@ import (
 
 var DefaultShardCount = uint64(32)
 
-type mapKey interface {
-	int | int8 | int16 | int32 | int64 | uint | uint8 | uint16 | uint32 | uint64 | uintptr | float32 | float64 | complex64 | complex128 | string
-}
-
-type Concurrent[K mapKey, V any] struct {
+type Concurrent[K comparable, V any] struct {
 	shardedList  []*Sharded[K, V]
 	shardedCount uint64
 }
 
-type Sharded[K mapKey, V any] struct {
+type Sharded[K comparable, V any] struct {
 	items map[K]V
 	sync.RWMutex
 }
 
-type Tuple[K mapKey, V any] struct {
+type Tuple[K comparable, V any] struct {
 	Key K
 	Val V
 }
 
 // NewWithSharedCount 返回协程安全版本
-func NewWithSharedCount[K mapKey, V any](sharedCount uint64) *Concurrent[K, V] {
+func NewWithSharedCount[K comparable, V any](sharedCount uint64) *Concurrent[K, V] {
 	p := &Concurrent[K, V]{
 		shardedCount: sharedCount,
 		shardedList:  make([]*Sharded[K, V], sharedCount),
@@ -45,7 +41,7 @@ func NewWithSharedCount[K mapKey, V any](sharedCount uint64) *Concurrent[K, V] {
 }
 
 // New 返回协程安全版本
-func New[K mapKey, V any]() *Concurrent[K, V] {
+func New[K comparable, V any]() *Concurrent[K, V] {
 	return NewWithSharedCount[K, V](DefaultShardCount)
 }
 

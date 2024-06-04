@@ -6,7 +6,34 @@ import (
 	"testing"
 )
 
+type ss string
+type ii int
+
 func TestAnyInt32String(t *testing.T) {
+	Convey("test sync array should work ok", t, func() {
+		tr0 := New[ss, ii]()
+		tr1 := New[ii, ss]()
+
+		So(tr0.Len(), ShouldEqual, 0)
+		So(tr1.Len(), ShouldEqual, 0)
+		tr0.Set("3", 1)
+		tr1.Set(1, "3")
+
+		So(tr0.Len(), ShouldEqual, 1)
+		So(tr1.Len(), ShouldEqual, 1)
+
+		So(tr0.SetNX("4", 2), ShouldBeTrue)
+		So(tr0.SetNX("3", 2), ShouldBeFalse)
+
+		So(tr1.SetNX(2, "4"), ShouldBeTrue)
+		So(tr1.SetNX(1, "3"), ShouldBeFalse)
+
+		So(tr0.GetAll(), ShouldContainKey, ss("3"))
+		So(tr0.GetAll(), ShouldContainKey, ss("4"))
+
+		So(tr1.GetAll(), ShouldContainKey, ii(1))
+		So(tr1.GetAll(), ShouldContainKey, ii(2))
+	})
 	Convey("test sync array", t, func() {
 		tr := New[int32, string]()
 		So(tr.Len(), ShouldEqual, 0)
