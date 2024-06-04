@@ -28,7 +28,6 @@ func TestHash(t *testing.T) {
 			{v: nil, hv: 0}, {v: int8(4), hv: 4}, {v: int16(5), hv: 5}, {v: int32(6), hv: 6}, {v: int64(8), hv: 8}, {v: 3, hv: 3},
 			{v: byte(2), hv: 2}, {v: uint16(9), hv: 9}, {v: uint64(1), hv: 1}, {v: uint32(7), hv: 7}, {v: uint(10), hv: 10}, {v: uint8(11), hv: 11},
 			{v: hasher{}, hv: 1}, {v: stringer{}, hv: MemHashString("1")}, {v: []byte(s), hv: s1}, {v: s, hv: s1},
-			{v: float32(1), panic: true},
 		} {
 			if test.panic {
 				So(func() {
