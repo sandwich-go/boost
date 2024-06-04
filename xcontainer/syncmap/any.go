@@ -5,18 +5,14 @@ import (
 	"sync"
 )
 
-type mapKey interface {
-	int | int8 | int16 | int32 | int64 | uint | uint8 | uint16 | uint32 | uint64 | uintptr | float32 | float64 | complex64 | complex128 | string
-}
-
 // SyncMap 定义并发安全的映射，使用 sync.Map 来实现
-type SyncMap[K mapKey, V any] struct {
+type SyncMap[K any, V any] struct {
 	sm     sync.Map
 	locker sync.RWMutex
 }
 
 // New 构造函数，返回一个新的 SyncMap
-func New[K mapKey, V any]() *SyncMap[K, V] {
+func New[K any, V any]() *SyncMap[K, V] {
 	return &SyncMap[K, V]{}
 }
 
