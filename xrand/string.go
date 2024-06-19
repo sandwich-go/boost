@@ -2,6 +2,7 @@ package xrand
 
 import (
 	"fmt"
+	"strings"
 	"time"
 	"unsafe"
 )
@@ -16,20 +17,24 @@ const (
 var nowFunc = time.Now
 
 // StringWithTimestamp 随机 n 个字符的字符串，并以当前时间戳做后缀
-func StringWithTimestamp(n int) string {
-	return fmt.Sprintf("%s_%d", String(n), nowFunc().Unix())
+func StringWithTimestamp(n int, letterList ...string) string {
+	return fmt.Sprintf("%s_%d", String(n, letterList...), nowFunc().Unix())
 }
 
 // String 随机 n 个字符的字符串
-func String(n int) string {
+func String(n int, letterList ...string) string {
+	letterBytesUsing := strings.Join(letterList, "")
+	if letterBytesUsing == "" {
+		letterBytesUsing = letterBytes
+	}
 	b := make([]byte, n)
 	// A src.Int63() generates 63 random bits, enough for letterIdxMax characters!
 	for i, cache, remain := n-1, FastRand(), letterIdxMax; i >= 0; {
 		if remain == 0 {
 			cache, remain = FastRand(), letterIdxMax
 		}
-		if idx := int(cache & letterIdxMask); idx < len(letterBytes) {
-			b[i] = letterBytes[idx]
+		if idx := int(cache & letterIdxMask); idx < len(letterBytesUsing) {
+			b[i] = letterBytesUsing[idx]
 			i--
 		}
 		cache >>= letterIdxBits
