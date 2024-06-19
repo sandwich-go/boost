@@ -16,6 +16,26 @@ func TestCloud(t *testing.T) {
 	}
 	sb := MustNew(StorageTypeS3, key, secret, "zhongtai", WithRegion("us-east-2"))
 
+	testUtil(sb, t)
+}
+
+func TestQCloud(t *testing.T) {
+	// https://cloud.tencent.com/document/faq/436/102489
+	// virtual-hosted-style
+	key := os.Getenv("RELEASE_QCLOUD_KEY")
+	secret := os.Getenv("RELEASE_QCLOUD_SECRET")
+	bucket := os.Getenv("RELEASE_QCLOUD_BUCKET")
+	if len(key) == 0 ||
+		len(secret) == 0 ||
+		len(bucket) == 0 {
+		return
+	}
+	sb := MustNew(StorageTypeQCloud, key, secret, bucket, WithRegion("ap-beijing"))
+
+	testUtil(sb, t)
+}
+
+func testUtil(sb Storage, t *testing.T) {
 	Convey("put/stat/list/copy object", t, func() {
 		str := "test"
 		src := "testtesttest"
