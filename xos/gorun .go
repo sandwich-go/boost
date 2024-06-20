@@ -20,7 +20,7 @@ func IsGoRun() bool {
 		func() {
 			ex, _ := os.Executable()
 			exPath := filepath.Dir(ex)
-			isGoRun = strings.Contains(exPath, "go-build") || strings.Contains(ex, "go_build_") || strings.Contains(exPath, "/private/var/folders/")
+			isGoRun = strings.Contains(exPath, "go-build") || strings.Contains(ex, "Library/Caches/JetBrains") || strings.Contains(ex, "go_build_") || strings.Contains(exPath, "/private/var/folders/")
 		},
 	)
 	return isGoRun
