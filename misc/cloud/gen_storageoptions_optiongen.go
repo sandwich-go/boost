@@ -7,6 +7,8 @@ package cloud
 type StorageOptions struct {
 	// annotation@Region(comment="云存储的Region")
 	Region string
+	// annotation@StorageType(comment="云存储类型")
+	StorageType StorageType
 }
 
 // NewStorageOptions new StorageOptions
@@ -38,6 +40,13 @@ func WithRegion(v string) StorageOption {
 	}
 }
 
+// WithStorageType 云存储类型
+func WithStorageType(v StorageType) StorageOption {
+	return func(cc *StorageOptions) {
+		cc.StorageType = v
+	}
+}
+
 // InstallStorageOptionsWatchDog the installed func will called when NewStorageOptions  called
 func InstallStorageOptionsWatchDog(dog func(cc *StorageOptions)) { watchDogStorageOptions = dog }
 
@@ -50,6 +59,7 @@ func newDefaultStorageOptions() *StorageOptions {
 
 	for _, opt := range [...]StorageOption{
 		WithRegion(""),
+		WithStorageType(""),
 	} {
 		opt(cc)
 	}
@@ -58,11 +68,13 @@ func newDefaultStorageOptions() *StorageOptions {
 }
 
 // all getter func
-func (cc *StorageOptions) GetRegion() string { return cc.Region }
+func (cc *StorageOptions) GetRegion() string           { return cc.Region }
+func (cc *StorageOptions) GetStorageType() StorageType { return cc.StorageType }
 
 // StorageOptionsVisitor visitor interface for StorageOptions
 type StorageOptionsVisitor interface {
 	GetRegion() string
+	GetStorageType() StorageType
 }
 
 // StorageOptionsInterface visitor + ApplyOption interface for StorageOptions

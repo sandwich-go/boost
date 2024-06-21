@@ -96,6 +96,10 @@ func (c baseStorage) PutObject(ctx context.Context, objName string, reader io.Re
 		ContentDisposition: spec.ContentDisposition,
 		CacheControl:       spec.CacheControl,
 	}
+	storageType := c.spec.StorageType
+	if storageType == StorageTypeGCS || storageType == StorageTypeQCloud {
+		op.DisableContentSha256 = true
+	}
 	if objSize == 0 {
 		op.DisableMultipart = true
 	}

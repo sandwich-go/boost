@@ -17,5 +17,7 @@ func StorageOptionsOptionDeclareWithDefault() interface{} {
 	return map[string]interface{}{
 		// annotation@Region(comment="云存储的Region")
 		"Region": "",
+		// annotation@StorageType(comment="云存储类型")
+		"StorageType": StorageType(""),
 	}
 }
