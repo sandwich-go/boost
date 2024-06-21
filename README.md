@@ -53,4 +53,5 @@ type Logger interface {
     Error(string)
     Fatal(string)
 }
+
 ```
