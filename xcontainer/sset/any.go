@@ -1,0 +1,253 @@
+// sset 包提供了多种类型的集合
+// 可以产生一个带读写锁的线程安全的SyncSet，也可以产生一个非线程安全的SyncSet
+// New 产生非协程安全的版本
+// NewSync 产生协程安全的版本
+package sset
+
+import (
+	"sync"
+)
+
+type Set[T comparable] struct {
+	mu   *localRWMutex
+	data map[T]struct{}
+}
+
+// New 创建非协程安全版本
+func New[T comparable]() *Set[T] { return newWithSafe[T](false) }
+
+// NewSync 创建协程安全版本
+func NewSync[T comparable]() *Set[T] { return newWithSafe[T](true) }
+
+func newWithSafe[T comparable](safe bool) *Set[T] {
+	return &Set[T]{data: make(map[T]struct{}), mu: newLocalRWMutex(safe)}
+}
+
+// Iterator 遍历
+func (set *Set[T]) Iterator(f func(v T) bool) {
+	set.mu.RLock()
+	defer set.mu.RUnlock()
+	for k := range set.data {
+		if !f(k) {
+			break
+		}
+	}
+}
+
+// Add 添加元素
+func (set *Set[T]) Add(items ...T) {
+	set.mu.Lock()
+	if set.data == nil {
+		set.data = make(map[T]struct{})
+	}
+	for _, v := range items {
+		set.data[v] = struct{}{}
+	}
+	set.mu.Unlock()
+}
+
+// AddIfNotExist 如果元素不存在则添加，如添加成功则返回true
+func (set *Set[T]) AddIfNotExist(item T) (addOK bool) {
+	if !set.Contains(item) {
+		set.mu.Lock()
+		defer set.mu.Unlock()
+		if set.data == nil {
+			set.data = make(map[T]struct{})
+		}
+		if _, ok := set.data[item]; !ok {
+			set.data[item] = struct{}{}
+			return true
+		}
+	}
+	return false
+}
+
+// AddIfNotExistFunc 如果元素不存在且f返回true则添加，如添加成功则返回true
+// f函数运行在lock之外
+func (set *Set[T]) AddIfNotExistFunc(item T, f func() bool) bool {
+	if !set.Contains(item) {
+		if f() {
+			set.mu.Lock()
+			defer set.mu.Unlock()
+			if set.data == nil {
+				set.data = make(map[T]struct{})
+			}
+			if _, ok := set.data[item]; !ok {
+				set.data[item] = struct{}{}
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// AddIfNotExistFuncLock 如果元素不存在且f返回true则添加，如添加成功则返回true
+// f函数运行在lock之内
+func (set *Set[T]) AddIfNotExistFuncLock(item T, f func() bool) bool {
+	if !set.Contains(item) {
+		set.mu.Lock()
+		defer set.mu.Unlock()
+		if set.data == nil {
+			set.data = make(map[T]struct{})
+		}
+		if f() {
+			if _, ok := set.data[item]; !ok {
+				set.data[item] = struct{}{}
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// Contains 是否存在元素
+func (set *Set[T]) Contains(item T) bool {
+	var ok bool
+	set.mu.RLock()
+	if set.data != nil {
+		_, ok = set.data[item]
+	}
+	set.mu.RUnlock()
+	return ok
+}
+
+// Remove 移除指定元素
+func (set *Set[T]) Remove(item T) {
+	set.mu.Lock()
+	if set.data != nil {
+		delete(set.data, item)
+	}
+	set.mu.Unlock()
+}
+
+// Size 返回长度
+func (set *Set[T]) Size() int {
+	set.mu.RLock()
+	l := len(set.data)
+	set.mu.RUnlock()
+	return l
+}
+
+// Clear 清理元素
+func (set *Set[T]) Clear() {
+	set.mu.Lock()
+	set.data = make(map[T]struct{})
+	set.mu.Unlock()
+}
+
+// Slice 返回元素slice
+func (set *Set[T]) Slice() []T {
+	set.mu.RLock()
+	var i = 0
+	var ret = make([]T, len(set.data))
+	for item := range set.data {
+		ret[i] = item
+		i++
+	}
+	set.mu.RUnlock()
+	return ret
+}
+
+// LockFunc 锁住当前set调用方法f
+func (set *Set[T]) LockFunc(f func(m map[T]struct{})) {
+	set.mu.Lock()
+	defer set.mu.Unlock()
+	f(set.data)
+}
+
+// RLockFunc 读锁住当前set调用方法f
+func (set *Set[T]) RLockFunc(f func(m map[T]struct{})) {
+	set.mu.RLock()
+	defer set.mu.RUnlock()
+	f(set.data)
+}
+
+// Equal 是否相等
+func (set *Set[T]) Equal(other *Set[T]) bool {
+	if set == other {
+		return true
+	}
+	set.mu.RLock()
+	defer set.mu.RUnlock()
+	other.mu.RLock()
+	defer other.mu.RUnlock()
+	if len(set.data) != len(other.data) {
+		return false
+	}
+	for key := range set.data {
+		if _, ok := other.data[key]; !ok {
+			return false
+		}
+	}
+	return true
+}
+
+// Merge 合并set，返回当前set
+func (set *Set[T]) Merge(others ...*Set[T]) *Set[T] {
+	set.mu.Lock()
+	defer set.mu.Unlock()
+	for _, other := range others {
+		if set != other {
+			other.mu.RLock()
+		}
+		for k, v := range other.data {
+			set.data[k] = v
+		}
+		if set != other {
+			other.mu.RUnlock()
+		}
+	}
+	return set
+}
+
+// Walk 对每个元素作用f方法
+func (set *Set[T]) Walk(f func(item T) T) *Set[T] {
+	set.mu.Lock()
+	defer set.mu.Unlock()
+	m := make(map[T]struct{}, len(set.data))
+	for k, v := range set.data {
+		m[f(k)] = v
+	}
+	set.data = m
+	return set
+}
+
+type localRWMutex struct {
+	*sync.RWMutex
+}
+
+func newLocalRWMutex(safe bool) *localRWMutex {
+	mu := localRWMutex{}
+	if safe {
+		mu.RWMutex = new(sync.RWMutex)
+	}
+	return &mu
+}
+
+func (mu *localRWMutex) IsSafe() bool {
+	return mu.RWMutex != nil
+}
+
+func (mu *localRWMutex) Lock() {
+	if mu.RWMutex != nil {
+		mu.RWMutex.Lock()
+	}
+}
+
+func (mu *localRWMutex) Unlock() {
+	if mu.RWMutex != nil {
+		mu.RWMutex.Unlock()
+	}
+}
+
+func (mu *localRWMutex) RLock() {
+	if mu.RWMutex != nil {
+		mu.RWMutex.RLock()
+	}
+}
+
+func (mu *localRWMutex) RUnlock() {
+	if mu.RWMutex != nil {
+		mu.RWMutex.RUnlock()
+	}
+}
