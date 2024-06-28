@@ -3,6 +3,7 @@ package xmath
 import (
 	"cmp"
 	"golang.org/x/exp/constraints"
+	"math/rand/v2"
 )
 
 // Max 返回大值
@@ -36,4 +37,13 @@ func EffectZeroLimit[T constraints.Unsigned](v, change T) T {
 		v = 0
 	}
 	return v
+}
+
+// Disturb 随机值，值的范围 [n*(100-percent)/100, n*(100+percent)/100]
+func Disturb[N constraints.Integer](n N, percent N) N {
+	w := rand.N(n * percent / 100)
+	if w%2 == 0 {
+		return n + w
+	}
+	return n - w
 }
