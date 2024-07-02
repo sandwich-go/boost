@@ -2,8 +2,9 @@ package xpanic
 
 import (
 	"errors"
-	. "github.com/smartystreets/goconvey/convey"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestPanicWhen(t *testing.T) {
@@ -26,5 +27,6 @@ func TestPanicWhen(t *testing.T) {
 		So(func() { WhenError(nil) }, ShouldNotPanic)
 		So(func() { WhenTrue(true, "%d", 1) }, ShouldPanic)
 		So(func() { WhenTrue(false, "%d", 1) }, ShouldNotPanic)
+		So(func() { WhenFalse(false, "%d", 1) }, ShouldPanic)
 	})
 }
