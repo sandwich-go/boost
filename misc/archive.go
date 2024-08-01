@@ -1,12 +1,14 @@
 package misc
 
 import (
+	"github.com/sandwich-go/boost/misc/xbit"
 	"github.com/sandwich-go/boost/xpool"
 )
 
 // Archive orm record 回滚使用的协助类
 type Archive[T any] struct {
-	Data T
+	Fields xbit.FieldSet
+	Data   T
 }
 
 type ArchivePool[T any] struct {
@@ -34,5 +36,6 @@ func (p *ArchivePool[T]) Put(a *Archive[T]) {
 	}
 	var zero T
 	a.Data = zero
+	a.Fields = 0
 	p.pool.Put(a)
 }
