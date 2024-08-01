@@ -16,7 +16,7 @@ type (
 	FieldSet uint64
 )
 
-var (
+const (
 	// FieldMax 最大位数
 	FieldMax Field = 64
 	// FieldSetFull 所有位数均为1
