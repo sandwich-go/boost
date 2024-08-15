@@ -165,3 +165,23 @@ func (x *AtomicString) Get() string {
 func (x *AtomicString) Set(v string) {
 	x.v.Store(v)
 }
+
+// AtomicTime is an atomic type-safe wrapper for time.Time values.
+type AtomicTime struct {
+	v int64
+}
+
+// Set Store atomically stores the passed time.Time.
+func (t *AtomicTime) Set(v time.Time) {
+	atomic.StoreInt64(&t.v, v.UnixNano())
+}
+
+// Get Load atomically loads the wrapped time.Time.
+func (t *AtomicTime) Get() time.Time {
+	return time.Unix(0, atomic.LoadInt64(&t.v))
+}
+
+// CompareAndSwap executes the compare-and-swap operation for a time.Time value.
+func (t *AtomicTime) CompareAndSwap(oldval, newval time.Time) bool {
+	return atomic.CompareAndSwapInt64(&t.v, oldval.UnixNano(), newval.UnixNano())
+}
