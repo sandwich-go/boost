@@ -2,6 +2,8 @@ package xparallel
 
 import "sync"
 
+const NoLimit = 0
+
 func worker[V any](wg *sync.WaitGroup, ch chan V, fn func(V)) {
 	for v := range ch {
 		fn(v)
@@ -12,7 +14,7 @@ func worker[V any](wg *sync.WaitGroup, ch chan V, fn func(V)) {
 func closeThenParallel[V any](maxp int, ch chan V, fn func(V)) {
 	close(ch)
 	concurrency := len(ch)
-	if maxp > 0 && concurrency > maxp {
+	if maxp != NoLimit && concurrency > maxp {
 		concurrency = maxp
 	}
 	var wg sync.WaitGroup
