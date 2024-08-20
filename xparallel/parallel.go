@@ -12,7 +12,7 @@ func worker[V any](wg *sync.WaitGroup, ch chan V, fn func(V)) {
 func closeThenParallel[V any](maxp int, ch chan V, fn func(V)) {
 	close(ch)
 	concurrency := len(ch)
-	if concurrency > maxp {
+	if maxp > 0 && concurrency > maxp {
 		concurrency = maxp
 	}
 	var wg sync.WaitGroup
