@@ -29,7 +29,7 @@ type Engine[V any] struct {
 }
 
 // NewEngine 创建 lru 类型的引擎
-// interval ticker 间隔时间，过期时间需要 [interval*0.75, interval*1.25] 之前才准确
+// interval ticker 间隔时间，过期时间需要 [interval*0.9, interval*1.1] 之前才准确
 // locker 节点锁，保证添加/删除/过期元素并发安全
 // expireHandler 过期元素处理器
 func NewEngine[V any](interval time.Duration, locker sync.Locker, expireHandler func(V)) *Engine[V] {
@@ -40,7 +40,7 @@ func NewEngine[V any](interval time.Duration, locker sync.Locker, expireHandler 
 	go func() {
 		slept := min(time.Second, interval)
 		for {
-			time.Sleep(xmath.Disturb(slept, 25))
+			time.Sleep(xmath.Disturb(slept, 10))
 			e.expire(locker)
 		}
 	}()
