@@ -14,6 +14,7 @@ func TestPoint(t *testing.T) {
 		So(p0.Y(), ShouldEqual, int8(2))
 
 		t.Log(p0)
+
 		p2 := p0.Add(p1)
 		So(p2.X(), ShouldEqual, int8(1*2))
 		So(p2.Y(), ShouldEqual, int8(2*2))

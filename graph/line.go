@@ -25,7 +25,7 @@ func (x Line[T]) End() Point[T] { return x.end }
 
 // Equals reports whether r and s contain the same set of points. All empty
 // rectangles are considered equal.
-func (x Line[T]) Equals(l Line[T]) bool { return x.start.Equals(l.start) && x.end.Equals(l.end) }
+func (x Line[T]) Equals(l Line[T]) bool { return x == l }
 
 // RangePoints range all points in rectangle.
 // if with return false, aborted range.
