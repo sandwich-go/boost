@@ -42,6 +42,9 @@ func (x Line[T]) RangePoints(with func(p Point[T]) bool) {
 		return
 	}
 
+	if !with(x.start) {
+		return
+	}
 	xy := float64(x.end.y - x.start.y)
 	xx := float64(x.end.x - x.start.x)
 	xyabs := math.Abs(xy)
