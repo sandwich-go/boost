@@ -35,6 +35,19 @@ func TestQCloud(t *testing.T) {
 	testUtil(sb, t)
 }
 
+func TestAliCloud(t *testing.T) {
+	key := os.Getenv("RELEASE_ALICLOUD_KEY")
+	secret := os.Getenv("RELEASE_ALICLOUD_SECRET")
+	bucket := os.Getenv("RELEASE_ALICLOUD_BUCKET")
+	if len(key) == 0 ||
+		len(secret) == 0 ||
+		len(bucket) == 0 {
+		return
+	}
+	sb := MustNew(StorageTypeAliCS, key, secret, bucket, WithRegion("us-east-1"))
+	testUtil(sb, t)
+}
+
 func testUtil(sb Storage, t *testing.T) {
 	Convey("put/stat/list/copy object", t, func() {
 		str := "test"

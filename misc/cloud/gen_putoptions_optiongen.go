@@ -3,6 +3,8 @@
 
 package cloud
 
+import "net/http"
+
 // PutOptions should use NewPutOptions to initialize it
 type PutOptions struct {
 	// annotation@ContentType(comment="上传文件的类型")
@@ -11,6 +13,16 @@ type PutOptions struct {
 	ContentDisposition string
 	// annotation@CacheControl(comment="上传文件的缓存控制")
 	CacheControl string
+	// annotation@DisableContentSha256(comment="禁止发送 Content-Sha256, 在非s3场景下，文件较小时，content-sha256 也会出现在文件内容中")
+	DisableContentSha256 bool
+	// annotation@CustomHeader(comment="自定义上传时附加的http header")
+	CustomHeader http.Header
+	// annotation@CustomMeta(comment="自定义上传时的 meta 信息")
+	CustomMeta map[string]string
+	// annotation@SendContentMd5(comment="gcs需要在上传时，minio 参数中指定 md5-base64")
+	SendContentMd5 bool
+	// annotation@FileMD5(comment="文件MD5")
+	FileMD5 string
 }
 
 // NewPutOptions new PutOptions
@@ -56,6 +68,41 @@ func WithCacheControl(v string) PutOption {
 	}
 }
 
+// WithDisableContentSha256 禁止发送 Content-Sha256, 在非s3场景下，文件较小时，content-sha256 也会出现在文件内容中
+func WithDisableContentSha256(v bool) PutOption {
+	return func(cc *PutOptions) {
+		cc.DisableContentSha256 = v
+	}
+}
+
+// WithCustomHeader 自定义上传时附加的http header
+func WithCustomHeader(v http.Header) PutOption {
+	return func(cc *PutOptions) {
+		cc.CustomHeader = v
+	}
+}
+
+// WithCustomMeta 自定义上传时的 meta 信息
+func WithCustomMeta(v map[string]string) PutOption {
+	return func(cc *PutOptions) {
+		cc.CustomMeta = v
+	}
+}
+
+// WithSendContentMd5 gcs需要在上传时，minio 参数中指定 md5-base64
+func WithSendContentMd5(v bool) PutOption {
+	return func(cc *PutOptions) {
+		cc.SendContentMd5 = v
+	}
+}
+
+// WithFileMD5 文件MD5
+func WithFileMD5(v string) PutOption {
+	return func(cc *PutOptions) {
+		cc.FileMD5 = v
+	}
+}
+
 // InstallPutOptionsWatchDog the installed func will called when NewPutOptions  called
 func InstallPutOptionsWatchDog(dog func(cc *PutOptions)) { watchDogPutOptions = dog }
 
@@ -70,6 +117,11 @@ func newDefaultPutOptions() *PutOptions {
 		WithContentType("application/octet-stream"),
 		WithContentDisposition(""),
 		WithCacheControl(""),
+		WithDisableContentSha256(false),
+		WithCustomHeader(nil),
+		WithCustomMeta(nil),
+		WithSendContentMd5(false),
+		WithFileMD5(""),
 	} {
 		opt(cc)
 	}
@@ -78,15 +130,25 @@ func newDefaultPutOptions() *PutOptions {
 }
 
 // all getter func
-func (cc *PutOptions) GetContentType() string        { return cc.ContentType }
-func (cc *PutOptions) GetContentDisposition() string { return cc.ContentDisposition }
-func (cc *PutOptions) GetCacheControl() string       { return cc.CacheControl }
+func (cc *PutOptions) GetContentType() string           { return cc.ContentType }
+func (cc *PutOptions) GetContentDisposition() string    { return cc.ContentDisposition }
+func (cc *PutOptions) GetCacheControl() string          { return cc.CacheControl }
+func (cc *PutOptions) GetDisableContentSha256() bool    { return cc.DisableContentSha256 }
+func (cc *PutOptions) GetCustomHeader() http.Header     { return cc.CustomHeader }
+func (cc *PutOptions) GetCustomMeta() map[string]string { return cc.CustomMeta }
+func (cc *PutOptions) GetSendContentMd5() bool          { return cc.SendContentMd5 }
+func (cc *PutOptions) GetFileMD5() string               { return cc.FileMD5 }
 
 // PutOptionsVisitor visitor interface for PutOptions
 type PutOptionsVisitor interface {
 	GetContentType() string
 	GetContentDisposition() string
 	GetCacheControl() string
+	GetDisableContentSha256() bool
+	GetCustomHeader() http.Header
+	GetCustomMeta() map[string]string
+	GetSendContentMd5() bool
+	GetFileMD5() string
 }
 
 // PutOptionsInterface visitor + ApplyOption interface for PutOptions

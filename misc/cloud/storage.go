@@ -3,10 +3,13 @@ package cloud
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
+	"encoding/hex"
 	"github.com/sandwich-go/boost/xpanic"
 	"github.com/sandwich-go/minio-go"
 	"github.com/sandwich-go/minio-go/pkg/credentials"
 	"io"
+	"net/http"
 	"net/url"
 	"strings"
 )
@@ -31,6 +34,7 @@ type (
 
 // New 新建 Storage
 func New(st StorageType, accessKeyID string, secretAccessKey string, bucket string, opts ...StorageOption) (Storage, error) {
+	opts = append(opts, WithStorageType(st))
 	creator, ok := creators[st]
 	if !ok {
 		return nil, ErrUnknownStorageType
@@ -84,21 +88,30 @@ func (c baseStorage) ResolveObjectName(rawUrl string) (string, error) {
 	return strings.Trim(u.Path, "/"), nil
 }
 
-func (c baseStorage) String() string { return c.bucket }
+func (c baseStorage) Type() StorageType {
+	return c.spec.StorageType
+}
+
+func (c baseStorage) String() string {
+	return c.bucket
+}
+
 func (c baseStorage) DelObject(ctx context.Context, objName string) error {
 	return c.cli.RemoveObject(ctx, c.bucket, objName, minio.RemoveObjectOptions{})
 }
 
 func (c baseStorage) PutObject(ctx context.Context, objName string, reader io.Reader, objSize int, opts ...PutOption) (err error) {
-	spec := NewPutOptions(opts...)
+	spec, err := c.toSpec(opts...)
+	if err != nil {
+		return err
+	}
 	op := minio.PutObjectOptions{
 		ContentType:        spec.ContentType,
 		ContentDisposition: spec.ContentDisposition,
 		CacheControl:       spec.CacheControl,
-	}
-	storageType := c.spec.StorageType
-	if storageType == StorageTypeGCS || storageType == StorageTypeQCloud {
-		op.DisableContentSha256 = true
+		CustomHeaders:      spec.CustomHeader,
+		SendContentMd5:     spec.SendContentMd5,
+		UserMetadata:       spec.CustomMeta,
 	}
 	if objSize == 0 {
 		op.DisableMultipart = true
@@ -118,6 +131,7 @@ func (c baseStorage) StatObject(ctx context.Context, objName string) (ObjectInfo
 		LastModified: info.LastModified,
 		Size:         info.Size,
 		ContentType:  info.ContentType,
+		Meta:         info.UserMetadata,
 	}, nil
 }
 
@@ -135,6 +149,7 @@ func (c baseStorage) ListObjects(ctx context.Context, prefix string) <-chan Obje
 				LastModified: info.LastModified,
 				Size:         info.Size,
 				ContentType:  info.ContentType,
+				Meta:         info.UserMetadata,
 			}
 		}
 	}()
@@ -166,4 +181,34 @@ func (c baseStorage) CopyObject(ctx context.Context, destObjName, srcObjName str
 		Object: srcObjName,
 	})
 	return err
+}
+
+func (c baseStorage) toSpec(opts ...PutOption) (*PutOptions, error) {
+	storageType := c.spec.StorageType
+	spec := NewPutOptions(opts...)
+	var defaultOpts []PutOption
+	if storageType == StorageTypeGCS || storageType == StorageTypeQCloud {
+		defaultOpts = append(defaultOpts, WithDisableContentSha256(true))
+	}
+	if (storageType == StorageTypeQCloud) && len(spec.FileMD5) != 0 {
+		const CosHeaderMD5Key = "x-cos-meta-md5"
+		defaultOpts = append(defaultOpts, WithCustomHeader(http.Header{CosHeaderMD5Key: []string{spec.FileMD5}}))
+	}
+	if storageType == StorageTypeAliCS && len(spec.FileMD5) != 0 {
+		hexStyleMD5 := spec.FileMD5
+		binaryData := make([]byte, len(hexStyleMD5)/2)
+		_, err := hex.Decode(binaryData, []byte(hexStyleMD5))
+		if err != nil {
+			return nil, err
+		}
+		md5Base64ed := base64.StdEncoding.EncodeToString(binaryData)
+		defaultOpts = append(defaultOpts, WithCustomHeader(http.Header{"Content-MD5": []string{md5Base64ed}}))
+		defaultOpts = append(defaultOpts, WithCustomMeta(map[string]string{XAliCSMetaMD5: spec.FileMD5}))
+	}
+
+	if storageType == StorageTypeGCS {
+		defaultOpts = append(defaultOpts, WithSendContentMd5(true))
+	}
+	fullOpts := append(defaultOpts, opts...)
+	return NewPutOptions(fullOpts...), nil
 }

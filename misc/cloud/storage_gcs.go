@@ -17,7 +17,6 @@ type gcsStorage struct {
 }
 
 func newGCStorage(accessKeyID string, secretAccessKey string, bucket string, opts ...StorageOption) (Storage, error) {
-	opts = append(opts, WithStorageType(StorageTypeGCS))
 	bb, err := newBaseBucket(accessKeyID, secretAccessKey, bucket, func(options *StorageOptions) (ep string, err error) {
 		return "storage.googleapis.com", nil
 	}, opts...)
