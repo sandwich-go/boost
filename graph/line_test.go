@@ -16,5 +16,13 @@ func TestLine(t *testing.T) {
 		So(l0.End().Equals(e), ShouldBeTrue)
 
 		t.Log(l0)
+
+		var l2 Line[int64]
+		var l2PointNum int
+		l2.RangePoints(func(p Point[int64]) bool {
+			l2PointNum++
+			return true
+		})
+		So(l2PointNum, ShouldBeZeroValue)
 	})
 }
