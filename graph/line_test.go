@@ -24,5 +24,16 @@ func TestLine(t *testing.T) {
 			return true
 		})
 		So(l2PointNum, ShouldBeZeroValue)
+
+		var l3 = L[int8](s, s)
+		var l3Points []Point[int8]
+		l3.RangePoints(func(p Point[int8]) bool {
+			l3Points = append(l3Points, p)
+			return true
+		})
+		So(len(l3Points), ShouldEqual, 1)
+		for _, p := range l3Points {
+			So(p.Equals(s), ShouldBeTrue)
+		}
 	})
 }
