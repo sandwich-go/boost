@@ -42,5 +42,13 @@ func TestLine(t *testing.T) {
 			return true
 		})
 		So(len(l0Points), ShouldEqual, 4)
+
+		l4 := L[int8](e, s)
+		var l4Points []Point[int8]
+		l4.RangePoints(func(p Point[int8]) bool {
+			l4Points = append(l4Points, p)
+			return true
+		})
+		So(len(l4Points), ShouldEqual, 4)
 	})
 }
