@@ -145,6 +145,7 @@ func (r Rectangle[T]) Inset(n T) Rectangle[T] {
 	return r
 }
 
+// IsIntersect reports whether the rectangle intersect other rectangle.
 func (r Rectangle[T]) IsIntersect(s Rectangle[T]) bool { return !r.Intersect(s).Empty() }
 
 // Intersect returns the largest rectangle contained by both r and s. If the
@@ -200,6 +201,7 @@ func (r Rectangle[T]) Union(s Rectangle[T]) Rectangle[T] {
 	return r
 }
 
+// Has reports whether the rectangle contains the point.
 func (r Rectangle[T]) Has(p Point[T]) bool {
 	return cmp.Compare(p.x, r.min.x) >= 0 && cmp.Compare(p.x, r.max.x) <= 0 && cmp.Compare(p.y, r.min.y) >= 0 && cmp.Compare(p.y, r.max.y) <= 0
 }
