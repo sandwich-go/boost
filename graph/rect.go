@@ -264,6 +264,12 @@ func RectFromCenterSize[T Number](center, size Point[T]) Rectangle[T] {
 	return Rect(center.x-size.x, center.y-center.y, center.x+size.x, center.y+size.y)
 }
 
+// RectFromBottomLeftSize constructs a rectangle with the given BottomLeft and size.
+// Both dimensions of size must be non-negative.
+func RectFromBottomLeftSize[T Number](bottomLeft, size Point[T]) Rectangle[T] {
+	return Rect(bottomLeft.x, bottomLeft.y, bottomLeft.x+size.x, bottomLeft.y+size.y)
+}
+
 // HelixRectRangeFromCenterAndMargin 由center节点逆时针螺旋由内向外访问margin区域内的所有节点
 // 25   24   23   22   21
 // 10    9    8    7   20
