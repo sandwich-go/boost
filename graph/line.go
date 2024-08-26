@@ -35,8 +35,6 @@ func (x Line[T]) RangePoints(with func(p Point[T]) bool) {
 		return
 	}
 
-	var ps []Point[T]
-	ps = append(ps, x.start)
 	if x.start.Equals(x.end) {
 		with(x.start)
 		return
