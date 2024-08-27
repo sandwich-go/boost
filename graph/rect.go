@@ -18,6 +18,9 @@ func (r Rectangle[T]) String() string {
 	return fmt.Sprintf("R{%s-%s}", r.min.String(), r.max.String())
 }
 
+func (r Rectangle[T]) Min() Point[T] { return r.min }
+func (r Rectangle[T]) Max() Point[T] { return r.max }
+
 // RangePoints range all points in rectangle.
 // if with return false, aborted range.
 func (r Rectangle[T]) RangePoints(with func(p Point[T]) bool) {
