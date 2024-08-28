@@ -106,12 +106,13 @@ func (c baseStorage) PutObject(ctx context.Context, objName string, reader io.Re
 		return err
 	}
 	op := minio.PutObjectOptions{
-		ContentType:        spec.ContentType,
-		ContentDisposition: spec.ContentDisposition,
-		CacheControl:       spec.CacheControl,
-		CustomHeaders:      spec.CustomHeader,
-		SendContentMd5:     spec.SendContentMd5,
-		UserMetadata:       spec.CustomMeta,
+		ContentType:          spec.ContentType,
+		ContentDisposition:   spec.ContentDisposition,
+		CacheControl:         spec.CacheControl,
+		CustomHeaders:        spec.CustomHeader,
+		SendContentMd5:       spec.SendContentMd5,
+		UserMetadata:         spec.CustomMeta,
+		DisableContentSha256: spec.DisableContentSha256,
 	}
 	if objSize == 0 {
 		op.DisableMultipart = true
@@ -187,14 +188,14 @@ func (c baseStorage) toSpec(opts ...PutOption) (*PutOptions, error) {
 	storageType := c.spec.StorageType
 	spec := NewPutOptions(opts...)
 	var defaultOpts []PutOption
-	if storageType == StorageTypeGCS || storageType == StorageTypeQCloud {
+	if storageType == StorageTypeGCS || storageType == StorageTypeQCloud || storageType == StorageTypeAliCS {
 		defaultOpts = append(defaultOpts, WithDisableContentSha256(true))
 	}
 	if (storageType == StorageTypeQCloud) && len(spec.FileMD5) != 0 {
 		const CosHeaderMD5Key = "x-cos-meta-md5"
 		defaultOpts = append(defaultOpts, WithCustomHeader(http.Header{CosHeaderMD5Key: []string{spec.FileMD5}}))
 	}
-	if storageType == StorageTypeAliCS && len(spec.FileMD5) != 0 {
+	if (storageType == StorageTypeAliCS || storageType == StorageTypeGCS) && len(spec.FileMD5) != 0 {
 		hexStyleMD5 := spec.FileMD5
 		binaryData := make([]byte, len(hexStyleMD5)/2)
 		_, err := hex.Decode(binaryData, []byte(hexStyleMD5))
