@@ -20,6 +20,9 @@ func (r Rectangle[T]) String() string {
 
 func (r Rectangle[T]) Min() Point[T] { return r.min }
 func (r Rectangle[T]) Max() Point[T] { return r.max }
+func (r Rectangle[T]) Center() Point[T] {
+	return P(r.min.x+(r.max.x-r.min.x)/2, r.min.y+(r.max.y-r.min.y)/2)
+}
 
 // RangePoints range all points in rectangle.
 // if with return false, aborted range.
@@ -272,7 +275,7 @@ func Rect[T Number](x0, y0, x1, y1 T) Rectangle[T] {
 // RectFromCenterSize constructs a rectangle with the given center and size.
 // Both dimensions of size must be non-negative.
 func RectFromCenterSize[T Number](center, size Point[T]) Rectangle[T] {
-	return Rect(center.x-size.x, center.y-center.y, center.x+size.x, center.y+size.y)
+	return Rect(center.x-size.x, center.y-size.y, center.x+size.x, center.y+size.y)
 }
 
 // RectFromMinSize constructs a rectangle with the given BottomLeft and size.
