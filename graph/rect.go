@@ -18,6 +18,12 @@ func (r Rectangle[T]) String() string {
 	return fmt.Sprintf("R{%s-%s}", r.min.String(), r.max.String())
 }
 
+func (r Rectangle[T]) Min() Point[T] { return r.min }
+func (r Rectangle[T]) Max() Point[T] { return r.max }
+func (r Rectangle[T]) Center() Point[T] {
+	return P(r.min.x+(r.max.x-r.min.x)/2, r.min.y+(r.max.y-r.min.y)/2)
+}
+
 // RangePoints range all points in rectangle.
 // if with return false, aborted range.
 func (r Rectangle[T]) RangePoints(with func(p Point[T]) bool) {
@@ -145,6 +151,9 @@ func (r Rectangle[T]) Inset(n T) Rectangle[T] {
 	return r
 }
 
+// IsIntersect reports whether the rectangle intersect other rectangle.
+func (r Rectangle[T]) IsIntersect(s Rectangle[T]) bool { return !r.Intersect(s).Empty() }
+
 // Intersect returns the largest rectangle contained by both r and s. If the
 // two rectangles do not overlap then the zero rectangle will be returned.
 func (r Rectangle[T]) Intersect(s Rectangle[T]) Rectangle[T] {
@@ -196,6 +205,11 @@ func (r Rectangle[T]) Union(s Rectangle[T]) Rectangle[T] {
 	}
 
 	return r
+}
+
+// Has reports whether the rectangle contains the point.
+func (r Rectangle[T]) Has(p Point[T]) bool {
+	return cmp.Compare(p.x, r.min.x) >= 0 && cmp.Compare(p.x, r.max.x) <= 0 && cmp.Compare(p.y, r.min.y) >= 0 && cmp.Compare(p.y, r.max.y) <= 0
 }
 
 // Empty reports whether the rectangle contains no points.
@@ -261,7 +275,13 @@ func Rect[T Number](x0, y0, x1, y1 T) Rectangle[T] {
 // RectFromCenterSize constructs a rectangle with the given center and size.
 // Both dimensions of size must be non-negative.
 func RectFromCenterSize[T Number](center, size Point[T]) Rectangle[T] {
-	return Rect(center.x-size.x, center.y-center.y, center.x+size.x, center.y+size.y)
+	return Rect(center.x-size.x, center.y-size.y, center.x+size.x, center.y+size.y)
+}
+
+// RectFromMinSize constructs a rectangle with the given BottomLeft and size.
+// Both dimensions of size must be non-negative.
+func RectFromMinSize[T Number](min, size Point[T]) Rectangle[T] {
+	return Rect(min.x, min.y, min.x+size.x, min.y+size.y)
 }
 
 // HelixRectRangeFromCenterAndMargin 由center节点逆时针螺旋由内向外访问margin区域内的所有节点
