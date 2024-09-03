@@ -23,7 +23,7 @@ type GridBuilder interface {
 	Build(x, y int) Grid
 }
 
-// Block 地块，包含二维的 Grid
+// Block 野外大地图最小的区域，包含二维的 Grid
 type Block[T graph.Number] struct {
 	grids    [][]Grid
 	gridSize T

@@ -18,7 +18,7 @@ func TestGrid(t *testing.T) {
 		}).AnyTimes()
 
 		var width, height, GridSize int64 = 1200, 1200, 3
-		g := G[int64](width, height, GridSize, b)
+		g := B[int64](width, height, GridSize, b)
 
 		c, err := g.GetGridByIndex(int(width/GridSize+1), int(height/GridSize))
 		So(err, ShouldNotBeNil)
