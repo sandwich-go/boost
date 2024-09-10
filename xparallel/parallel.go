@@ -27,6 +27,9 @@ func closeThenParallel[V any](maxp int, ch chan V, fn func(V)) {
 }
 
 func MapK[K comparable, V any](maxp int, p map[K]V, fn func(K)) {
+	if len(p) == 0 {
+		return
+	}
 	ch := make(chan K, len(p))
 	for k := range p {
 		ch <- k
@@ -35,6 +38,9 @@ func MapK[K comparable, V any](maxp int, p map[K]V, fn func(K)) {
 }
 
 func MapV[K comparable, V any](maxp int, p map[K]V, fn func(V)) {
+	if len(p) == 0 {
+		return
+	}
 	ch := make(chan V, len(p))
 	for _, v := range p {
 		ch <- v
@@ -43,6 +49,9 @@ func MapV[K comparable, V any](maxp int, p map[K]V, fn func(V)) {
 }
 
 func SliceK[V any](maxp int, p []V, fn func(int)) {
+	if len(p) == 0 {
+		return
+	}
 	ch := make(chan int, len(p))
 	for k := range p {
 		ch <- k
@@ -51,6 +60,9 @@ func SliceK[V any](maxp int, p []V, fn func(int)) {
 }
 
 func SliceV[V any](maxp int, p []V, fn func(V)) {
+	if len(p) == 0 {
+		return
+	}
 	ch := make(chan V, len(p))
 	for _, v := range p {
 		ch <- v
