@@ -27,10 +27,13 @@ func init() {
 // Execute 根据指定的 template 以及 args 生成对应文本内容
 func Execute(templateStr string, args interface{}, opts ...Option) ([]byte, error) {
 	cfg := NewOptions(opts...)
-	t, err := template.New(cfg.GetName()).
-		Funcs(funcMap).
-		Funcs(sprig.FuncMap()).
-		Parse(templateStr)
+	t := template.New(cfg.GetName())
+	t = t.Funcs(funcMap).Funcs(sprig.FuncMap())
+	if fm := cfg.GetFuncMap(); len(fm) > 0 {
+		t = t.Funcs(fm)
+	}
+	var err error
+	t, err = t.Parse(templateStr)
 	if err != nil {
 		return nil, err
 	}
