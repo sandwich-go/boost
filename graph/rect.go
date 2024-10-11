@@ -32,8 +32,8 @@ func (r Rectangle[T]) RangePoints(with func(p Point[T]) bool) {
 		return
 	}
 
-	for x := r.min.x; cmp.Compare(x, r.max.x) <= 0; x++ {
-		for y := r.min.y; cmp.Compare(y, r.max.y) <= 0; y++ {
+	for x := r.min.x; cmp.Compare(x, r.max.x) < 0; x++ {
+		for y := r.min.y; cmp.Compare(y, r.max.y) < 0; y++ {
 			if !with(P(x, y)) {
 				return
 			}
