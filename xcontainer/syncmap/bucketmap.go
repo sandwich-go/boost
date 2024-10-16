@@ -25,7 +25,11 @@ func (m *BucketMap[K, V]) indexByKey(key K) int {
 	if m.bucketNum == 1 {
 		return 0
 	}
-	return int(m.hashFunc(key) % m.bucketNum)
+	i := m.hashFunc(key)
+	if i <= 0 {
+		return 0
+	}
+	return int(i % m.bucketNum)
 }
 
 // Load returns the value stored in the map for a key, or nil if no
