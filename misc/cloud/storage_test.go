@@ -2,10 +2,11 @@ package cloud
 
 import (
 	"context"
-	. "github.com/smartystreets/goconvey/convey"
 	"os"
 	"strings"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestCloud(t *testing.T) {
@@ -31,6 +32,22 @@ func TestQCloud(t *testing.T) {
 		return
 	}
 	sb := MustNew(StorageTypeQCloud, key, secret, bucket, WithRegion("ap-beijing"))
+
+	testUtil(sb, t)
+}
+func TestMinio(t *testing.T) {
+	key := os.Getenv("RELEASE_MINIO_KEY")
+	secret := os.Getenv("RELEASE_MINIO_SECRET")
+	bucket := os.Getenv("RELEASE_MINIO_BUCKET")
+	region := os.Getenv("RELEASE_MINIO_REGION")
+	if len(key) == 0 ||
+		len(secret) == 0 ||
+		len(bucket) == 0 ||
+		len(region) == 0 {
+		t.Log("not set minio env")
+		return
+	}
+	sb := MustNew(StorageTypeMinio, key, secret, bucket, WithRegion(region))
 
 	testUtil(sb, t)
 }
