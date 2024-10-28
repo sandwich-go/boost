@@ -21,6 +21,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/vmihailenco/msgpack/v5 v5.3.5
 	go.uber.org/goleak v1.3.0
+	go.uber.org/mock v0.4.0
 	golang.org/x/crypto v0.19.0
 	golang.org/x/exp v0.0.0-20240325151524-a685a6edb6d8
 	google.golang.org/protobuf v1.33.0

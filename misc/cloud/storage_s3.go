@@ -13,7 +13,6 @@ type s3Storage struct {
 }
 
 func newS3Storage(accessKeyID string, secretAccessKey string, bucket string, opts ...StorageOption) (Storage, error) {
-	opts = append(opts, WithStorageType(StorageTypeS3))
 	bb, err := newBaseBucket(accessKeyID, secretAccessKey, bucket, func(options *StorageOptions) (ep string, err error) {
 		if len(options.GetRegion()) == 0 {
 			err = ErrRegionShouldNotEmptyForS3

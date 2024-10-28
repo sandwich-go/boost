@@ -1,6 +1,6 @@
 # geom
 
-地理位置
+图形
 
 - 支持地理位置运算
 
@@ -8,8 +8,8 @@
 # 例子
 
 ```go
-x := PtInt8(1, 0)
-y := PtInt8(1, 4)
+x := P[int](1, 0)
+y := P[int](1, 4)
 z := x.Add(y)
 fmt.Println(z)
 ```

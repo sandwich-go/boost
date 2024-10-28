@@ -19,20 +19,22 @@ type ObjectInfo struct {
 	// An ETag is optionally set to md5sum of an object.  In case of multipart objects,
 	// ETag is of the form MD5SUM-N where MD5SUM is md5sum of all individual md5sums of
 	// each parts concatenated into one string.
-	ETag         string    `json:"etag"`
-	Key          string    `json:"name"`         // Name of the object
-	LastModified time.Time `json:"lastModified"` // Date and time the object was last modified.
-	Size         int64     `json:"size"`         // Size in bytes of the object.
-	ContentType  string    `json:"contentType"`  // A standard MIME type describing the format of the object data.
+	ETag         string            `json:"etag"`
+	Key          string            `json:"name"`         // Name of the object
+	LastModified time.Time         `json:"lastModified"` // Date and time the object was last modified.
+	Size         int64             `json:"size"`         // Size in bytes of the object.
+	ContentType  string            `json:"contentType"`  // A standard MIME type describing the format of the object data.
+	Meta         map[string]string `json:"meta"`         // Description of the object
 }
 
 // Storage 存储器
 type Storage interface {
+	//Type  类型
+	Type() StorageType
 	// GetRootUrl 获取 root url，不同的 StorageType，拥有不同的 root url
 	GetRootUrl() string
 	// ResolveObjectName 解析 objectName
 	ResolveObjectName(rawUrl string) (string, error)
-
 	// DelObject 通过 objectName 删除指定的 object
 	DelObject(ctx context.Context, objectName string) error
 	// PutObject 将 object 存放至 Storage 中
