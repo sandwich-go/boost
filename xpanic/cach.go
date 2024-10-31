@@ -1,10 +1,15 @@
 package xpanic
 
+import (
+	"runtime"
+)
+
 // Panic is a snapshot of a panic, containing both the panic's reason and the
 // system stack.
 type Panic struct {
 	// Reason is the value supplied to the recover function.
 	Reason interface{}
+	Stack  []byte
 }
 
 // Catch recovers from panic. It should be used as a deferred call.
@@ -15,6 +20,13 @@ func Catch(cb func(p *Panic)) {
 	if reason := recover(); reason != nil && cb != nil {
 		cb(&Panic{
 			Reason: reason,
+			Stack: func() []byte {
+				const size = 4096
+				buf := make([]byte, size)
+				buf = buf[:runtime.Stack(buf, false)]
+
+				return buf
+			}(),
 		})
 	}
 }
