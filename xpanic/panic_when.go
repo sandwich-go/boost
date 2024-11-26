@@ -1,6 +1,9 @@
 package xpanic
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // WhenErrorAsFmtFirst err 不为 nil 则 wrap 并 panic，将 err 作为第一个 fmt 的参数
 // xpanic.WhenErrorAsFmtFirst(err, "got error: %w while reading file: %s", filePath)
@@ -15,11 +18,15 @@ func WhenErrorAsFmtFirst(err error, fmtStr string, args ...interface{}) {
 }
 
 // WhenError err 不为 nil 则 panic
-func WhenError(err error) {
+func WhenError(err error, reason ...string) {
 	if err == nil {
 		return
 	}
-	panic(err)
+	if len(reason) > 0 {
+		panic(strings.Join(reason, "\n"))
+	} else {
+		panic(err)
+	}
 }
 
 // WhenTrue 当 condition 为 true 时 panic
