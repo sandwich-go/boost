@@ -29,7 +29,7 @@ func (t *Tree[K, V]) newNode(key K, value V) *Node[K, V] {
 
 // Put inserts node into the tree or update the node's value if the key exsited.
 // Key should adhere to the comparator's type assertion, otherwise method panics.
-func (t *Tree[K, V]) Put(key K, value V) {
+func (t *Tree[K, V]) Put(key K, value V) (exists bool) {
 	insert := func(node, parent *Node[K, V]) {
 		node.Parent = parent
 		t.insertCase1(node)
@@ -47,6 +47,7 @@ func (t *Tree[K, V]) Put(key K, value V) {
 		switch {
 		case i == 0:
 			cur.Value = value
+			exists = true
 			return
 		case i < 0:
 			if cur.Left == nil {

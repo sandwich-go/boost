@@ -18,14 +18,27 @@ func TestRedBlackTreeGet(t *testing.T) {
 		t.Errorf("Got %v expected %v", actualValue, 0)
 	}
 
-	tree.Put(1, "x") // 1->x
-	tree.Put(2, "b") // 1->x, 2->b (in order)
-	tree.Put(1, "a") // 1->a, 2->b (in order, replacement)
-	tree.Put(3, "c") // 1->a, 2->b, 3->c (in order)
-	tree.Put(4, "d") // 1->a, 2->b, 3->c, 4->d (in order)
-	tree.Put(5, "e") // 1->a, 2->b, 3->c, 4->d, 5->e (in order)
-	tree.Put(6, "f") // 1->a, 2->b, 3->c, 4->d, 5->e, 6->f (in order)
-
+	if tree.Put(1, "x") { // 1->x
+		t.Errorf("Got %v expected %v", true, false)
+	}
+	if tree.Put(2, "b") { // 1->x, 2->b (in order)
+		t.Errorf("Got %v expected %v", true, false)
+	}
+	if !tree.Put(1, "a") { // 1->a, 2->b (in order, replacement)
+		t.Errorf("Got %v expected %v", false, true)
+	}
+	if tree.Put(3, "c") { // 1->a, 2->b, 3->c (in order)
+		t.Errorf("Got %v expected %v", true, false)
+	}
+	if tree.Put(4, "d") { // 1->a, 2->b, 3->c, 4->d (in order)
+		t.Errorf("Got %v expected %v", true, false)
+	}
+	if tree.Put(5, "e") { // 1->a, 2->b, 3->c, 4->d, 5->e (in order)
+		t.Errorf("Got %v expected %v", true, false)
+	}
+	if tree.Put(6, "f") { // 1->a, 2->b, 3->c, 4->d, 5->e, 6->f (in order)
+		t.Errorf("Got %v expected %v", true, false)
+	}
 	fmt.Println(tree)
 	//
 	//  RedBlackTree
