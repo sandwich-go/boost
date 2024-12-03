@@ -8,7 +8,7 @@ import (
 func Do(s string, options ...Option) string {
 	opts := NewOptions(options...)
 	if len(s) <= opts.HideLenMin+opts.PrefixKeep+opts.SuffixKeep {
-		return strings.Repeat("*", len(s)) + "@" + opts.Suffix
+		return strings.Repeat(string(opts.HideReplaceWith), len(s)) + "@" + opts.Suffix
 	}
 	replaceLen := opts.HideReplaceLen
 	if replaceLen == 0 {
