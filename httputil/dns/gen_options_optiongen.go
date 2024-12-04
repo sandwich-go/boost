@@ -24,7 +24,7 @@ type Options struct {
 func NewOptions(opts ...Option) *Options {
 	cc := newDefaultOptions()
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 	if watchDogOptions != nil {
 		watchDogOptions(cc)
@@ -39,17 +39,27 @@ func NewOptions(opts ...Option) *Options {
 func (cc *Options) ApplyOption(opts ...Option) []Option {
 	var previous []Option
 	for _, opt := range opts {
-		previous = append(previous, opt(cc))
+		previous = append(previous, opt.Apply(cc))
 	}
 	return previous
 }
 
-// Option option func
-type Option func(cc *Options) Option
+// OptionFunc option func
+type Option interface {
+	Apply(cc *Options) Option
+}
+
+var _ Option = OptionFunc(nil)
+
+type OptionFunc func(cc *Options) OptionFunc
+
+func (f OptionFunc) Apply(cc *Options) Option {
+	return f(cc)
+}
 
 // WithTTL Cache过期ttl
-func WithTTL(v time.Duration) Option {
-	return func(cc *Options) Option {
+func WithTTL(v time.Duration) OptionFunc {
+	return func(cc *Options) OptionFunc {
 		previous := cc.TTL
 		cc.TTL = v
 		return WithTTL(previous)
@@ -57,8 +67,8 @@ func WithTTL(v time.Duration) Option {
 }
 
 // WithDialer 拨号器
-func WithDialer(v Dialer) Option {
-	return func(cc *Options) Option {
+func WithDialer(v Dialer) OptionFunc {
+	return func(cc *Options) OptionFunc {
 		previous := cc.Dialer
 		cc.Dialer = v
 		return WithDialer(previous)
@@ -66,8 +76,8 @@ func WithDialer(v Dialer) Option {
 }
 
 // WithResolver 解析器
-func WithResolver(v Resolver) Option {
-	return func(cc *Options) Option {
+func WithResolver(v Resolver) OptionFunc {
+	return func(cc *Options) OptionFunc {
 		previous := cc.Resolver
 		cc.Resolver = v
 		return WithResolver(previous)
@@ -75,8 +85,8 @@ func WithResolver(v Resolver) Option {
 }
 
 // WithPolicy 拨号策略
-func WithPolicy(v Policy) Option {
-	return func(cc *Options) Option {
+func WithPolicy(v Policy) OptionFunc {
+	return func(cc *Options) OptionFunc {
 		previous := cc.Policy
 		cc.Policy = v
 		return WithPolicy(previous)
@@ -84,8 +94,8 @@ func WithPolicy(v Policy) Option {
 }
 
 // WithLookupTimeout 搜索超时
-func WithLookupTimeout(v time.Duration) Option {
-	return func(cc *Options) Option {
+func WithLookupTimeout(v time.Duration) OptionFunc {
+	return func(cc *Options) OptionFunc {
 		previous := cc.LookupTimeout
 		cc.LookupTimeout = v
 		return WithLookupTimeout(previous)
@@ -93,8 +103,8 @@ func WithLookupTimeout(v time.Duration) Option {
 }
 
 // WithOnLookup 当成功搜索
-func WithOnLookup(v OnLookup) Option {
-	return func(cc *Options) Option {
+func WithOnLookup(v OnLookup) OptionFunc {
+	return func(cc *Options) OptionFunc {
 		previous := cc.OnLookup
 		cc.OnLookup = v
 		return WithOnLookup(previous)
@@ -107,11 +117,9 @@ func InstallOptionsWatchDog(dog func(cc *Options)) { watchDogOptions = dog }
 // watchDogOptions global watch dog
 var watchDogOptions func(cc *Options)
 
-// newDefaultOptions new default Options
-func newDefaultOptions() *Options {
-	cc := &Options{}
-
-	for _, opt := range [...]Option{
+// setOptionsDefaultValue default Options value
+func setOptionsDefaultValue(cc *Options) {
+	for _, opt := range [...]OptionFunc{
 		WithTTL(0),
 		WithDialer(defaultDialer),
 		WithResolver(net.DefaultResolver),
@@ -121,7 +129,12 @@ func newDefaultOptions() *Options {
 	} {
 		opt(cc)
 	}
+}
 
+// newDefaultOptions new default Options
+func newDefaultOptions() *Options {
+	cc := &Options{}
+	setOptionsDefaultValue(cc)
 	return cc
 }
 

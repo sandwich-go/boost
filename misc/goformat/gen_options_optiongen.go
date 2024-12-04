@@ -19,7 +19,7 @@ type Options struct {
 func NewOptions(opts ...Option) *Options {
 	cc := newDefaultOptions()
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 	if watchDogOptions != nil {
 		watchDogOptions(cc)
@@ -34,17 +34,27 @@ func NewOptions(opts ...Option) *Options {
 func (cc *Options) ApplyOption(opts ...Option) []Option {
 	var previous []Option
 	for _, opt := range opts {
-		previous = append(previous, opt(cc))
+		previous = append(previous, opt.Apply(cc))
 	}
 	return previous
 }
 
-// Option option func
-type Option func(cc *Options) Option
+// OptionFunc option func
+type Option interface {
+	Apply(cc *Options) Option
+}
+
+var _ Option = OptionFunc(nil)
+
+type OptionFunc func(cc *Options) OptionFunc
+
+func (f OptionFunc) Apply(cc *Options) Option {
+	return f(cc)
+}
 
 // WithFragment 允许解析源文件片段代码
-func WithFragment(v bool) Option {
-	return func(cc *Options) Option {
+func WithFragment(v bool) OptionFunc {
+	return func(cc *Options) OptionFunc {
 		previous := cc.Fragment
 		cc.Fragment = v
 		return WithFragment(previous)
@@ -52,8 +62,8 @@ func WithFragment(v bool) Option {
 }
 
 // WithAllErrors 打印所有的语法错误到标准输出。如果不使用此标记，则只会打印不同行的前10个错误
-func WithAllErrors(v bool) Option {
-	return func(cc *Options) Option {
+func WithAllErrors(v bool) OptionFunc {
+	return func(cc *Options) OptionFunc {
 		previous := cc.AllErrors
 		cc.AllErrors = v
 		return WithAllErrors(previous)
@@ -61,8 +71,8 @@ func WithAllErrors(v bool) Option {
 }
 
 // WithRemoveBareReturns 移除无效的return
-func WithRemoveBareReturns(v bool) Option {
-	return func(cc *Options) Option {
+func WithRemoveBareReturns(v bool) OptionFunc {
+	return func(cc *Options) OptionFunc {
 		previous := cc.RemoveBareReturns
 		cc.RemoveBareReturns = v
 		return WithRemoveBareReturns(previous)
@@ -75,18 +85,21 @@ func InstallOptionsWatchDog(dog func(cc *Options)) { watchDogOptions = dog }
 // watchDogOptions global watch dog
 var watchDogOptions func(cc *Options)
 
-// newDefaultOptions new default Options
-func newDefaultOptions() *Options {
-	cc := &Options{}
-
-	for _, opt := range [...]Option{
+// setOptionsDefaultValue default Options value
+func setOptionsDefaultValue(cc *Options) {
+	for _, opt := range [...]OptionFunc{
 		WithFragment(false),
 		WithAllErrors(false),
 		WithRemoveBareReturns(false),
 	} {
 		opt(cc)
 	}
+}
 
+// newDefaultOptions new default Options
+func newDefaultOptions() *Options {
+	cc := &Options{}
+	setOptionsDefaultValue(cc)
 	return cc
 }
 

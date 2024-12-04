@@ -16,7 +16,7 @@ func isEmail(s string) bool {
 
 func maskString(s string, opts *Options) string {
 	if len(s) <= opts.HideLenMin+opts.PrefixKeep+opts.SuffixKeep {
-		return strings.Repeat(string(opts.HideReplaceWith), len(s)) + "@" + opts.Suffix
+		return strings.Repeat(string(opts.HideReplaceWith), len(s)) + opts.Suffix
 	}
 	replaceLen := opts.HideReplaceLen
 	if replaceLen == 0 {
@@ -24,7 +24,7 @@ func maskString(s string, opts *Options) string {
 	}
 	return s[:opts.PrefixKeep] +
 		strings.Repeat(string(opts.HideReplaceWith), replaceLen) +
-		s[len(s)-opts.SuffixKeep:] + "@" + opts.Suffix
+		s[len(s)-opts.SuffixKeep:] + opts.Suffix
 }
 
 // Do 主逻辑函数

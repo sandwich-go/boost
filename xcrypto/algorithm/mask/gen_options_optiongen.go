@@ -18,7 +18,7 @@ type Options struct {
 func NewOptions(opts ...Option) *Options {
 	cc := newDefaultOptions()
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 	if watchDogOptions != nil {
 		watchDogOptions(cc)
@@ -29,50 +29,60 @@ func NewOptions(opts ...Option) *Options {
 // ApplyOption apply multiple new option
 func (cc *Options) ApplyOption(opts ...Option) {
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 }
 
-// Option option func
-type Option func(cc *Options)
+// OptionFunc option func
+type Option interface {
+	Apply(cc *Options)
+}
+
+var _ Option = OptionFunc(nil)
+
+type OptionFunc func(cc *Options)
+
+func (f OptionFunc) Apply(cc *Options) {
+	f(cc)
+}
 
 // WithSuffix option func for filed Suffix
-func WithSuffix(v string) Option {
+func WithSuffix(v string) OptionFunc {
 	return func(cc *Options) {
 		cc.Suffix = v
 	}
 }
 
 // WithPrefixKeep option func for filed PrefixKeep
-func WithPrefixKeep(v int) Option {
+func WithPrefixKeep(v int) OptionFunc {
 	return func(cc *Options) {
 		cc.PrefixKeep = v
 	}
 }
 
 // WithSuffixKeep option func for filed SuffixKeep
-func WithSuffixKeep(v int) Option {
+func WithSuffixKeep(v int) OptionFunc {
 	return func(cc *Options) {
 		cc.SuffixKeep = v
 	}
 }
 
 // WithHideLenMin option func for filed HideLenMin
-func WithHideLenMin(v int) Option {
+func WithHideLenMin(v int) OptionFunc {
 	return func(cc *Options) {
 		cc.HideLenMin = v
 	}
 }
 
 // WithHideReplaceWith option func for filed HideReplaceWith
-func WithHideReplaceWith(v rune) Option {
+func WithHideReplaceWith(v rune) OptionFunc {
 	return func(cc *Options) {
 		cc.HideReplaceWith = v
 	}
 }
 
 // WithHideReplaceLen option func for filed HideReplaceLen
-func WithHideReplaceLen(v int) Option {
+func WithHideReplaceLen(v int) OptionFunc {
 	return func(cc *Options) {
 		cc.HideReplaceLen = v
 	}
@@ -84,12 +94,10 @@ func InstallOptionsWatchDog(dog func(cc *Options)) { watchDogOptions = dog }
 // watchDogOptions global watch dog
 var watchDogOptions func(cc *Options)
 
-// newDefaultOptions new default Options
-func newDefaultOptions() *Options {
-	cc := &Options{}
-
-	for _, opt := range [...]Option{
-		WithSuffix("hash"),
+// setOptionsDefaultValue default Options value
+func setOptionsDefaultValue(cc *Options) {
+	for _, opt := range [...]OptionFunc{
+		WithSuffix("@protected"),
 		WithPrefixKeep(3),
 		WithSuffixKeep(3),
 		WithHideLenMin(3),
@@ -98,7 +106,12 @@ func newDefaultOptions() *Options {
 	} {
 		opt(cc)
 	}
+}
 
+// newDefaultOptions new default Options
+func newDefaultOptions() *Options {
+	cc := &Options{}
+	setOptionsDefaultValue(cc)
 	return cc
 }
 

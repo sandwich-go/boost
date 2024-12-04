@@ -29,7 +29,7 @@ type PutOptions struct {
 func NewPutOptions(opts ...PutOption) *PutOptions {
 	cc := newDefaultPutOptions()
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 	if watchDogPutOptions != nil {
 		watchDogPutOptions(cc)
@@ -40,64 +40,74 @@ func NewPutOptions(opts ...PutOption) *PutOptions {
 // ApplyOption apply multiple new option
 func (cc *PutOptions) ApplyOption(opts ...PutOption) {
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 }
 
-// PutOption option func
-type PutOption func(cc *PutOptions)
+// PutOptionFunc option func
+type PutOption interface {
+	Apply(cc *PutOptions)
+}
+
+var _ PutOption = PutOptionFunc(nil)
+
+type PutOptionFunc func(cc *PutOptions)
+
+func (f PutOptionFunc) Apply(cc *PutOptions) {
+	f(cc)
+}
 
 // WithContentType 上传文件的类型
-func WithContentType(v string) PutOption {
+func WithContentType(v string) PutOptionFunc {
 	return func(cc *PutOptions) {
 		cc.ContentType = v
 	}
 }
 
 // WithContentDisposition 上传文件的内容描述
-func WithContentDisposition(v string) PutOption {
+func WithContentDisposition(v string) PutOptionFunc {
 	return func(cc *PutOptions) {
 		cc.ContentDisposition = v
 	}
 }
 
 // WithCacheControl 上传文件的缓存控制
-func WithCacheControl(v string) PutOption {
+func WithCacheControl(v string) PutOptionFunc {
 	return func(cc *PutOptions) {
 		cc.CacheControl = v
 	}
 }
 
 // WithDisableContentSha256 禁止发送 Content-Sha256, 在非s3场景下，文件较小时，content-sha256 也会出现在文件内容中
-func WithDisableContentSha256(v bool) PutOption {
+func WithDisableContentSha256(v bool) PutOptionFunc {
 	return func(cc *PutOptions) {
 		cc.DisableContentSha256 = v
 	}
 }
 
 // WithCustomHeader 自定义上传时附加的http header
-func WithCustomHeader(v http.Header) PutOption {
+func WithCustomHeader(v http.Header) PutOptionFunc {
 	return func(cc *PutOptions) {
 		cc.CustomHeader = v
 	}
 }
 
 // WithCustomMeta 自定义上传时的 meta 信息
-func WithCustomMeta(v map[string]string) PutOption {
+func WithCustomMeta(v map[string]string) PutOptionFunc {
 	return func(cc *PutOptions) {
 		cc.CustomMeta = v
 	}
 }
 
 // WithSendContentMd5 gcs需要在上传时，minio 参数中指定 md5-base64
-func WithSendContentMd5(v bool) PutOption {
+func WithSendContentMd5(v bool) PutOptionFunc {
 	return func(cc *PutOptions) {
 		cc.SendContentMd5 = v
 	}
 }
 
 // WithFileMD5 文件MD5
-func WithFileMD5(v string) PutOption {
+func WithFileMD5(v string) PutOptionFunc {
 	return func(cc *PutOptions) {
 		cc.FileMD5 = v
 	}
@@ -109,11 +119,9 @@ func InstallPutOptionsWatchDog(dog func(cc *PutOptions)) { watchDogPutOptions = 
 // watchDogPutOptions global watch dog
 var watchDogPutOptions func(cc *PutOptions)
 
-// newDefaultPutOptions new default PutOptions
-func newDefaultPutOptions() *PutOptions {
-	cc := &PutOptions{}
-
-	for _, opt := range [...]PutOption{
+// setPutOptionsDefaultValue default PutOptions value
+func setPutOptionsDefaultValue(cc *PutOptions) {
+	for _, opt := range [...]PutOptionFunc{
 		WithContentType("application/octet-stream"),
 		WithContentDisposition(""),
 		WithCacheControl(""),
@@ -125,7 +133,12 @@ func newDefaultPutOptions() *PutOptions {
 	} {
 		opt(cc)
 	}
+}
 
+// newDefaultPutOptions new default PutOptions
+func newDefaultPutOptions() *PutOptions {
+	cc := &PutOptions{}
+	setPutOptionsDefaultValue(cc)
 	return cc
 }
 

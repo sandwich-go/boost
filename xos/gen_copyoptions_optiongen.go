@@ -21,7 +21,7 @@ type CopyOptions struct {
 func NewCopyOptions(opts ...CopyOption) *CopyOptions {
 	cc := newDefaultCopyOptions()
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 	if watchDogCopyOptions != nil {
 		watchDogCopyOptions(cc)
@@ -32,36 +32,46 @@ func NewCopyOptions(opts ...CopyOption) *CopyOptions {
 // ApplyOption apply multiple new option
 func (cc *CopyOptions) ApplyOption(opts ...CopyOption) {
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 }
 
-// CopyOption option func
-type CopyOption func(cc *CopyOptions)
+// CopyOptionFunc option func
+type CopyOption interface {
+	Apply(cc *CopyOptions)
+}
+
+var _ CopyOption = CopyOptionFunc(nil)
+
+type CopyOptionFunc func(cc *CopyOptions)
+
+func (f CopyOptionFunc) Apply(cc *CopyOptions) {
+	f(cc)
+}
 
 // WithCopyOnSymlink option func for filed OnSymlink
-func WithCopyOnSymlink(v func(src string) SymlinkAction) CopyOption {
+func WithCopyOnSymlink(v func(src string) SymlinkAction) CopyOptionFunc {
 	return func(cc *CopyOptions) {
 		cc.OnSymlink = v
 	}
 }
 
 // WithCopySkip option func for filed Skip
-func WithCopySkip(v func(src string) (bool, error)) CopyOption {
+func WithCopySkip(v func(src string) (bool, error)) CopyOptionFunc {
 	return func(cc *CopyOptions) {
 		cc.Skip = v
 	}
 }
 
 // WithCopyAddPermission option func for filed AddPermission
-func WithCopyAddPermission(v os.FileMode) CopyOption {
+func WithCopyAddPermission(v os.FileMode) CopyOptionFunc {
 	return func(cc *CopyOptions) {
 		cc.AddPermission = v
 	}
 }
 
 // WithCopySync option func for filed Sync
-func WithCopySync(v bool) CopyOption {
+func WithCopySync(v bool) CopyOptionFunc {
 	return func(cc *CopyOptions) {
 		cc.Sync = v
 	}
@@ -73,11 +83,9 @@ func InstallCopyOptionsWatchDog(dog func(cc *CopyOptions)) { watchDogCopyOptions
 // watchDogCopyOptions global watch dog
 var watchDogCopyOptions func(cc *CopyOptions)
 
-// newDefaultCopyOptions new default CopyOptions
-func newDefaultCopyOptions() *CopyOptions {
-	cc := &CopyOptions{}
-
-	for _, opt := range [...]CopyOption{
+// setCopyOptionsDefaultValue default CopyOptions value
+func setCopyOptionsDefaultValue(cc *CopyOptions) {
+	for _, opt := range [...]CopyOptionFunc{
 		WithCopyOnSymlink(func(src string) SymlinkAction {
 			return Shallow
 		}),
@@ -89,7 +97,12 @@ func newDefaultCopyOptions() *CopyOptions {
 	} {
 		opt(cc)
 	}
+}
 
+// newDefaultCopyOptions new default CopyOptions
+func newDefaultCopyOptions() *CopyOptions {
+	cc := &CopyOptions{}
+	setCopyOptionsDefaultValue(cc)
 	return cc
 }
 

@@ -3,7 +3,7 @@ package mask
 //go:generate optionGen  --option_return_previous=false
 func OptionsOptionDeclareWithDefault() interface{} {
 	return map[string]interface{}{
-		"Suffix":          "hash",
+		"Suffix":          "@protected",
 		"PrefixKeep":      3,
 		"SuffixKeep":      3,
 		"HideLenMin":      3,

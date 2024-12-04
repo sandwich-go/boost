@@ -18,7 +18,7 @@ type Options struct {
 func NewOptions(opts ...Option) *Options {
 	cc := newDefaultOptions()
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 	if watchDogOptions != nil {
 		watchDogOptions(cc)
@@ -33,17 +33,27 @@ func NewOptions(opts ...Option) *Options {
 func (cc *Options) ApplyOption(opts ...Option) []Option {
 	var previous []Option
 	for _, opt := range opts {
-		previous = append(previous, opt(cc))
+		previous = append(previous, opt.Apply(cc))
 	}
 	return previous
 }
 
-// Option option func
-type Option func(cc *Options) Option
+// OptionFunc option func
+type Option interface {
+	Apply(cc *Options) Option
+}
+
+var _ Option = OptionFunc(nil)
+
+type OptionFunc func(cc *Options) OptionFunc
+
+func (f OptionFunc) Apply(cc *Options) Option {
+	return f(cc)
+}
 
 // WithType 解压缩类型
-func WithType(v Type) Option {
-	return func(cc *Options) Option {
+func WithType(v Type) OptionFunc {
+	return func(cc *Options) OptionFunc {
 		previous := cc.Type
 		cc.Type = v
 		return WithType(previous)
@@ -51,8 +61,8 @@ func WithType(v Type) Option {
 }
 
 // WithLevel 解压缩等级
-func WithLevel(v int) Option {
-	return func(cc *Options) Option {
+func WithLevel(v int) OptionFunc {
+	return func(cc *Options) OptionFunc {
 		previous := cc.Level
 		cc.Level = v
 		return WithLevel(previous)
@@ -65,17 +75,20 @@ func InstallOptionsWatchDog(dog func(cc *Options)) { watchDogOptions = dog }
 // watchDogOptions global watch dog
 var watchDogOptions func(cc *Options)
 
-// newDefaultOptions new default Options
-func newDefaultOptions() *Options {
-	cc := &Options{}
-
-	for _, opt := range [...]Option{
+// setOptionsDefaultValue default Options value
+func setOptionsDefaultValue(cc *Options) {
+	for _, opt := range [...]OptionFunc{
 		WithType(GZIP),
 		WithLevel(DefaultCompression),
 	} {
 		opt(cc)
 	}
+}
 
+// newDefaultOptions new default Options
+func newDefaultOptions() *Options {
+	cc := &Options{}
+	setOptionsDefaultValue(cc)
 	return cc
 }
 

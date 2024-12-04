@@ -21,7 +21,7 @@ type Options struct {
 func NewOptions(opts ...Option) *Options {
 	cc := newDefaultOptions()
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 	if watchDogOptions != nil {
 		watchDogOptions(cc)
@@ -36,17 +36,27 @@ func NewOptions(opts ...Option) *Options {
 func (cc *Options) ApplyOption(opts ...Option) []Option {
 	var previous []Option
 	for _, opt := range opts {
-		previous = append(previous, opt(cc))
+		previous = append(previous, opt.Apply(cc))
 	}
 	return previous
 }
 
-// Option option func
-type Option func(cc *Options) Option
+// OptionFunc option func
+type Option interface {
+	Apply(cc *Options) Option
+}
+
+var _ Option = OptionFunc(nil)
+
+type OptionFunc func(cc *Options) OptionFunc
+
+func (f OptionFunc) Apply(cc *Options) Option {
+	return f(cc)
+}
 
 // WithHashKey hash使用的key
-func WithHashKey(v []byte) Option {
-	return func(cc *Options) Option {
+func WithHashKey(v []byte) OptionFunc {
+	return func(cc *Options) OptionFunc {
 		previous := cc.HashKey
 		cc.HashKey = v
 		return WithHashKey(previous)
@@ -54,8 +64,8 @@ func WithHashKey(v []byte) Option {
 }
 
 // WithHashOffset hash的偏移值
-func WithHashOffset(v []byte) Option {
-	return func(cc *Options) Option {
+func WithHashOffset(v []byte) OptionFunc {
+	return func(cc *Options) OptionFunc {
 		previous := cc.HashOffset
 		cc.HashOffset = v
 		return WithHashOffset(previous)
@@ -63,8 +73,8 @@ func WithHashOffset(v []byte) Option {
 }
 
 // WithUsingReservedBuff 解压缩等级
-func WithUsingReservedBuff(v bool) Option {
-	return func(cc *Options) Option {
+func WithUsingReservedBuff(v bool) OptionFunc {
+	return func(cc *Options) OptionFunc {
 		previous := cc.UsingReservedBuff
 		cc.UsingReservedBuff = v
 		return WithUsingReservedBuff(previous)
@@ -77,18 +87,21 @@ func InstallOptionsWatchDog(dog func(cc *Options)) { watchDogOptions = dog }
 // watchDogOptions global watch dog
 var watchDogOptions func(cc *Options)
 
-// newDefaultOptions new default Options
-func newDefaultOptions() *Options {
-	cc := &Options{}
-
-	for _, opt := range [...]Option{
+// setOptionsDefaultValue default Options value
+func setOptionsDefaultValue(cc *Options) {
+	for _, opt := range [...]OptionFunc{
 		WithHashKey(z.StringToBytes("nlCwbUUd")),
 		WithHashOffset(z.StringToBytes("FAAAAAA")),
 		WithUsingReservedBuff(false),
 	} {
 		opt(cc)
 	}
+}
 
+// newDefaultOptions new default Options
+func newDefaultOptions() *Options {
+	cc := &Options{}
+	setOptionsDefaultValue(cc)
 	return cc
 }
 
