@@ -1,4 +1,4 @@
-package hide
+package mask
 
 //go:generate optionGen  --option_return_previous=false
 func OptionsOptionDeclareWithDefault() interface{} {

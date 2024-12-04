@@ -1,4 +1,4 @@
-package hide
+package mask
 
 import (
 	"fmt"
