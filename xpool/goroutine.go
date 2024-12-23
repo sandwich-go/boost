@@ -82,11 +82,10 @@ func (p *GoroutinePool) Push(ctx context.Context, job Job) error {
 	}
 	if p.timeout == 0 {
 		select {
-		case p.jobQueue <- job:
 		case <-ctx.Done():
 			return xerror.NewText("goroutine pool job push context done")
+		case p.jobQueue <- job:
 		}
-		p.jobQueue <- job
 	} else {
 		select {
 		case <-poolTimeWheel.After(p.timeout):
