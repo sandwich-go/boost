@@ -1,6 +1,7 @@
 package xpool
 
 import (
+	"context"
 	"errors"
 	"github.com/sandwich-go/boost/xerror"
 	"github.com/sandwich-go/boost/xsync"
@@ -75,16 +76,23 @@ var poolTimeWheel = xtime.NewWheel(time.Second, 20)
 
 // Push 放入 job 至job 队列
 // 若设置了 timeout，当 job 队列满，Push 阻塞 timeout 会报错
-func (p *GoroutinePool) Push(job Job) error {
+func (p *GoroutinePool) Push(ctx context.Context, job Job) error {
 	if p.IsClosed() {
 		return errors.New("pool closed")
 	}
 	if p.timeout == 0 {
+		select {
+		case p.jobQueue <- job:
+		case <-ctx.Done():
+			return xerror.NewText("goroutine pool job push context done")
+		}
 		p.jobQueue <- job
 	} else {
 		select {
 		case <-poolTimeWheel.After(p.timeout):
 			return xerror.NewText("goroutine pool job queue blocked with %s", p.timeout)
+		case <-ctx.Done():
+			return xerror.NewText("goroutine pool job push context done")
 		case p.jobQueue <- job:
 		}
 	}
