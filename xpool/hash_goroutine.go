@@ -1,6 +1,7 @@
 package xpool
 
 import (
+	"context"
 	"github.com/sandwich-go/boost/z"
 	"time"
 )
@@ -25,7 +26,7 @@ func (h *HashGoroutinePool) getPool(key string) *GoroutinePool {
 }
 
 func (h *HashGoroutinePool) PushJob(key string, job Job) error {
-	return h.getPool(key).Push(job)
+	return h.getPool(key).Push(context.Background(), job)
 }
 
 func (h *HashGoroutinePool) Close() {
