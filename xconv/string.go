@@ -3,17 +3,30 @@ package xconv
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/sandwich-go/boost/z"
 	"reflect"
 	"strconv"
 	"time"
+
+	"github.com/sandwich-go/boost/z"
 )
 
+// String [影响性能] converts `any` to string.
 // String [影响性能] converts `any` to string.
 func String(any interface{}) string {
 	if any == nil {
 		return ""
 	}
+	// 如果是 reflect.Value 类型
+	if rv, ok := any.(reflect.Value); ok {
+		// 如果 reflect.Value 是零值，返回空字符串
+		if !rv.IsValid() {
+			return ""
+		}
+		// 使用 Interface() 获取原始值并递归调用 String 方法
+		return String(rv.Interface())
+	}
+
+	// 其他类型处理
 	switch value := any.(type) {
 	case int:
 		return strconv.Itoa(value)
