@@ -88,6 +88,16 @@ func (m *BucketMap[K, V]) Range(f func(key K, value V) bool) {
 	}
 }
 
+func (m *BucketMap[K, V]) BucketNum() int {
+	return len(m.natives)
+}
+
+func (m *BucketMap[K, V]) RangeBucket(i int, f func(key K, value V) bool) {
+	m.natives[i].Range(func(key, value any) bool {
+		return f(key.(K), value.(V))
+	})
+}
+
 // CompareAndSwap swaps the old and new values for key
 // if the value stored in the map is equal to old.
 // The old value must be of a comparable type.
