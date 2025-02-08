@@ -2,20 +2,16 @@ package xrand
 
 import (
 	"cmp"
+	"math/rand/v2"
+	"sort"
+
 	"github.com/sandwich-go/boost/misc"
 	"golang.org/x/exp/constraints"
-	"math/rand"
-	"sort"
-	"time"
 )
-
-func init() {
-	rand.Seed(time.Now().UTC().UnixNano())
-}
 
 // RandomInt 随机某个值，该值[min, max]
 func RandomInt(min int, max int) int {
-	return rand.Intn(max-min+1) + min
+	return rand.IntN(max-min+1) + min
 }
 
 // RandomSelectOneFromMap map[int32]int32{1:10,2:24,3:53}
@@ -37,7 +33,7 @@ func RandomSelectOneKeyFromMap[K cmp.Ordered, V constraints.Integer](numbers map
 	sort.Slice(keyArr, func(i, j int) bool {
 		return cmp.Compare(keyArr[i], keyArr[j]) < 0
 	})
-	r := rand.Int63n(int64(total)) + 1
+	r := rand.Int64N(int64(total)) + 1
 	for _, key := range keyArr {
 		rate := numbers[key]
 		tmpTotal += rate
@@ -62,7 +58,7 @@ func RandomSelectIndexFromArray[T constraints.Integer](numbers []T) (int, bool) 
 	if total <= 0 {
 		return 0, false
 	}
-	r := rand.Int63n(int64(total)) + 1
+	r := rand.Int64N(int64(total)) + 1
 	for index, rate := range numbers {
 		tmpTotal += rate
 		if r <= int64(tmpTotal) {
@@ -74,5 +70,5 @@ func RandomSelectIndexFromArray[T constraints.Integer](numbers []T) (int, bool) 
 
 // IsSelected100n  number / 100 的概率返回true
 func IsSelected100n(number int32) bool {
-	return rand.Int31n(100)+1 <= number
+	return rand.Int32N(100)+1 <= number
 }

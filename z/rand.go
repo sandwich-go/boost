@@ -5,13 +5,26 @@ import (
 )
 
 // FastRand is a fast thread local random function.
+//
 //go:linkname FastRand runtime.fastrand
 func FastRand() uint32
 
 // FastRandUint32n returns pseudorandom uint32 in the range [0..maxN).
 // It is safe calling this function from concurrent goroutines.
 func FastRandUint32n(maxN uint32) uint32 {
+	if maxN == 0 {
+		return 0
+	}
 	x := FastRand()
 	// See http://lemire.me/blog/2016/06/27/a-fast-alternative-to-the-modulo-reduction/
 	return uint32((uint64(x) * uint64(maxN)) >> 32)
+}
+
+// FastRandInt 借助FastRandUint32n实现快速的random
+func FastRandInt(min int, max int) int {
+	if min > max {
+		return min
+	}
+	diff := uint32(max - min + 1)
+	return min + int(FastRandUint32n(diff))
 }
