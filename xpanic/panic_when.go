@@ -3,6 +3,8 @@ package xpanic
 import (
 	"fmt"
 	"strings"
+
+	"github.com/sandwich-go/boost/isnil"
 )
 
 // WhenErrorAsFmtFirst err 不为 nil 则 wrap 并 panic，将 err 作为第一个 fmt 的参数
@@ -49,4 +51,14 @@ func WhenHereNotNil(err error) {
 		return
 	}
 	panic(fmt.Errorf("err should be nil when here, got:%w", err))
+}
+
+// WhenNil 如果v为nil则panic
+func WhenNil(v any, fmtStr string, args ...interface{}) {
+	WhenTrue(isnil.Check(v), fmtStr, args...)
+}
+
+// WhenNotNil 如果v不为nil则panic
+func WhenNotNil(v any, fmtStr string, args ...interface{}) {
+	WhenTrue(!isnil.Check(v), fmtStr, args...)
 }

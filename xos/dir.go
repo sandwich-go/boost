@@ -9,6 +9,7 @@ import (
 
 	"github.com/sandwich-go/boost"
 	"github.com/sandwich-go/boost/xerror"
+	"github.com/sandwich-go/boost/xpanic"
 
 	"github.com/sandwich-go/boost/xslice"
 )
@@ -50,7 +51,7 @@ func IsEmpty(path string) bool {
 	}
 }
 
-// RemoveSubDirsUnderDir 删除指定目录下的子目录
+// RemoveSubDirsUnderDir 删除指定目录下的子目录,符合filterList的则删除
 func RemoveSubDirsUnderDir(dir string, filterList ...func(dir string) bool) error {
 	if !ExistsDir(dir) {
 		return nil
@@ -135,9 +136,9 @@ func RemoveDirs(dir string) error {
 }
 
 // RemoveFilesUnderDir 删除目录下的文件
-func RemoveFilesUnderDir(pathStr string, filter func(filePath string) bool) {
+func RemoveFilesUnderDir(pathStr string, includeFilter func(filePath string) bool) {
 	fileList := make([]string, 0)
-	_ = filepath.Walk(pathStr, FileWalkFuncWithIncludeFilter(&fileList, filter))
+	_ = filepath.Walk(pathStr, FileWalkFuncWithIncludeFilter(&fileList, includeFilter))
 	for _, filePath := range fileList {
 		_ = os.Remove(filePath)
 	}
@@ -295,10 +296,21 @@ func CreateDirAll(dir string) error {
 }
 
 // EnsureEmpty 确保清空目录下的所有内容，但是保证目录存在
-func EnsureEmpty(dir string) (err error) {
-	err = os.RemoveAll(dir)
-	if err != nil {
-		return err
+func EnsureEmpty(dirList ...string) (err error) {
+	for _, dir := range dirList {
+		err = os.RemoveAll(dir)
+		if err != nil {
+			return err
+		}
+		err = TouchDirAll(dir)
+		if err != nil {
+			return err
+		}
 	}
-	return TouchDirAll(dir)
+	return nil
+}
+
+// MustEnsureEmpty 确保清空目录下的所有内容，但是保证目录存在
+func MustEnsureEmpty(dirList ...string) {
+	xpanic.WhenError(EnsureEmpty(dirList...))
 }
