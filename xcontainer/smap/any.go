@@ -236,6 +236,18 @@ func (m *Concurrent[K, V]) doSetWithLockCheckWithFunc(key K, f func(key K) V) (r
 	return
 }
 
+// Swap swaps the value for a key and returns the previous value if any.
+// The loaded result reports whether the key was present.
+func (m *Concurrent[K, V]) Swap(key K, value V) (previous V, loaded bool) {
+	shard := m.GetShard(key)
+	shard.Lock()
+	defer shard.Unlock()
+
+	previous, loaded = shard.items[key]
+	shard.items[key] = value
+	return
+}
+
 // GetOrSetFunc 获取或者设定数值，方法f在Lock写锁外执行, 如元素早已存在则返回false,设定成功返回true
 func (m *Concurrent[K, V]) GetOrSetFunc(key K, f func(key K) V) (result V, isSet bool) {
 	if v, ok := m.Get(key); ok {
