@@ -242,10 +242,24 @@ func (m *Concurrent[K, V]) Swap(key K, value V) (previous V, loaded bool) {
 	shard := m.GetShard(key)
 	shard.Lock()
 	defer shard.Unlock()
-
 	previous, loaded = shard.items[key]
 	shard.items[key] = value
 	return
+}
+
+// CompareAndDeleteFunc deletes the entry for key if the comparison function returns true.
+// The comparison function is called with the current value (if any).
+func (m *Concurrent[K, V]) CompareAndDeleteFunc(key K, cmp func(current V) bool) (deleted bool) {
+	shard := m.GetShard(key)
+	shard.Lock()
+	defer shard.Unlock()
+
+	current, ok := shard.items[key]
+	if ok && cmp(current) {
+		delete(shard.items, key)
+		return true
+	}
+	return false
 }
 
 // GetOrSetFunc 获取或者设定数值，方法f在Lock写锁外执行, 如元素早已存在则返回false,设定成功返回true
