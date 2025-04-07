@@ -10,6 +10,7 @@ type BucketMap[K any, V any] struct {
 	hashFunc  func(K) int64
 	bucketNum int64
 	natives   []sync.Map
+	locks     []sync.RWMutex
 }
 
 func NewBucketMap[K any, V any](bucketNum int, hashFunc func(K) int64) *BucketMap[K, V] {
@@ -18,6 +19,7 @@ func NewBucketMap[K any, V any](bucketNum int, hashFunc func(K) int64) *BucketMa
 	}
 	b := &BucketMap[K, V]{hashFunc: hashFunc, bucketNum: int64(bucketNum)}
 	b.natives = make([]sync.Map, bucketNum)
+	b.locks = make([]sync.RWMutex, bucketNum)
 	return b
 }
 
@@ -198,4 +200,35 @@ func (m *BucketMap[K, V]) RangeDeterministic(f func(key K, value V) bool, sortab
 			}
 		}
 	}
+}
+
+// LoadOrStoreFuncErrorLock 函数根据key查找值，如果key存在则返回对应的值，否则用cf函数计算得到一个新的值，存储到 SyncMap 中并返回。
+// 如果执行cf函数时出错，则返回error。
+// 函数内部使用读写锁实现并发安全
+func (m *BucketMap[K, V]) LoadOrStoreFuncErrorLock(key K, newValFunc func(key K) (V, error)) (value V, loaded bool, err error) {
+	index := m.indexByKey(key)
+	bucket := &m.natives[index]
+	if val, ok := bucket.Load(key); ok {
+		return val.(V), true, nil
+	}
+	m.locks[index].Lock()
+	defer m.locks[index].Unlock()
+
+	if val, ok := bucket.Load(key); ok {
+		return val.(V), true, nil
+	}
+	v, err := newValFunc(key)
+	if err != nil {
+		return v, false, err
+	}
+	bucket.Store(key, v)
+	return v, false, nil
+}
+
+// LoadOrStoreFuncLock 根据key获取对应的value，若不存在则通过cf回调创建value并存储
+func (m *BucketMap[K, V]) LoadOrStoreFuncLock(key K, cf func(key K) V) (value V, loaded bool) {
+	value, loaded, _ = m.LoadOrStoreFuncErrorLock(key, func(key K) (V, error) {
+		return cf(key), nil
+	})
+	return value, loaded
 }

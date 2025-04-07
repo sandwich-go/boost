@@ -16,6 +16,7 @@ var DefaultShardCount = uint64(32)
 type Concurrent[K comparable, V any] struct {
 	shardedList  []*Sharded[K, V]
 	shardedCount uint64
+	hashFunc     func(key interface{}) uint64
 }
 
 type Sharded[K comparable, V any] struct {
@@ -28,11 +29,15 @@ type Tuple[K comparable, V any] struct {
 	Val V
 }
 
-// NewWithSharedCount 返回协程安全版本
-func NewWithSharedCount[K comparable, V any](sharedCount uint64) *Concurrent[K, V] {
+// newMap 返回协程安全版本
+func newMap[K comparable, V any](sharedCount uint64, hashFunc func(key interface{}) uint64) *Concurrent[K, V] {
+	if sharedCount == 0 {
+		sharedCount = DefaultShardCount
+	}
 	p := &Concurrent[K, V]{
 		shardedCount: sharedCount,
 		shardedList:  make([]*Sharded[K, V], sharedCount),
+		hashFunc:     hashFunc,
 	}
 	for i := uint64(0); i < sharedCount; i++ {
 		p.shardedList[i] = &Sharded[K, V]{items: make(map[K]V)}
@@ -40,9 +45,19 @@ func NewWithSharedCount[K comparable, V any](sharedCount uint64) *Concurrent[K, 
 	return p
 }
 
+// NewWithSharedCount 返回协程安全版本
+func NewWithSharedCount[K comparable, V any](sharedCount uint64) *Concurrent[K, V] {
+	return newMap[K, V](sharedCount, z.KeyToHash)
+}
+
 // New 返回协程安全版本
 func New[K comparable, V any]() *Concurrent[K, V] {
-	return NewWithSharedCount[K, V](DefaultShardCount)
+	return newMap[K, V](DefaultShardCount, z.KeyToHash)
+}
+
+// NewWithHashFunc 返回协程安全版本
+func NewWithHashFunc[K comparable, V any](hashFunc func(key interface{}) uint64) *Concurrent[K, V] {
+	return newMap[K, V](DefaultShardCount, hashFunc)
 }
 
 // GetShard 返回key对应的分片
