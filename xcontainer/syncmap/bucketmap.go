@@ -3,6 +3,10 @@ package syncmap
 import (
 	"sort"
 	"sync"
+	"sync/atomic"
+	"time"
+
+	"github.com/sandwich-go/boost/xpanic"
 )
 
 // BucketMap 定义并发安全的分桶映射，使用 sync.Map 来实现
@@ -12,35 +16,85 @@ type BucketMap[K comparable, V any] struct {
 	natives   []sync.Map
 	locks     []sync.RWMutex
 
-	keyCaches []struct {
-		sync.RWMutex
-		keys []K
-	}
-	cacheKey bool
+	// 采用间隔更新的方式
+	// 双缓冲切片指针 + 当前活跃 index
+	keySnapshots [2]atomic.Pointer[[]K]
+	activeIndex  atomic.Uint32
+	keySlicePool sync.Pool
+	stopCh       chan struct{}
+	refreshDur   time.Duration
 }
 
-func NewBucketMapWithCacheKey[K comparable, V any](bucketNum int, hashFunc func(K) int64) *BucketMap[K, V] {
-	return newBucketMap[K, V](bucketNum, true, hashFunc)
+func NewBucketMapWithCacheKey[K comparable, V any](bucketNum int, cacheKeyInterval time.Duration, hashFunc func(K) int64) (
+	m *BucketMap[K, V],
+	forceFresh func(),
+	stopFunc func()) {
+	m = newBucketMap[K, V](bucketNum, cacheKeyInterval, hashFunc)
+	return m, m.refreshKeysNow, func() {
+		close(m.stopCh)
+	}
 }
 func NewBucketMap[K comparable, V any](bucketNum int, hashFunc func(K) int64) *BucketMap[K, V] {
-	return newBucketMap[K, V](bucketNum, false, hashFunc)
+	return newBucketMap[K, V](bucketNum, 0, hashFunc)
 }
-func newBucketMap[K comparable, V any](bucketNum int, cacheKey bool, hashFunc func(K) int64) *BucketMap[K, V] {
+func newBucketMap[K comparable, V any](bucketNum int, refreshDur time.Duration, hashFunc func(K) int64) *BucketMap[K, V] {
 	if bucketNum <= 0 {
 		bucketNum = 1
 	}
 	b := &BucketMap[K, V]{hashFunc: hashFunc, bucketNum: int64(bucketNum)}
 	b.natives = make([]sync.Map, bucketNum)
 	b.locks = make([]sync.RWMutex, bucketNum)
-	b.cacheKey = cacheKey
-	if cacheKey {
-		b.keyCaches = make([]struct {
-			sync.RWMutex
-			keys []K
-		}, bucketNum)
+	b.refreshDur = refreshDur
+	b.stopCh = make(chan struct{})
+	if refreshDur > 0 {
+		b.keySlicePool = sync.Pool{
+			New: func() any {
+				s := make([]K, 0, 10000)
+				return &s
+			},
+		}
+		// 初始化两个空快照
+		for i := range b.keySnapshots {
+			ptr := make([]K, 0)
+			b.keySnapshots[i].Store(&ptr)
+		}
+		b.refreshKeySnapshot()
+		go xpanic.AutoRecover("bucket_map_cache_key", func() {
+			ticker := time.NewTicker(refreshDur)
+			defer ticker.Stop()
+			for {
+				select {
+				case <-ticker.C:
+					b.refreshKeySnapshot()
+				case <-b.stopCh:
+					return
+				}
+			}
+		})
 	}
 	return b
 }
+
+func (m *BucketMap[K, V]) refreshKeysNow() {
+	m.refreshKeySnapshot()
+}
+
+func (m *BucketMap[K, V]) refreshKeySnapshot() {
+	keysPtr := m.keySlicePool.Get().(*[]K)
+	*keysPtr = (*keysPtr)[:0]
+	for i := range m.natives {
+		m.natives[i].Range(func(k, _ any) bool {
+			*keysPtr = append(*keysPtr, k.(K))
+			return true
+		})
+	}
+	// 更新备用快照
+	next := 1 - int(m.activeIndex.Load())
+	m.keySnapshots[next].Store(keysPtr)
+	// 原子切换
+	m.activeIndex.Store(uint32(next))
+}
+
 func (m *BucketMap[K, V]) indexByKey(key K) int {
 	if m.bucketNum == 1 {
 		return 0
@@ -68,7 +122,6 @@ func (m *BucketMap[K, V]) Load(key K) (V, bool) {
 func (m *BucketMap[K, V]) Store(key K, value V) {
 	idx := m.indexByKey(key)
 	m.natives[idx].Store(key, value)
-	m.addKeyToCache(idx, key)
 }
 
 // LoadOrStore returns the existing value for the key if present.
@@ -77,9 +130,6 @@ func (m *BucketMap[K, V]) Store(key K, value V) {
 func (m *BucketMap[K, V]) LoadOrStore(key K, value V) (actual V, loaded bool) {
 	idx := m.indexByKey(key)
 	a, l := m.natives[idx].LoadOrStore(key, value)
-	if !loaded {
-		m.addKeyToCache(idx, key)
-	}
 	return a.(V), l
 }
 
@@ -92,8 +142,6 @@ func (m *BucketMap[K, V]) LoadAndDelete(key K) (value V, loaded bool) {
 		var v2 V
 		return v2, false
 	}
-	// is delete
-	m.removeKeyFromCache(idx, key)
 	return v.(V), isLoaded
 }
 
@@ -101,7 +149,6 @@ func (m *BucketMap[K, V]) LoadAndDelete(key K) (value V, loaded bool) {
 func (m *BucketMap[K, V]) Delete(key K) {
 	idx := m.indexByKey(key)
 	m.natives[idx].Delete(key)
-	m.removeKeyFromCache(idx, key)
 }
 
 // Range calls f sequentially for each key and value present in the map.
@@ -157,23 +204,16 @@ func (m *BucketMap[K, V]) Swap(key K, new V) (V, bool) {
 // If there is no current value for key in the map, CompareAndDelete
 // returns false (even if the old value is the nil interface value).
 func (m *BucketMap[K, V]) CompareAndDelete(key K, new V) bool {
-	idx := m.indexByKey(key)
-	deleted := m.natives[idx].CompareAndDelete(key, new)
-	if deleted {
-		m.removeKeyFromCache(idx, key)
-	}
-	return deleted
+	return m.natives[m.indexByKey(key)].CompareAndDelete(key, new)
 }
 
 func (m *BucketMap[K, V]) Keys() (ret []K) {
-	if m.cacheKey {
-		for i := range m.keyCaches {
-			cache := &m.keyCaches[i]
-			cache.RLock()
-			ret = append(ret, cache.keys...)
-			cache.RUnlock()
+	if m.refreshDur > 0 {
+		snapshot := m.keySnapshots[m.activeIndex.Load()].Load()
+		if snapshot == nil {
+			return nil
 		}
-		return ret
+		return *snapshot
 	}
 	// fallback
 	for i := range m.natives {
@@ -186,15 +226,6 @@ func (m *BucketMap[K, V]) Keys() (ret []K) {
 }
 
 func (m *BucketMap[K, V]) Len() (c int) {
-	if m.cacheKey {
-		for i := range m.keyCaches {
-			cache := &m.keyCaches[i]
-			cache.RLock()
-			c += len(cache.keys)
-			cache.RUnlock()
-		}
-		return c
-	}
 	// fallback
 	for i := range m.natives {
 		m.natives[i].Range(func(key, value interface{}) bool {
@@ -220,11 +251,7 @@ func (m *BucketMap[K, V]) Get(key K) (value V) {
 // DeleteMultiple 删除映射中的多个键
 func (m *BucketMap[K, V]) DeleteMultiple(keys ...K) {
 	for _, k := range keys {
-		idx := m.indexByKey(k)
-		_, isLoaded := m.natives[idx].LoadAndDelete(k)
-		if isLoaded {
-			m.removeKeyFromCache(idx, k)
-		}
+		m.natives[m.indexByKey(k)].Delete(k)
 	}
 }
 
@@ -233,12 +260,6 @@ func (m *BucketMap[K, V]) clear(index int) {
 		m.natives[index].Delete(key)
 		return true
 	})
-	if m.cacheKey {
-		cache := &m.keyCaches[index]
-		cache.Lock()
-		cache.keys = make([]K, 0)
-		cache.Unlock()
-	}
 }
 
 // Clear 清空映射
@@ -288,7 +309,6 @@ func (m *BucketMap[K, V]) LoadOrStoreFuncErrorLock(key K, newValFunc func(key K)
 		return v, false, err
 	}
 	bucket.Store(key, v)
-	m.addKeyToCache(idx, key)
 	return v, false, nil
 }
 
@@ -298,34 +318,4 @@ func (m *BucketMap[K, V]) LoadOrStoreFuncLock(key K, cf func(key K) V) (value V,
 		return cf(key), nil
 	})
 	return value, loaded
-}
-func (m *BucketMap[K, V]) addKeyToCache(index int, key K) {
-	if !m.cacheKey {
-		return
-	}
-	cache := &m.keyCaches[index]
-	cache.Lock()
-	defer cache.Unlock()
-	for _, k := range cache.keys {
-		if k == key {
-			return
-		}
-	}
-	cache.keys = append(cache.keys, key)
-}
-
-func (m *BucketMap[K, V]) removeKeyFromCache(index int, key K) {
-	if !m.cacheKey {
-		return
-	}
-	cache := &m.keyCaches[index]
-	cache.Lock()
-	defer cache.Unlock()
-	newKeys := make([]K, 0, len(cache.keys))
-	for _, k := range cache.keys {
-		if k != key {
-			newKeys = append(newKeys, k)
-		}
-	}
-	cache.keys = newKeys
 }

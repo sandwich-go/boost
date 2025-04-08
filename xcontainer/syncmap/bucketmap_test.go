@@ -3,6 +3,7 @@ package syncmap
 import (
 	"strconv"
 	"testing"
+	"time"
 )
 
 func generateTestData(n int) ([]string, []int) {
@@ -19,7 +20,7 @@ func BenchmarkKeys_Cached(b *testing.B) {
 	hashFn := func(s string) int64 {
 		return int64(len(s)) // 简单 hash 函数
 	}
-	m := NewBucketMapWithCacheKey[string, int](64, hashFn)
+	m, _, _ := NewBucketMapWithCacheKey[string, int](64, time.Millisecond*500, hashFn)
 	keys, values := generateTestData(10000)
 
 	for i := 0; i < len(keys); i++ {
