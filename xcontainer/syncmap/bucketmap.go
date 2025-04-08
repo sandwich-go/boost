@@ -3,26 +3,42 @@ package syncmap
 import (
 	"sort"
 	"sync"
+	"sync/atomic"
 )
 
 // BucketMap 定义并发安全的分桶映射，使用 sync.Map 来实现
-type BucketMap[K any, V any] struct {
+type BucketMap[K comparable, V any] struct {
 	hashFunc  func(K) int64
 	bucketNum int64
 	natives   []sync.Map
 	locks     []sync.RWMutex
+
+	keyCaches []atomic.Pointer[[]K]
+	cacheKey  bool
 }
 
-func NewBucketMap[K any, V any](bucketNum int, hashFunc func(K) int64) *BucketMap[K, V] {
+func NewBucketMapWithCacheKey[K comparable, V any](bucketNum int, hashFunc func(K) int64) *BucketMap[K, V] {
+	return newBucketMap[K, V](bucketNum, true, hashFunc)
+}
+func NewBucketMap[K comparable, V any](bucketNum int, hashFunc func(K) int64) *BucketMap[K, V] {
+	return newBucketMap[K, V](bucketNum, false, hashFunc)
+}
+func newBucketMap[K comparable, V any](bucketNum int, cacheKey bool, hashFunc func(K) int64) *BucketMap[K, V] {
 	if bucketNum <= 0 {
 		bucketNum = 1
 	}
 	b := &BucketMap[K, V]{hashFunc: hashFunc, bucketNum: int64(bucketNum)}
 	b.natives = make([]sync.Map, bucketNum)
 	b.locks = make([]sync.RWMutex, bucketNum)
+	b.cacheKey = cacheKey
+	if cacheKey {
+		b.keyCaches = make([]atomic.Pointer[[]K], bucketNum)
+		for i := range b.keyCaches {
+			b.keyCaches[i].Store(new([]K))
+		}
+	}
 	return b
 }
-
 func (m *BucketMap[K, V]) indexByKey(key K) int {
 	if m.bucketNum == 1 {
 		return 0
@@ -47,29 +63,44 @@ func (m *BucketMap[K, V]) Load(key K) (V, bool) {
 }
 
 // Store sets the value for a key.
-func (m *BucketMap[K, V]) Store(key K, value V) { m.natives[m.indexByKey(key)].Store(key, value) }
+func (m *BucketMap[K, V]) Store(key K, value V) {
+	idx := m.indexByKey(key)
+	m.natives[idx].Store(key, value)
+	m.addKeyToCache(idx, key)
+}
 
 // LoadOrStore returns the existing value for the key if present.
 // Otherwise, it stores and returns the given value.
 // The loaded result is true if the value was loaded, false if stored.
 func (m *BucketMap[K, V]) LoadOrStore(key K, value V) (actual V, loaded bool) {
-	a, l := m.natives[m.indexByKey(key)].LoadOrStore(key, value)
+	idx := m.indexByKey(key)
+	a, l := m.natives[idx].LoadOrStore(key, value)
+	if !loaded {
+		m.addKeyToCache(idx, key)
+	}
 	return a.(V), l
 }
 
 // LoadAndDelete deletes the value for a key, returning the previous value if any.
 // The loaded result reports whether the key was present.
 func (m *BucketMap[K, V]) LoadAndDelete(key K) (value V, loaded bool) {
-	v, l := m.natives[m.indexByKey(key)].LoadAndDelete(key)
-	if !l {
+	idx := m.indexByKey(key)
+	v, isLoaded := m.natives[idx].LoadAndDelete(key)
+	if !isLoaded {
 		var v2 V
 		return v2, false
 	}
-	return v.(V), l
+	// is delete
+	m.removeKeyFromCache(idx, key)
+	return v.(V), isLoaded
 }
 
 // Delete deletes the value for a key.
-func (m *BucketMap[K, V]) Delete(key K) { m.natives[m.indexByKey(key)].Delete(key) }
+func (m *BucketMap[K, V]) Delete(key K) {
+	idx := m.indexByKey(key)
+	m.natives[idx].Delete(key)
+	m.removeKeyFromCache(idx, key)
+}
 
 // Range calls f sequentially for each key and value present in the map.
 // If f returns false, range stops the iteration.
@@ -124,11 +155,22 @@ func (m *BucketMap[K, V]) Swap(key K, new V) (V, bool) {
 // If there is no current value for key in the map, CompareAndDelete
 // returns false (even if the old value is the nil interface value).
 func (m *BucketMap[K, V]) CompareAndDelete(key K, new V) bool {
-	return m.natives[m.indexByKey(key)].CompareAndDelete(key, new)
+	idx := m.indexByKey(key)
+	deleted := m.natives[idx].CompareAndDelete(key, new)
+	if deleted {
+		m.removeKeyFromCache(idx, key)
+	}
+	return deleted
 }
 
-// Keys 获取映射中的所有键，返回一个 Key 类型的切片
 func (m *BucketMap[K, V]) Keys() (ret []K) {
+	if m.cacheKey {
+		for i := range m.keyCaches {
+			ptr := m.keyCaches[i].Load()
+			ret = append(ret, *ptr...)
+		}
+		return ret
+	}
 	for i := range m.natives {
 		m.natives[i].Range(func(key, value interface{}) bool {
 			ret = append(ret, key.(K))
@@ -140,6 +182,15 @@ func (m *BucketMap[K, V]) Keys() (ret []K) {
 
 // Len 获取映射中键值对的数量
 func (m *BucketMap[K, V]) Len() (c int) {
+	if m.cacheKey {
+		for i := range m.keyCaches {
+			ptr := m.keyCaches[i].Load()
+			if ptr != nil {
+				c += len(*ptr)
+			}
+		}
+		return c
+	}
 	for i := range m.natives {
 		m.natives[i].Range(func(key, value interface{}) bool {
 			c++
@@ -164,13 +215,20 @@ func (m *BucketMap[K, V]) Get(key K) (value V) {
 // DeleteMultiple 删除映射中的多个键
 func (m *BucketMap[K, V]) DeleteMultiple(keys ...K) {
 	for _, k := range keys {
-		m.natives[m.indexByKey(k)].Delete(k)
+		idx := m.indexByKey(k)
+		_, isLoaded := m.natives[idx].LoadAndDelete(k)
+		if isLoaded {
+			m.removeKeyFromCache(idx, k)
+		}
 	}
 }
 
 func (m *BucketMap[K, V]) clear(index int) {
 	m.natives[index].Range(func(key, value interface{}) bool {
 		m.natives[index].Delete(key)
+		if m.cacheKey {
+			m.keyCaches[index].Store(new([]K))
+		}
 		return true
 	})
 }
@@ -206,13 +264,13 @@ func (m *BucketMap[K, V]) RangeDeterministic(f func(key K, value V) bool, sortab
 // 如果执行cf函数时出错，则返回error。
 // 函数内部使用读写锁实现并发安全
 func (m *BucketMap[K, V]) LoadOrStoreFuncErrorLock(key K, newValFunc func(key K) (V, error)) (value V, loaded bool, err error) {
-	index := m.indexByKey(key)
-	bucket := &m.natives[index]
+	idx := m.indexByKey(key)
+	bucket := &m.natives[idx]
 	if val, ok := bucket.Load(key); ok {
 		return val.(V), true, nil
 	}
-	m.locks[index].Lock()
-	defer m.locks[index].Unlock()
+	m.locks[idx].Lock()
+	defer m.locks[idx].Unlock()
 
 	if val, ok := bucket.Load(key); ok {
 		return val.(V), true, nil
@@ -222,6 +280,7 @@ func (m *BucketMap[K, V]) LoadOrStoreFuncErrorLock(key K, newValFunc func(key K)
 		return v, false, err
 	}
 	bucket.Store(key, v)
+	m.addKeyToCache(idx, key)
 	return v, false, nil
 }
 
@@ -231,4 +290,62 @@ func (m *BucketMap[K, V]) LoadOrStoreFuncLock(key K, cf func(key K) V) (value V,
 		return cf(key), nil
 	})
 	return value, loaded
+}
+func (m *BucketMap[K, V]) addKeyToCache(index int, key K) {
+	if !m.cacheKey {
+		return
+	}
+	for {
+		oldPtr := m.keyCaches[index].Load()
+		var old []K
+		if oldPtr != nil {
+			old = *oldPtr
+			for _, k := range old {
+				if k == key {
+					return
+				}
+			}
+		}
+
+		newSlice := make([]K, len(old), len(old)+1)
+		copy(newSlice, old)
+		newSlice = append(newSlice, key)
+
+		newPtr := &newSlice
+		if m.keyCaches[index].CompareAndSwap(oldPtr, newPtr) {
+			return // 更新成功，退出
+		}
+		// 否则重新再来一次
+	}
+}
+func (m *BucketMap[K, V]) removeKeyFromCache(index int, key K) {
+	if !m.cacheKey {
+		return
+	}
+	for {
+		oldPtr := m.keyCaches[index].Load()
+		if oldPtr == nil {
+			return // 无内容，直接返回
+		}
+		old := *oldPtr
+
+		found := false
+		newSlice := make([]K, 0, len(old))
+		for _, k := range old {
+			if k == key {
+				found = true
+				continue
+			}
+			newSlice = append(newSlice, k)
+		}
+		if !found {
+			return // key 不存在，直接返回
+		}
+
+		newPtr := &newSlice
+		if m.keyCaches[index].CompareAndSwap(oldPtr, newPtr) {
+			return // 更新成功
+		}
+		// 否则重新获取最新值，再试一次
+	}
 }
