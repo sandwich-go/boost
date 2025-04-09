@@ -14,6 +14,8 @@ var (
 	timeAfterFunc = DefaultTiming.AfterFunc
 )
 
+type timer *timingwheel.Timer
+
 func init() {
 	DefaultTiming.Start()
 }

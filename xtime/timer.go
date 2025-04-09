@@ -12,7 +12,7 @@ type Timer interface {
 }
 
 type SafeTimer struct {
-	t      *time.Timer
+	t      timer
 	domain string
 	cb     func()
 }
@@ -36,7 +36,7 @@ func (t *SafeTimer) GetDomain() string {
 }
 
 type DanglingTimer struct {
-	t      *time.Timer
+	t      timer
 	lock   sync.RWMutex // 框架管理的timer不需要加锁，业务自己管理的timer需要加锁
 	domain string
 	cb     func()
