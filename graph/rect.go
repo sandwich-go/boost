@@ -24,16 +24,16 @@ func (r Rectangle[T]) Center() Point[T] {
 	return P(r.min.x+(r.max.x-r.min.x)/2, r.min.y+(r.max.y-r.min.y)/2)
 }
 
-// RangePoints range all points in rectangle.
+// RangePointsMinMaxClosed range all points in rectangle.
 // if with return false, aborted range.
-func (r Rectangle[T]) RangePoints(with func(p Point[T]) bool) {
+func (r Rectangle[T]) RangePointsMinMaxClosed(with func(p Point[T]) bool) {
 	var ZR Rectangle[T]
 	if with == nil || r == ZR {
 		return
 	}
 
-	for x := r.min.x; cmp.Compare(x, r.max.x) < 0; x++ {
-		for y := r.min.y; cmp.Compare(y, r.max.y) < 0; y++ {
+	for x := r.min.x; cmp.Compare(x, r.max.x) <= 0; x++ {
+		for y := r.min.y; cmp.Compare(y, r.max.y) <= 0; y++ {
 			if !with(P(x, y)) {
 				return
 			}
@@ -41,9 +41,9 @@ func (r Rectangle[T]) RangePoints(with func(p Point[T]) bool) {
 	}
 }
 
-// RangePointsMinClosedMaxOpen range all points in rectangle except min x, y.
+// RangePointsMinOpenMaxClosed range all points in rectangle except min x, y.
 // if with return false, aborted range.
-func (r Rectangle[T]) RangePointsMinClosedMaxOpen(with func(p Point[T]) bool) {
+func (r Rectangle[T]) RangePointsMinOpenMaxClosed(with func(p Point[T]) bool) {
 	var ZR Rectangle[T]
 	if with == nil || r == ZR {
 		return
@@ -58,9 +58,9 @@ func (r Rectangle[T]) RangePointsMinClosedMaxOpen(with func(p Point[T]) bool) {
 	}
 }
 
-// RangePointsMinMaxClosed range all points in rectangle except min/max x, y.
+// RangePointsMinMaxOpen range all points in rectangle except min/max x, y.
 // if with return false, aborted range.
-func (r Rectangle[T]) RangePointsMinMaxClosed(with func(p Point[T]) bool) {
+func (r Rectangle[T]) RangePointsMinMaxOpen(with func(p Point[T]) bool) {
 	var ZR Rectangle[T]
 	if with == nil || r == ZR {
 		return
@@ -75,9 +75,9 @@ func (r Rectangle[T]) RangePointsMinMaxClosed(with func(p Point[T]) bool) {
 	}
 }
 
-// RangePointsMinOpenMaxClosed range all points in rectangle except max x, y.
+// RangePointsMinClosedMaxOpen range all points in rectangle except max x, y.
 // if with return false, aborted range.
-func (r Rectangle[T]) RangePointsMinOpenMaxClosed(with func(p Point[T]) bool) {
+func (r Rectangle[T]) RangePointsMinClosedMaxOpen(with func(p Point[T]) bool) {
 	var ZR Rectangle[T]
 	if with == nil || r == ZR {
 		return
@@ -207,9 +207,21 @@ func (r Rectangle[T]) Union(s Rectangle[T]) Rectangle[T] {
 	return r
 }
 
-// Has reports whether the rectangle contains the point.
-func (r Rectangle[T]) Has(p Point[T]) bool {
+// HasMinMaxClosed reports whether the rectangle contains the point.
+func (r Rectangle[T]) HasMinMaxClosed(p Point[T]) bool {
 	return cmp.Compare(p.x, r.min.x) >= 0 && cmp.Compare(p.x, r.max.x) <= 0 && cmp.Compare(p.y, r.min.y) >= 0 && cmp.Compare(p.y, r.max.y) <= 0
+}
+
+func (r Rectangle[T]) HasMinMaxOpen(p Point[T]) bool {
+	return cmp.Compare(p.x, r.min.x) > 0 && cmp.Compare(p.x, r.max.x) < 0 && cmp.Compare(p.y, r.min.y) > 0 && cmp.Compare(p.y, r.max.y) < 0
+}
+
+func (r Rectangle[T]) HasMinOpenMaxClosed(p Point[T]) bool {
+	return cmp.Compare(p.x, r.min.x) > 0 && cmp.Compare(p.x, r.max.x) <= 0 && cmp.Compare(p.y, r.min.y) > 0 && cmp.Compare(p.y, r.max.y) <= 0
+}
+
+func (r Rectangle[T]) HasMinClosedMaxOpen(p Point[T]) bool {
+	return cmp.Compare(p.x, r.min.x) >= 0 && cmp.Compare(p.x, r.max.x) < 0 && cmp.Compare(p.y, r.min.y) >= 0 && cmp.Compare(p.y, r.max.y) < 0
 }
 
 // Empty reports whether the rectangle contains no points.

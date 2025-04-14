@@ -118,7 +118,7 @@ func (b *Block[T]) RangeGridInRectangle(rect graph.Rectangle[T], with func(p Gri
 	}
 	for x := b.toIndex(minX); x < b.toSum(maxX); x++ {
 		for y := b.toIndex(minY); y < b.toSum(maxY); y++ {
-			ok := rect.Has(graph.P(b.toPoint(x), b.toPoint(y)))
+			ok := rect.HasMinMaxClosed(graph.P(b.toPoint(x), b.toPoint(y)))
 			if !ok {
 				continue
 			}
