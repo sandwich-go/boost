@@ -2,6 +2,7 @@ package lru
 
 import (
 	"github.com/sandwich-go/boost/xmath"
+	"github.com/sandwich-go/boost/xsync"
 	"sync"
 	"time"
 )
@@ -26,6 +27,27 @@ type Engine[V any] struct {
 	cleanInterval time.Duration
 	head          *Node[V]
 	expireHandler func(V)
+
+	locker  sync.Locker
+	started xsync.AtomicInt32
+	active  bool
+}
+
+func newEngine[V any](interval time.Duration, locker sync.Locker, expireHandler func(V), active bool) *Engine[V] {
+	return &Engine[V]{
+		cleanInterval: interval,
+		locker:        locker,
+		expireHandler: expireHandler,
+		active:        active,
+	}
+}
+
+// NewLazyEngine 创建 lru 类型的引擎, 当第一个元素添加的时候，才会启动元素清理协程
+// interval ticker 间隔时间，过期时间需要 [interval*0.9, interval*1.1] 之前才准确
+// locker 节点锁，保证添加/删除/过期元素并发安全
+// expireHandler 过期元素处理器
+func NewLazyEngine[V any](interval time.Duration, locker sync.Locker, expireHandler func(V)) *Engine[V] {
+	return newEngine(interval, locker, expireHandler, false)
 }
 
 // NewEngine 创建 lru 类型的引擎
@@ -33,22 +55,29 @@ type Engine[V any] struct {
 // locker 节点锁，保证添加/删除/过期元素并发安全
 // expireHandler 过期元素处理器
 func NewEngine[V any](interval time.Duration, locker sync.Locker, expireHandler func(V)) *Engine[V] {
-	var e = &Engine[V]{
-		cleanInterval: interval,
-		expireHandler: expireHandler,
+	var e = newEngine(interval, locker, expireHandler, true)
+	e.startCleaner()
+	return e
+}
+
+func (e *Engine[V]) startCleaner() {
+	if !e.started.CompareAndSwap(0, 1) {
+		return
 	}
 	go func() {
-		slept := min(time.Second, interval)
+		slept := min(time.Second, e.cleanInterval)
 		for {
 			time.Sleep(xmath.Disturb(slept, 10))
-			e.expire(locker)
+			e.expire()
 		}
 	}()
-	return e
 }
 
 // Add 添加元素
 func (e *Engine[V]) Add(value V) *Node[V] {
+	if !e.active && e.started.Get() == 0 {
+		e.startCleaner()
+	}
 	n := &Node[V]{
 		value:  value,
 		engine: e,
@@ -130,10 +159,10 @@ func (e *Engine[V]) moveNodeToHead(node *Node[V]) {
 	e.head = node
 }
 
-func (e *Engine[V]) expire(locker sync.Locker) {
-	if locker != nil {
-		locker.Lock()
-		defer locker.Unlock()
+func (e *Engine[V]) expire() {
+	if e.locker != nil {
+		e.locker.Lock()
+		defer e.locker.Unlock()
 	}
 	if e.head == nil {
 		return
