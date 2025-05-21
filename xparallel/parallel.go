@@ -1,14 +1,24 @@
 package xparallel
 
-import "sync"
+import (
+	"fmt"
+	"sync"
+
+	"github.com/sandwich-go/boost/internal/log"
+	"github.com/sandwich-go/boost/xpanic"
+)
 
 const NoLimit = 0
 
 func worker[V any](wg *sync.WaitGroup, ch chan V, fn func(V)) {
+	defer wg.Done()
 	for v := range ch {
-		fn(v)
+		xpanic.Try(func() {
+			fn(v)
+		}).Catch(func(err xpanic.E) {
+			log.Error(fmt.Sprintf("parallel worker panic: %v", err))
+		})
 	}
-	wg.Done()
 }
 
 func closeThenParallel[V any](maxp int, ch chan V, fn func(V)) {
