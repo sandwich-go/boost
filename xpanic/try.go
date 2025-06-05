@@ -1,5 +1,10 @@
 package xpanic
 
+import (
+	"fmt"
+	"runtime/debug"
+)
+
 // https://github.com/manucorporat/try/blob/master/try.go
 
 const rethrow_panic = "_____rethrow"
@@ -9,18 +14,25 @@ type (
 	exception struct {
 		finally func()
 		Error   E
+		Stack   []byte
 	}
 )
+
+func (e exception) String() string {
+	return fmt.Sprintf("%v\n%s", e.Error, string(e.Stack))
+}
 
 func Throw() {
 	panic(rethrow_panic)
 }
 
 func Try(f func()) (e exception) {
-	e = exception{nil, nil}
+	e = exception{nil, nil, nil}
 	// catch error in
 	defer func() {
-		e.Error = recover()
+		if e.Error = recover(); e.Error != nil {
+			e.Stack = debug.Stack()
+		}
 	}()
 	f()
 	return
@@ -42,7 +54,7 @@ func (e exception) Catch(f func(err E)) {
 				panic(err)
 			}
 		}()
-		f(e.Error)
+		f(e)
 	} else if e.finally != nil {
 		e.finally()
 	}

@@ -165,7 +165,7 @@ func (d *dispatcher) TriggerTickFuncs(ctx context.Context) {
 		xpanic.Try(func() {
 			h.cb(ctx)
 		}).Catch(func(err xpanic.E) {
-			log.Error(fmt.Sprintf("panic in tick funcs, reason:%v", err))
+			fmt.Printf("panic in tick funcs, reason:%v", err)
 		})
 	}
 }
