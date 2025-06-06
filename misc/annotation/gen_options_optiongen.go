@@ -19,7 +19,7 @@ type Options struct {
 func NewOptions(opts ...Option) *Options {
 	cc := newDefaultOptions()
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 	if watchDogOptions != nil {
 		watchDogOptions(cc)
@@ -34,17 +34,27 @@ func NewOptions(opts ...Option) *Options {
 func (cc *Options) ApplyOption(opts ...Option) []Option {
 	var previous []Option
 	for _, opt := range opts {
-		previous = append(previous, opt(cc))
+		previous = append(previous, opt.Apply(cc))
 	}
 	return previous
 }
 
-// Option option func
-type Option func(cc *Options) Option
+// OptionFunc option func
+type Option interface {
+	Apply(cc *Options) Option
+}
+
+var _ Option = OptionFunc(nil)
+
+type OptionFunc func(cc *Options) OptionFunc
+
+func (f OptionFunc) Apply(cc *Options) Option {
+	return f(cc)
+}
 
 // WithMagicPrefix 只有包含 MagicPrefix 的行，才能萃取到注释
-func WithMagicPrefix(v string) Option {
-	return func(cc *Options) Option {
+func WithMagicPrefix(v string) OptionFunc {
+	return func(cc *Options) OptionFunc {
 		previous := cc.MagicPrefix
 		cc.MagicPrefix = v
 		return WithMagicPrefix(previous)
@@ -52,8 +62,8 @@ func WithMagicPrefix(v string) Option {
 }
 
 // WithLowerKey key是否为转化为小写
-func WithLowerKey(v bool) Option {
-	return func(cc *Options) Option {
+func WithLowerKey(v bool) OptionFunc {
+	return func(cc *Options) OptionFunc {
 		previous := cc.LowerKey
 		cc.LowerKey = v
 		return WithLowerKey(previous)
@@ -61,10 +71,19 @@ func WithLowerKey(v bool) Option {
 }
 
 // WithDescriptors 描述数组
-func WithDescriptors(v ...Descriptor) Option {
-	return func(cc *Options) Option {
+func WithDescriptors(v ...Descriptor) OptionFunc {
+	return func(cc *Options) OptionFunc {
 		previous := cc.Descriptors
 		cc.Descriptors = v
+		return WithDescriptors(previous...)
+	}
+}
+
+// AppendDescriptors 描述数组
+func AppendDescriptors(v ...Descriptor) OptionFunc {
+	return func(cc *Options) OptionFunc {
+		previous := cc.Descriptors
+		cc.Descriptors = append(cc.Descriptors, v...)
 		return WithDescriptors(previous...)
 	}
 }
@@ -75,18 +94,21 @@ func InstallOptionsWatchDog(dog func(cc *Options)) { watchDogOptions = dog }
 // watchDogOptions global watch dog
 var watchDogOptions func(cc *Options)
 
-// newDefaultOptions new default Options
-func newDefaultOptions() *Options {
-	cc := &Options{}
-
-	for _, opt := range [...]Option{
+// setOptionsDefaultValue default Options value
+func setOptionsDefaultValue(cc *Options) {
+	for _, opt := range [...]OptionFunc{
 		WithMagicPrefix("annotation@"),
 		WithLowerKey(true),
 		WithDescriptors(nil...),
 	} {
 		opt(cc)
 	}
+}
 
+// newDefaultOptions new default Options
+func newDefaultOptions() *Options {
+	cc := &Options{}
+	setOptionsDefaultValue(cc)
 	return cc
 }
 

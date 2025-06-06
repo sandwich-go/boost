@@ -32,4 +32,15 @@ func TestArray(t *testing.T) {
 		arr.SetFormatFunc(DotFormatFunc)
 		t.Log(arr.Error())
 	})
+	Convey("errors.Is", t, func() {
+		errArray := &Array{}
+		errArray.Push(NewText("1"))
+		e1 := NewText("2")
+		e2 := Wrap(e1, "wrap with xerror")
+		So(errors.Is(errArray, e1), ShouldBeFalse)
+		errArray.Push(e2)
+		So(errors.Is(errArray, e1), ShouldBeTrue)
+		So(errors.Is(errArray, e2), ShouldBeTrue)
+		So(errors.Is(errArray.Err(), e1), ShouldBeTrue)
+	})
 }

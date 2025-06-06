@@ -15,7 +15,7 @@ type Options struct {
 func NewOptions(opts ...Option) *Options {
 	cc := newDefaultOptions()
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 	if watchDogOptions != nil {
 		watchDogOptions(cc)
@@ -26,22 +26,32 @@ func NewOptions(opts ...Option) *Options {
 // ApplyOption apply multiple new option
 func (cc *Options) ApplyOption(opts ...Option) {
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 }
 
-// Option option func
-type Option func(cc *Options)
+// OptionFunc option func
+type Option interface {
+	Apply(cc *Options)
+}
+
+var _ Option = OptionFunc(nil)
+
+type OptionFunc func(cc *Options)
+
+func (f OptionFunc) Apply(cc *Options) {
+	f(cc)
+}
 
 // WithPer option func for filed per
-func WithPer(v time.Duration) Option {
+func WithPer(v time.Duration) OptionFunc {
 	return func(cc *Options) {
 		cc.per = v
 	}
 }
 
 // WithSlack option func for filed Slack
-func WithSlack(v int) Option {
+func WithSlack(v int) OptionFunc {
 	return func(cc *Options) {
 		cc.Slack = v
 	}
@@ -53,17 +63,20 @@ func InstallOptionsWatchDog(dog func(cc *Options)) { watchDogOptions = dog }
 // watchDogOptions global watch dog
 var watchDogOptions func(cc *Options)
 
-// newDefaultOptions new default Options
-func newDefaultOptions() *Options {
-	cc := &Options{}
-
-	for _, opt := range [...]Option{
+// setOptionsDefaultValue default Options value
+func setOptionsDefaultValue(cc *Options) {
+	for _, opt := range [...]OptionFunc{
 		WithPer(time.Second),
 		WithSlack(10),
 	} {
 		opt(cc)
 	}
+}
 
+// newDefaultOptions new default Options
+func newDefaultOptions() *Options {
+	cc := &Options{}
+	setOptionsDefaultValue(cc)
 	return cc
 }
 

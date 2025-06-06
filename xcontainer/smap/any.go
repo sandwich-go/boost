@@ -13,30 +13,31 @@ import (
 
 var DefaultShardCount = uint64(32)
 
-type mapKey interface {
-	int | int8 | int16 | int32 | int64 | uint | uint8 | uint16 | uint32 | uint64 | uintptr | float32 | float64 | complex64 | complex128 | string
-}
-
-type Concurrent[K mapKey, V any] struct {
+type Concurrent[K comparable, V any] struct {
 	shardedList  []*Sharded[K, V]
 	shardedCount uint64
+	hashFunc     func(key interface{}) uint64
 }
 
-type Sharded[K mapKey, V any] struct {
+type Sharded[K comparable, V any] struct {
 	items map[K]V
 	sync.RWMutex
 }
 
-type Tuple[K mapKey, V any] struct {
+type Tuple[K comparable, V any] struct {
 	Key K
 	Val V
 }
 
-// NewWithSharedCount 返回协程安全版本
-func NewWithSharedCount[K mapKey, V any](sharedCount uint64) *Concurrent[K, V] {
+// newMap 返回协程安全版本
+func newMap[K comparable, V any](sharedCount uint64, hashFunc func(key interface{}) uint64) *Concurrent[K, V] {
+	if sharedCount == 0 {
+		sharedCount = DefaultShardCount
+	}
 	p := &Concurrent[K, V]{
 		shardedCount: sharedCount,
 		shardedList:  make([]*Sharded[K, V], sharedCount),
+		hashFunc:     hashFunc,
 	}
 	for i := uint64(0); i < sharedCount; i++ {
 		p.shardedList[i] = &Sharded[K, V]{items: make(map[K]V)}
@@ -44,9 +45,19 @@ func NewWithSharedCount[K mapKey, V any](sharedCount uint64) *Concurrent[K, V] {
 	return p
 }
 
+// NewWithSharedCount 返回协程安全版本
+func NewWithSharedCount[K comparable, V any](sharedCount uint64) *Concurrent[K, V] {
+	return newMap[K, V](sharedCount, z.KeyToHash)
+}
+
 // New 返回协程安全版本
-func New[K mapKey, V any]() *Concurrent[K, V] {
-	return NewWithSharedCount[K, V](DefaultShardCount)
+func New[K comparable, V any]() *Concurrent[K, V] {
+	return newMap[K, V](DefaultShardCount, z.KeyToHash)
+}
+
+// NewWithHashFunc 返回协程安全版本
+func NewWithHashFunc[K comparable, V any](hashFunc func(key interface{}) uint64) *Concurrent[K, V] {
+	return newMap[K, V](DefaultShardCount, hashFunc)
 }
 
 // GetShard 返回key对应的分片
@@ -238,6 +249,32 @@ func (m *Concurrent[K, V]) doSetWithLockCheckWithFunc(key K, f func(key K) V) (r
 	result = val
 	shard.Unlock()
 	return
+}
+
+// Swap swaps the value for a key and returns the previous value if any.
+// The loaded result reports whether the key was present.
+func (m *Concurrent[K, V]) Swap(key K, value V) (previous V, loaded bool) {
+	shard := m.GetShard(key)
+	shard.Lock()
+	defer shard.Unlock()
+	previous, loaded = shard.items[key]
+	shard.items[key] = value
+	return
+}
+
+// CompareAndDeleteFunc deletes the entry for key if the comparison function returns true.
+// The comparison function is called with the current value (if any).
+func (m *Concurrent[K, V]) CompareAndDeleteFunc(key K, cmp func(current V) bool) (deleted bool) {
+	shard := m.GetShard(key)
+	shard.Lock()
+	defer shard.Unlock()
+
+	current, ok := shard.items[key]
+	if ok && cmp(current) {
+		delete(shard.items, key)
+		return true
+	}
+	return false
 }
 
 // GetOrSetFunc 获取或者设定数值，方法f在Lock写锁外执行, 如元素早已存在则返回false,设定成功返回true

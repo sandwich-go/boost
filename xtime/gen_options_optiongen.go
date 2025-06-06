@@ -19,7 +19,7 @@ type Options struct {
 func NewOptions(opts ...Option) *Options {
 	cc := newDefaultOptions()
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 	if watchDogOptions != nil {
 		watchDogOptions(cc)
@@ -30,29 +30,39 @@ func NewOptions(opts ...Option) *Options {
 // ApplyOption apply multiple new option
 func (cc *Options) ApplyOption(opts ...Option) {
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 }
 
-// Option option func
-type Option func(cc *Options)
+// OptionFunc option func
+type Option interface {
+	Apply(cc *Options)
+}
+
+var _ Option = OptionFunc(nil)
+
+type OptionFunc func(cc *Options)
+
+func (f OptionFunc) Apply(cc *Options) {
+	f(cc)
+}
 
 // WithTickDuration tick的duration，大于0是自动开启ticker
-func WithTickDuration(v time.Duration) Option {
+func WithTickDuration(v time.Duration) OptionFunc {
 	return func(cc *Options) {
 		cc.TickDuration = v
 	}
 }
 
 // WithTickHostingMode 全托管模式，内部起一个协程执行tick的func
-func WithTickHostingMode(v bool) Option {
+func WithTickHostingMode(v bool) OptionFunc {
 	return func(cc *Options) {
 		cc.TickHostingMode = v
 	}
 }
 
 // WithTickCount option func for filed TickCount
-func WithTickCount(v CountGauge) Option {
+func WithTickCount(v CountGauge) OptionFunc {
 	return func(cc *Options) {
 		cc.TickCount = v
 	}
@@ -64,18 +74,21 @@ func InstallOptionsWatchDog(dog func(cc *Options)) { watchDogOptions = dog }
 // watchDogOptions global watch dog
 var watchDogOptions func(cc *Options)
 
-// newDefaultOptions new default Options
-func newDefaultOptions() *Options {
-	cc := &Options{}
-
-	for _, opt := range [...]Option{
+// setOptionsDefaultValue default Options value
+func setOptionsDefaultValue(cc *Options) {
+	for _, opt := range [...]OptionFunc{
 		WithTickDuration(0),
 		WithTickHostingMode(true),
 		WithTickCount(&noopGauge{}),
 	} {
 		opt(cc)
 	}
+}
 
+// newDefaultOptions new default Options
+func newDefaultOptions() *Options {
+	cc := &Options{}
+	setOptionsDefaultValue(cc)
 	return cc
 }
 

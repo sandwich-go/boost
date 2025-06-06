@@ -17,7 +17,14 @@ const (
 	DefaultTimerDomain = "timer-domain-system"
 )
 
-type Dispatcher interface {
+// Lifecycle manages the start and close lifecycle methods.
+type Lifecycle interface {
+	Start()
+	Close()
+}
+
+// TimerDispatcher manages timer-related functionalities.
+type TimerDispatcher interface {
 	AfterFunc(d time.Duration, cb func()) *SafeTimer
 	AfterFuncWithOwnershipTransfer(td time.Duration, cb func()) *DanglingTimer
 	CronFunc(cronExpr *cron.Expression, cb func()) *Cron
@@ -30,8 +37,11 @@ type Dispatcher interface {
 	AfterFuncWithOwnershipTransferInDomain(td time.Duration, cb func(), domain string) *DanglingTimer
 
 	TimerNotify() <-chan Timer
-	Close()
-	Start()
+}
+
+type Dispatcher interface {
+	TimerDispatcher
+	Lifecycle
 }
 
 type TickerDispatcher interface {
@@ -155,7 +165,7 @@ func (d *dispatcher) TriggerTickFuncs(ctx context.Context) {
 		xpanic.Try(func() {
 			h.cb(ctx)
 		}).Catch(func(err xpanic.E) {
-			log.Error(fmt.Sprintf("panic in tick funcs, reason:%v", err))
+			fmt.Printf("panic in tick funcs, reason:%v", err)
 		})
 	}
 }
@@ -213,7 +223,7 @@ func (d *dispatcher) AfterFuncWithOwnershipTransferInDomain(td time.Duration, cb
 	t := new(DanglingTimer)
 	t.cb = cb
 	t.domain = domain
-	t.t = time.AfterFunc(td, func() {
+	t.t = timeAfterFunc(td, func() {
 		// callback from another goroutine
 		select {
 		// FIRST read from no buffer chan, even closed, will return false
@@ -241,7 +251,7 @@ func (d *dispatcher) AfterFuncInDomain(td time.Duration, cb func(), domain strin
 	t := new(SafeTimer)
 	t.cb = cb
 	t.domain = domain
-	t.t = time.AfterFunc(td, func() {
+	t.t = timeAfterFunc(td, func() {
 		// callback from another goroutine
 		select {
 		// FIRST read from no buffer chan, even closed, will return false

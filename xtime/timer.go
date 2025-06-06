@@ -5,6 +5,11 @@ import (
 	"time"
 )
 
+type internalTimer interface {
+	Stop() bool
+	Reset(time.Duration) bool
+}
+
 type Timer interface {
 	Cb()
 	stop()
@@ -12,7 +17,7 @@ type Timer interface {
 }
 
 type SafeTimer struct {
-	t      *time.Timer
+	t      internalTimer
 	domain string
 	cb     func()
 }
@@ -36,7 +41,7 @@ func (t *SafeTimer) GetDomain() string {
 }
 
 type DanglingTimer struct {
-	t      *time.Timer
+	t      internalTimer
 	lock   sync.RWMutex // 框架管理的timer不需要加锁，业务自己管理的timer需要加锁
 	domain string
 	cb     func()
@@ -56,10 +61,11 @@ func (t *DanglingTimer) Stop() {
 func (t *DanglingTimer) Reset(d time.Duration) bool { return t.t.Reset(d) }
 
 func (t *DanglingTimer) Cb() {
-	t.lock.Lock()
-	defer t.lock.Unlock()
-	if t.cb != nil {
-		t.cb()
+	t.lock.RLock()
+	cb := t.cb
+	t.lock.RUnlock()
+	if cb != nil {
+		cb()
 	}
 }
 

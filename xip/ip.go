@@ -5,9 +5,15 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/sandwich-go/boost/xos"
+	"github.com/sandwich-go/boost/xslice"
 )
 
+const boostIPPreferVPN = "boost_ip_prefer_vpn"
+
 // LocalIpv4Addrs scan all ip addresses with loopback excluded.
+// If VPN is connected, prioritize returning the VPN IP address.
 func LocalIpv4Addrs() (ips []string, err error) {
 	ips = make([]string, 0)
 
@@ -16,6 +22,26 @@ func LocalIpv4Addrs() (ips []string, err error) {
 		return ips, e
 	}
 
+	// 优先检查 VPN 接口
+	if xos.EnvGetCaseInsensitive(boostIPPreferVPN) != "" {
+		for _, iface := range ifaces {
+			if isVPNInterface(iface) {
+				addrs, e := iface.Addrs()
+				if e != nil {
+					continue
+				}
+
+				for _, addr := range addrs {
+					ip := getIPFromAddr(addr)
+					if ip != nil && ip.To4() != nil {
+						ips = append(ips, ip.String())
+					}
+				}
+			}
+		}
+	}
+
+	// 如果没有找到 VPN 接口的 IP，继续检查其他接口
 	for _, iface := range ifaces {
 		if iface.Flags&net.FlagUp == 0 {
 			continue // interface down
@@ -36,31 +62,42 @@ func LocalIpv4Addrs() (ips []string, err error) {
 		}
 
 		for _, addr := range addrs {
-			var ip net.IP
-			switch v := addr.(type) {
-			case *net.IPNet:
-				ip = v.IP
-			case *net.IPAddr:
-				ip = v.IP
-			}
-
-			if ip == nil || ip.IsLoopback() {
-				continue
-			}
-
-			ip = ip.To4()
-			if ip == nil {
-				continue // not an ipv4 address
-			}
-
-			ipStr := ip.String()
-			if IsIntranet(ipStr) {
-				ips = append(ips, ipStr)
+			ip := getIPFromAddr(addr)
+			if ip != nil && ip.To4() != nil && IsIntranet(ip.String()) {
+				ips = append(ips, ip.String())
 			}
 		}
 	}
+	return xslice.StringsRemoveRepeated(ips), nil
+}
 
-	return ips, nil
+// isVPNInterface 判断是否是 VPN 接口
+func isVPNInterface(iface net.Interface) bool {
+	// 常见的 VPN 接口名称前缀
+	vpnPrefixes := []string{"tun", "utun", "ppp", "tap"}
+	for _, prefix := range vpnPrefixes {
+		if strings.HasPrefix(iface.Name, prefix) {
+			return true
+		}
+	}
+
+	// 检查接口标志（某些 VPN 接口可能有特定标志）
+	if iface.Flags&net.FlagPointToPoint != 0 {
+		return true
+	}
+
+	return false
+}
+
+// getIPFromAddr 从 net.Addr 中提取 IP 地址
+func getIPFromAddr(addr net.Addr) net.IP {
+	switch v := addr.(type) {
+	case *net.IPNet:
+		return v.IP
+	case *net.IPAddr:
+		return v.IP
+	}
+	return nil
 }
 
 // IsIntranet 是否是内网地址
@@ -86,7 +123,7 @@ func IsIntranet(ipStr string) bool {
 }
 
 // GetLocalIP returns the non loopback local IP of the host
-// 该接口在 POD 中可能会获取到空的 local IP
+// If VPN is connected, prioritize returning the VPN IP address.
 func GetLocalIP() string {
 	addrs, err := LocalIpv4Addrs()
 	if err != nil || len(addrs) == 0 {

@@ -3,6 +3,8 @@
 
 package xtemplate
 
+import "html/template"
+
 // Options should use NewOptions to initialize it
 type Options struct {
 	// annotation@Name(comment="指定模板的名称")
@@ -11,13 +13,15 @@ type Options struct {
 	FileName string
 	// annotation@Filers(comment="在生成指定文件或返回模板填充后数据前，指定过滤器，可以对数据进行二次加工")
 	Filers []Filter
+	// annotation@FuncMap(comment="自定义的函数集")
+	FuncMap template.FuncMap
 }
 
 // NewOptions new Options
 func NewOptions(opts ...Option) *Options {
 	cc := newDefaultOptions()
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 	if watchDogOptions != nil {
 		watchDogOptions(cc)
@@ -28,31 +32,55 @@ func NewOptions(opts ...Option) *Options {
 // ApplyOption apply multiple new option
 func (cc *Options) ApplyOption(opts ...Option) {
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 }
 
-// Option option func
-type Option func(cc *Options)
+// OptionFunc option func
+type Option interface {
+	Apply(cc *Options)
+}
+
+var _ Option = OptionFunc(nil)
+
+type OptionFunc func(cc *Options)
+
+func (f OptionFunc) Apply(cc *Options) {
+	f(cc)
+}
 
 // WithOptionName 指定模板的名称
-func WithOptionName(v string) Option {
+func WithOptionName(v string) OptionFunc {
 	return func(cc *Options) {
 		cc.Name = v
 	}
 }
 
 // WithOptionFileName 文件名称，若不为空，则会生成对应的文件，若文件为 .go 文件，则会格式化
-func WithOptionFileName(v string) Option {
+func WithOptionFileName(v string) OptionFunc {
 	return func(cc *Options) {
 		cc.FileName = v
 	}
 }
 
 // WithOptionFilers 在生成指定文件或返回模板填充后数据前，指定过滤器，可以对数据进行二次加工
-func WithOptionFilers(v ...Filter) Option {
+func WithOptionFilers(v ...Filter) OptionFunc {
 	return func(cc *Options) {
 		cc.Filers = v
+	}
+}
+
+// AppendOptionFilers 在生成指定文件或返回模板填充后数据前，指定过滤器，可以对数据进行二次加工
+func AppendOptionFilers(v ...Filter) OptionFunc {
+	return func(cc *Options) {
+		cc.Filers = append(cc.Filers, v...)
+	}
+}
+
+// WithOptionFuncMap 自定义的函数集
+func WithOptionFuncMap(v template.FuncMap) OptionFunc {
+	return func(cc *Options) {
+		cc.FuncMap = v
 	}
 }
 
@@ -62,31 +90,37 @@ func InstallOptionsWatchDog(dog func(cc *Options)) { watchDogOptions = dog }
 // watchDogOptions global watch dog
 var watchDogOptions func(cc *Options)
 
-// newDefaultOptions new default Options
-func newDefaultOptions() *Options {
-	cc := &Options{}
-
-	for _, opt := range [...]Option{
+// setOptionsDefaultValue default Options value
+func setOptionsDefaultValue(cc *Options) {
+	for _, opt := range [...]OptionFunc{
 		WithOptionName("xtemplate"),
 		WithOptionFileName(""),
 		WithOptionFilers(nil...),
+		WithOptionFuncMap(make(template.FuncMap, 0)),
 	} {
 		opt(cc)
 	}
+}
 
+// newDefaultOptions new default Options
+func newDefaultOptions() *Options {
+	cc := &Options{}
+	setOptionsDefaultValue(cc)
 	return cc
 }
 
 // all getter func
-func (cc *Options) GetName() string     { return cc.Name }
-func (cc *Options) GetFileName() string { return cc.FileName }
-func (cc *Options) GetFilers() []Filter { return cc.Filers }
+func (cc *Options) GetName() string              { return cc.Name }
+func (cc *Options) GetFileName() string          { return cc.FileName }
+func (cc *Options) GetFilers() []Filter          { return cc.Filers }
+func (cc *Options) GetFuncMap() template.FuncMap { return cc.FuncMap }
 
 // OptionsVisitor visitor interface for Options
 type OptionsVisitor interface {
 	GetName() string
 	GetFileName() string
 	GetFilers() []Filter
+	GetFuncMap() template.FuncMap
 }
 
 // OptionsInterface visitor + ApplyOption interface for Options

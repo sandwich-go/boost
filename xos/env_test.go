@@ -1,9 +1,11 @@
 package xos
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"os"
+	"strings"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestEnv(t *testing.T) {
@@ -14,6 +16,7 @@ func TestEnv(t *testing.T) {
 		So(os.Setenv(envName, envValue), ShouldBeNil)
 
 		So(EnvGet(envName), ShouldEqual, envValue)
+		So(EnvGetCaseInsensitive(strings.ToUpper(envName)), ShouldEqual, envValue)
 		So(EnvGet(envName+"1", envValue), ShouldEqual, envValue)
 	})
 }

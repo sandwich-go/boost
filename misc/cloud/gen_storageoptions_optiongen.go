@@ -7,13 +7,15 @@ package cloud
 type StorageOptions struct {
 	// annotation@Region(comment="云存储的Region")
 	Region string
+	// annotation@StorageType(comment="云存储类型")
+	StorageType StorageType
 }
 
 // NewStorageOptions new StorageOptions
 func NewStorageOptions(opts ...StorageOption) *StorageOptions {
 	cc := newDefaultStorageOptions()
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 	if watchDogStorageOptions != nil {
 		watchDogStorageOptions(cc)
@@ -24,17 +26,34 @@ func NewStorageOptions(opts ...StorageOption) *StorageOptions {
 // ApplyOption apply multiple new option
 func (cc *StorageOptions) ApplyOption(opts ...StorageOption) {
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 }
 
-// StorageOption option func
-type StorageOption func(cc *StorageOptions)
+// StorageOptionFunc option func
+type StorageOption interface {
+	Apply(cc *StorageOptions)
+}
+
+var _ StorageOption = StorageOptionFunc(nil)
+
+type StorageOptionFunc func(cc *StorageOptions)
+
+func (f StorageOptionFunc) Apply(cc *StorageOptions) {
+	f(cc)
+}
 
 // WithRegion 云存储的Region
-func WithRegion(v string) StorageOption {
+func WithRegion(v string) StorageOptionFunc {
 	return func(cc *StorageOptions) {
 		cc.Region = v
+	}
+}
+
+// WithStorageType 云存储类型
+func WithStorageType(v StorageType) StorageOptionFunc {
+	return func(cc *StorageOptions) {
+		cc.StorageType = v
 	}
 }
 
@@ -44,25 +63,31 @@ func InstallStorageOptionsWatchDog(dog func(cc *StorageOptions)) { watchDogStora
 // watchDogStorageOptions global watch dog
 var watchDogStorageOptions func(cc *StorageOptions)
 
-// newDefaultStorageOptions new default StorageOptions
-func newDefaultStorageOptions() *StorageOptions {
-	cc := &StorageOptions{}
-
-	for _, opt := range [...]StorageOption{
+// setStorageOptionsDefaultValue default StorageOptions value
+func setStorageOptionsDefaultValue(cc *StorageOptions) {
+	for _, opt := range [...]StorageOptionFunc{
 		WithRegion(""),
+		WithStorageType(""),
 	} {
 		opt(cc)
 	}
+}
 
+// newDefaultStorageOptions new default StorageOptions
+func newDefaultStorageOptions() *StorageOptions {
+	cc := &StorageOptions{}
+	setStorageOptionsDefaultValue(cc)
 	return cc
 }
 
 // all getter func
-func (cc *StorageOptions) GetRegion() string { return cc.Region }
+func (cc *StorageOptions) GetRegion() string           { return cc.Region }
+func (cc *StorageOptions) GetStorageType() StorageType { return cc.StorageType }
 
 // StorageOptionsVisitor visitor interface for StorageOptions
 type StorageOptionsVisitor interface {
 	GetRegion() string
+	GetStorageType() StorageType
 }
 
 // StorageOptionsInterface visitor + ApplyOption interface for StorageOptions

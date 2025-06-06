@@ -22,7 +22,7 @@ type ProcessOptions struct {
 func NewProcessOptions(opts ...ProcessOption) *ProcessOptions {
 	cc := newDefaultProcessOptions()
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 	if watchDogProcessOptions != nil {
 		watchDogProcessOptions(cc)
@@ -33,52 +33,76 @@ func NewProcessOptions(opts ...ProcessOption) *ProcessOptions {
 // ApplyOption apply multiple new option
 func (cc *ProcessOptions) ApplyOption(opts ...ProcessOption) {
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 }
 
-// ProcessOption option func
-type ProcessOption func(cc *ProcessOptions)
+// ProcessOptionFunc option func
+type ProcessOption interface {
+	Apply(cc *ProcessOptions)
+}
+
+var _ ProcessOption = ProcessOptionFunc(nil)
+
+type ProcessOptionFunc func(cc *ProcessOptions)
+
+func (f ProcessOptionFunc) Apply(cc *ProcessOptions) {
+	f(cc)
+}
 
 // WithArgs option func for filed Args
-func WithArgs(v ...string) ProcessOption {
+func WithArgs(v ...string) ProcessOptionFunc {
 	return func(cc *ProcessOptions) {
 		cc.Args = v
 	}
 }
 
+// AppendArgs append func for filed Args
+func AppendArgs(v ...string) ProcessOptionFunc {
+	return func(cc *ProcessOptions) {
+		cc.Args = append(cc.Args, v...)
+	}
+}
+
 // WithStdin option func for filed Stdin
-func WithStdin(v io.Reader) ProcessOption {
+func WithStdin(v io.Reader) ProcessOptionFunc {
 	return func(cc *ProcessOptions) {
 		cc.Stdin = v
 	}
 }
 
 // WithStdout option func for filed Stdout
-func WithStdout(v io.Writer) ProcessOption {
+func WithStdout(v io.Writer) ProcessOptionFunc {
 	return func(cc *ProcessOptions) {
 		cc.Stdout = v
 	}
 }
 
 // WithStderr option func for filed Stderr
-func WithStderr(v io.Writer) ProcessOption {
+func WithStderr(v io.Writer) ProcessOptionFunc {
 	return func(cc *ProcessOptions) {
 		cc.Stderr = v
 	}
 }
 
 // WithWorkingDir option func for filed WorkingDir
-func WithWorkingDir(v string) ProcessOption {
+func WithWorkingDir(v string) ProcessOptionFunc {
 	return func(cc *ProcessOptions) {
 		cc.WorkingDir = v
 	}
 }
 
 // WithEnv option func for filed Env
-func WithEnv(v ...string) ProcessOption {
+func WithEnv(v ...string) ProcessOptionFunc {
 	return func(cc *ProcessOptions) {
 		cc.Env = v
+	}
+}
+
+// AppendEnv append func for filed Env
+func AppendEnv(v ...string) ProcessOptionFunc {
+	return func(cc *ProcessOptions) {
+		cc.Env = append(cc.Env, v...)
 	}
 }
 
@@ -88,11 +112,9 @@ func InstallProcessOptionsWatchDog(dog func(cc *ProcessOptions)) { watchDogProce
 // watchDogProcessOptions global watch dog
 var watchDogProcessOptions func(cc *ProcessOptions)
 
-// newDefaultProcessOptions new default ProcessOptions
-func newDefaultProcessOptions() *ProcessOptions {
-	cc := &ProcessOptions{}
-
-	for _, opt := range [...]ProcessOption{
+// setProcessOptionsDefaultValue default ProcessOptions value
+func setProcessOptionsDefaultValue(cc *ProcessOptions) {
+	for _, opt := range [...]ProcessOptionFunc{
 		WithArgs(make([]string, 0)...),
 		WithStdin(os.Stdin),
 		WithStdout(os.Stdout),
@@ -102,7 +124,12 @@ func newDefaultProcessOptions() *ProcessOptions {
 	} {
 		opt(cc)
 	}
+}
 
+// newDefaultProcessOptions new default ProcessOptions
+func newDefaultProcessOptions() *ProcessOptions {
+	cc := &ProcessOptions{}
+	setProcessOptionsDefaultValue(cc)
 	return cc
 }
 

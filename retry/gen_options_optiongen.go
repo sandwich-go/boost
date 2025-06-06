@@ -35,7 +35,7 @@ type Options struct {
 func NewOptions(opts ...Option) *Options {
 	cc := newDefaultOptions()
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 	if watchDogOptions != nil {
 		watchDogOptions(cc)
@@ -46,71 +46,81 @@ func NewOptions(opts ...Option) *Options {
 // ApplyOption apply multiple new option
 func (cc *Options) ApplyOption(opts ...Option) {
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 }
 
-// Option option func
-type Option func(cc *Options)
+// OptionFunc option func
+type Option interface {
+	Apply(cc *Options)
+}
+
+var _ Option = OptionFunc(nil)
+
+type OptionFunc func(cc *Options)
+
+func (f OptionFunc) Apply(cc *Options) {
+	f(cc)
+}
 
 // WithLimit 最大尝试次数
-func WithLimit(v uint) Option {
+func WithLimit(v uint) OptionFunc {
 	return func(cc *Options) {
 		cc.Limit = v
 	}
 }
 
 // WithDelay 固定延迟
-func WithDelay(v time.Duration) Option {
+func WithDelay(v time.Duration) OptionFunc {
 	return func(cc *Options) {
 		cc.Delay = v
 	}
 }
 
 // WithMaxJitter 延迟最大抖动
-func WithMaxJitter(v time.Duration) Option {
+func WithMaxJitter(v time.Duration) OptionFunc {
 	return func(cc *Options) {
 		cc.MaxJitter = v
 	}
 }
 
 // WithOnRetry 每次重试会先调用此方法
-func WithOnRetry(v func(n uint, err error)) Option {
+func WithOnRetry(v func(n uint, err error)) OptionFunc {
 	return func(cc *Options) {
 		cc.OnRetry = v
 	}
 }
 
 // WithRetryIf 何种error进行重试
-func WithRetryIf(v func(err error) bool) Option {
+func WithRetryIf(v func(err error) bool) OptionFunc {
 	return func(cc *Options) {
 		cc.RetryIf = v
 	}
 }
 
 // WithDelayType 何种error进行重试
-func WithDelayType(v DelayTypeFunc) Option {
+func WithDelayType(v DelayTypeFunc) OptionFunc {
 	return func(cc *Options) {
 		cc.DelayType = v
 	}
 }
 
 // WithLastErrorOnly 是否只返回最后遇到的error
-func WithLastErrorOnly(v bool) Option {
+func WithLastErrorOnly(v bool) OptionFunc {
 	return func(cc *Options) {
 		cc.LastErrorOnly = v
 	}
 }
 
 // WithContext context，可以设定超时等
-func WithContext(v context.Context) Option {
+func WithContext(v context.Context) OptionFunc {
 	return func(cc *Options) {
 		cc.Context = v
 	}
 }
 
 // WithMaxDelay 最大延迟时间
-func WithMaxDelay(v time.Duration) Option {
+func WithMaxDelay(v time.Duration) OptionFunc {
 	return func(cc *Options) {
 		cc.MaxDelay = v
 	}
@@ -122,13 +132,10 @@ func InstallOptionsWatchDog(dog func(cc *Options)) { watchDogOptions = dog }
 // watchDogOptions global watch dog
 var watchDogOptions func(cc *Options)
 
-// newDefaultOptions new default Options
-func newDefaultOptions() *Options {
-	cc := &Options{
-		MaxBackOffNInner: 0,
-	}
-
-	for _, opt := range [...]Option{
+// setOptionsDefaultValue default Options value
+func setOptionsDefaultValue(cc *Options) {
+	cc.MaxBackOffNInner = 0
+	for _, opt := range [...]OptionFunc{
 		WithLimit(10),
 		WithDelay(100 * time.Millisecond),
 		WithMaxJitter(100 * time.Millisecond),
@@ -142,7 +149,12 @@ func newDefaultOptions() *Options {
 	} {
 		opt(cc)
 	}
+}
 
+// newDefaultOptions new default Options
+func newDefaultOptions() *Options {
+	cc := &Options{}
+	setOptionsDefaultValue(cc)
 	return cc
 }
 

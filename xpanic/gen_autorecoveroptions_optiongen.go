@@ -22,7 +22,7 @@ type AutoRecoverOptions struct {
 func NewAutoRecoverOptions(opts ...AutoRecoverOption) *AutoRecoverOptions {
 	cc := newDefaultAutoRecoverOptions()
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 	if watchDogAutoRecoverOptions != nil {
 		watchDogAutoRecoverOptions(cc)
@@ -33,22 +33,32 @@ func NewAutoRecoverOptions(opts ...AutoRecoverOption) *AutoRecoverOptions {
 // ApplyOption apply multiple new option
 func (cc *AutoRecoverOptions) ApplyOption(opts ...AutoRecoverOption) {
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 }
 
-// AutoRecoverOption option func
-type AutoRecoverOption func(cc *AutoRecoverOptions)
+// AutoRecoverOptionFunc option func
+type AutoRecoverOption interface {
+	Apply(cc *AutoRecoverOptions)
+}
+
+var _ AutoRecoverOption = AutoRecoverOptionFunc(nil)
+
+type AutoRecoverOptionFunc func(cc *AutoRecoverOptions)
+
+func (f AutoRecoverOptionFunc) Apply(cc *AutoRecoverOptions) {
+	f(cc)
+}
 
 // WithAutoRecoverOptionDelayTime 每次panic后重启delay的时间 Note: 这里应该可以直接对接到retry package，复用重试逻辑
-func WithAutoRecoverOptionDelayTime(v time.Duration) AutoRecoverOption {
+func WithAutoRecoverOptionDelayTime(v time.Duration) AutoRecoverOptionFunc {
 	return func(cc *AutoRecoverOptions) {
 		cc.DelayTime = v
 	}
 }
 
 // WithAutoRecoverOptionOnRecover 如果指定了该函数，recover panic的时候，会执行该函数，默认输出error日志
-func WithAutoRecoverOptionOnRecover(v OnRecover) AutoRecoverOption {
+func WithAutoRecoverOptionOnRecover(v OnRecover) AutoRecoverOptionFunc {
 	return func(cc *AutoRecoverOptions) {
 		cc.OnRecover = v
 	}
@@ -62,11 +72,9 @@ func InstallAutoRecoverOptionsWatchDog(dog func(cc *AutoRecoverOptions)) {
 // watchDogAutoRecoverOptions global watch dog
 var watchDogAutoRecoverOptions func(cc *AutoRecoverOptions)
 
-// newDefaultAutoRecoverOptions new default AutoRecoverOptions
-func newDefaultAutoRecoverOptions() *AutoRecoverOptions {
-	cc := &AutoRecoverOptions{}
-
-	for _, opt := range [...]AutoRecoverOption{
+// setAutoRecoverOptionsDefaultValue default AutoRecoverOptions value
+func setAutoRecoverOptionsDefaultValue(cc *AutoRecoverOptions) {
+	for _, opt := range [...]AutoRecoverOptionFunc{
 		WithAutoRecoverOptionDelayTime(0),
 		WithAutoRecoverOptionOnRecover(func(tag string, reason interface{}) {
 			log.Error(fmt.Sprintf("%s panic with err, reason: %v", tag, reason))
@@ -74,7 +82,12 @@ func newDefaultAutoRecoverOptions() *AutoRecoverOptions {
 	} {
 		opt(cc)
 	}
+}
 
+// newDefaultAutoRecoverOptions new default AutoRecoverOptions
+func newDefaultAutoRecoverOptions() *AutoRecoverOptions {
+	cc := &AutoRecoverOptions{}
+	setAutoRecoverOptionsDefaultValue(cc)
 	return cc
 }
 

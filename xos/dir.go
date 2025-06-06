@@ -2,12 +2,14 @@ package xos
 
 import (
 	"fmt"
-	"github.com/sandwich-go/boost"
-	"github.com/sandwich-go/boost/xerror"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
+
+	"github.com/sandwich-go/boost"
+	"github.com/sandwich-go/boost/xerror"
+	"github.com/sandwich-go/boost/xpanic"
 
 	"github.com/sandwich-go/boost/xslice"
 )
@@ -49,8 +51,8 @@ func IsEmpty(path string) bool {
 	}
 }
 
-// RemoveSubDirsUnderDir 删除指定目录下的子目录
-func RemoveSubDirsUnderDir(dir string, filter func(dir string) bool) error {
+// RemoveSubDirsUnderDir 删除指定目录下的子目录,符合filterList的则删除
+func RemoveSubDirsUnderDir(dir string, filterList ...func(dir string) bool) error {
 	if !ExistsDir(dir) {
 		return nil
 	}
@@ -62,7 +64,14 @@ func RemoveSubDirsUnderDir(dir string, filter func(dir string) bool) error {
 	for _, f := range fs {
 		if f.IsDir() {
 			fd := filepath.Join(dir, f.Name())
-			if filter == nil || filter(fd) {
+			valid := true
+			for _, filter := range filterList {
+				valid = filter(fd)
+				if !valid {
+					break
+				}
+			}
+			if valid {
 				fileList = append(fileList, fd)
 			}
 		}
@@ -126,10 +135,22 @@ func RemoveDirs(dir string) error {
 	return nil
 }
 
+func runExceptOneTrueChain(v string,includeFilter... func(filePath string) bool) bool{
+	for _,f := range includeFilter {
+		if f(v){
+			return true
+		}
+	}
+	return false
+}
+
 // RemoveFilesUnderDir 删除目录下的文件
-func RemoveFilesUnderDir(pathStr string, filter func(filePath string) bool) {
+// includeFilter可为多个，任意一个includeFilter返回true则会删除该文件
+func RemoveFilesUnderDir(pathStr string, includeFilter... func(filePath string) bool) {
 	fileList := make([]string, 0)
-	_ = filepath.Walk(pathStr, FileWalkFuncWithIncludeFilter(&fileList, filter))
+	_ = filepath.Walk(pathStr, FileWalkFuncWithIncludeFilter(&fileList, func(f string) bool {
+		return runExceptOneTrueChain(f,includeFilter...)
+	}))
 	for _, filePath := range fileList {
 		_ = os.Remove(filePath)
 	}
@@ -284,4 +305,24 @@ func CreateDirAll(dir string) error {
 		}
 	}
 	return err
+}
+
+// EnsureEmpty 确保清空目录下的所有内容，但是保证目录存在
+func EnsureEmpty(dirList ...string) (err error) {
+	for _, dir := range dirList {
+		err = os.RemoveAll(dir)
+		if err != nil {
+			return err
+		}
+		err = TouchDirAll(dir)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// MustEnsureEmpty 确保清空目录下的所有内容，但是保证目录存在
+func MustEnsureEmpty(dirList ...string) {
+	xpanic.WhenError(EnsureEmpty(dirList...))
 }
