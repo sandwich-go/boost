@@ -1,4 +1,12 @@
-### v1.3.81 🌈 (2025-07-29 18:04:34)
+### v1.3.82 🌈 (2025-07-29 18:42:34)
+
+#### 🛠  Refactor
+  * add huaweiru ([587f711](https://github.com/sandwich-go/boost/commit/587f71126abd228409e87839cd964f3deb2a6ab6)) (<small>[Daming Yang](daming.yang@centurygame.com)@2025-07-29 18:42:34 &#43;0800 &#43;0800</small>)
+
+#### 🤖  Tools
+  * **sem**: make changelog ([a32ee76](https://github.com/sandwich-go/boost/commit/a32ee76340996ba20f6e7c1a45a18fa97533ed17)) (<small>[Daming Yang](daming.yang@centurygame.com)@2025-07-29 18:16:24 &#43;0800 &#43;0800</small>)
+
+### v1.3.81 (2025-07-29 18:04:34)
 
 #### 🛠  Refactor
   * add huaweiru ([a8cbde6](https://github.com/sandwich-go/boost/commit/a8cbde6ca4734ac65d3c31ecc1e7fefff92fd941)) (<small>[Daming Yang](daming.yang@centurygame.com)@2025-07-29 18:04:34 &#43;0800 &#43;0800</small>)
