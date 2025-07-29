@@ -2,7 +2,7 @@ package cloud
 
 import "fmt"
 
-const StorageTypeHuaweiRU StorageType = "huawei-ru" // 华为云俄罗斯区域
+const StorageTypeHuaweiRU StorageType = "huaweiru" // 华为云俄罗斯区域
 
 func init() {
 	register(StorageTypeHuaweiRU, newHuaweiRUStorage)
