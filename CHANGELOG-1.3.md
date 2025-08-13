@@ -1,4 +1,12 @@
-### v1.3.83 🌈 (2025-08-13 11:59:03)
+### v1.3.84 🌈 (2025-08-13 18:52:07)
+
+#### 🐛  Bug Fixed
+  * cloud s3 url with region ([07afa33](https://github.com/sandwich-go/boost/commit/07afa337c8ae70e19f69735a446b3935e77e01c1)) (<small>[zhengyang.zhu](zhengyang.zhu@centurygame.com)@2025-08-13 18:52:07 &#43;0800 &#43;0800</small>)
+
+#### 🤖  Tools
+  * **sem**: make changelog ([45d2500](https://github.com/sandwich-go/boost/commit/45d25000898485d1d09a91ca590059bc1b47a7e7)) (<small>[Daming Yang](daming.yang@centurygame.com)@2025-08-13 13:50:07 &#43;0800 &#43;0800</small>)
+
+### v1.3.83 (2025-08-13 11:59:03)
 
 #### 🛠  Refactor
   * remove some debug log ([f8ff329](https://github.com/sandwich-go/boost/commit/f8ff3293369459ad07c30090013d0e6500ee5204)) (<small>[Daming Yang](daming.yang@centurygame.com)@2025-08-13 11:59:03 &#43;0800 &#43;0800</small>)
