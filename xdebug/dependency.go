@@ -4,12 +4,14 @@ import (
 	"github.com/coreos/go-semver/semver"
 	"github.com/sandwich-go/boost"
 	"runtime/debug"
+	"strings"
 )
 
 type dependency interface {
 	GetPath() string
 	GetRequireVersion() string
 	WarnString() string
+	GoVersionDisuse() string
 }
 
 // dependencies 依赖的包
@@ -19,15 +21,18 @@ func registerDependency(d dependency) {
 	dependencies = append(dependencies, d)
 }
 
-func getDependenciesFromBuildInfo() (map[string]semver.Version, bool) {
+func getDependenciesFromBuildInfo() (map[string]semver.Version, *semver.Version, bool) {
 	bi, ok := debug.ReadBuildInfo()
 	if !ok {
 		// read fail, don't check require dependencies
-		return nil, false
+		return nil, nil, false
 	}
 	if bi == nil {
-		return nil, true
+		return nil, nil, true
 	}
+
+	ver, _ := semver.NewVersion(strings.TrimPrefix(bi.GoVersion, "go"))
+
 	var out = make(map[string]semver.Version)
 	for _, dep := range bi.Deps {
 		if v, _ := semver.NewVersion(dep.Version); v != nil {
@@ -36,14 +41,22 @@ func getDependenciesFromBuildInfo() (map[string]semver.Version, bool) {
 			out[dep.Path] = semver.Version{}
 		}
 	}
-	return out, true
+	return out, ver, true
 }
 
-func checkRequireDependency(deps map[string]semver.Version, requireDependency dependency) bool {
+func checkRequireDependency(goVer *semver.Version, deps map[string]semver.Version, requireDependency dependency) bool {
 	// has require dependency?
 	depSemVer, ok := deps[requireDependency.GetPath()]
 	if !ok {
 		return false
+	}
+
+	if goVersionDisuse := requireDependency.GoVersionDisuse(); goVersionDisuse != "" {
+		goDisuseSemVer, _ := semver.NewVersion(goVersionDisuse)
+		if goVer != nil && goDisuseSemVer != nil && goVer.Compare(*goDisuseSemVer) >= 0 {
+			// 如果当前的 go 版本大于等于放弃版本，则不校验
+			return false
+		}
 	}
 	// compare dependency version
 	requireVer := requireDependency.GetRequireVersion()
@@ -59,12 +72,12 @@ func checkRequireDependency(deps map[string]semver.Version, requireDependency de
 
 // CheckRequireDependencies 检查依赖
 func CheckRequireDependencies() {
-	deps, ok := getDependenciesFromBuildInfo()
+	deps, ver, ok := getDependenciesFromBuildInfo()
 	if !ok {
 		return
 	}
 	for _, v := range dependencies {
-		if checkRequireDependency(deps, v) {
+		if checkRequireDependency(ver, deps, v) {
 			continue
 		}
 		boost.LogWarn(v.WarnString())
