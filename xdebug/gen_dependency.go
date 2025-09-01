@@ -10,8 +10,8 @@ func init() {
 type automaxprocs struct{}
 
 func (d automaxprocs) GetPath() string           { return "go.uber.org/automaxprocs" }
-func (d automaxprocs) GetRequireVersion() string { return "v1.5.1" }
-func (d automaxprocs) GoVersionDisuse() string { return "v1.25.0" }
+func (d automaxprocs) GetRequireVersion() string { return "1.5.1" }
+func (d automaxprocs) GoVersionDisuse() string { return "1.25.0" }
 func (d automaxprocs) WarnString() string {
 	return fmt.Sprintf(`for the best performance, please blank import the package '%s@%s'`, d.GetPath(), d.GetRequireVersion())
 }

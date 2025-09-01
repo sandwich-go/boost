@@ -15,8 +15,8 @@ func GetDependencyTPLArgs() interface{} {
 	dependencyConfigs = append(dependencyConfigs, DependencyConfig{
 		Name:            "automaxprocs",
 		Path:            "go.uber.org/automaxprocs",
-		RequireVersion:  "v1.5.1",
-		DisuseGoVersion: "v1.25.0",
+		RequireVersion:  "1.5.1",
+		DisuseGoVersion: "1.25.0",
 		WarnString:      "fmt.Sprintf(`for the best performance, please blank import the package '%s@%s'`, d.GetPath(), d.GetRequireVersion())",
 	})
 	sort.Slice(dependencyConfigs, func(i, j int) bool {

@@ -45,18 +45,17 @@ func getDependenciesFromBuildInfo() (map[string]semver.Version, *semver.Version,
 }
 
 func checkRequireDependency(goVer *semver.Version, deps map[string]semver.Version, requireDependency dependency) bool {
+	if goVersionDisuse := requireDependency.GoVersionDisuse(); goVersionDisuse != "" && goVer != nil {
+		goDisuseSemVer, _ := semver.NewVersion(goVersionDisuse)
+		if goDisuseSemVer != nil && goVer.Compare(*goDisuseSemVer) >= 0 {
+			// 如果当前的 go 版本大于等于放弃版本，则不校验
+			return true
+		}
+	}
 	// has require dependency?
 	depSemVer, ok := deps[requireDependency.GetPath()]
 	if !ok {
 		return false
-	}
-
-	if goVersionDisuse := requireDependency.GoVersionDisuse(); goVersionDisuse != "" {
-		goDisuseSemVer, _ := semver.NewVersion(goVersionDisuse)
-		if goVer != nil && goDisuseSemVer != nil && goVer.Compare(*goDisuseSemVer) >= 0 {
-			// 如果当前的 go 版本大于等于放弃版本，则不校验
-			return false
-		}
 	}
 	// compare dependency version
 	requireVer := requireDependency.GetRequireVersion()
