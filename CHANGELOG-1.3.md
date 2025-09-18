@@ -1,4 +1,28 @@
-### v1.3.84 🌈 (2025-08-13 18:52:07)
+### v1.3.87 🌈 (2025-09-18 21:50:00)
+
+#### 🐛  Bug Fixed
+  * etl ([a58a8c9](https://github.com/sandwich-go/boost/commit/a58a8c9402a8a344512a4858653e3875bdd325ad)) (<small>[hui.wang](hui.wang@centurygame.com)@2025-09-18 21:49:51 &#43;0800 &#43;0800</small>)
+
+#### 🛠  Refactor
+  * **xslice**: 增加 last 函数 ([b5a0106](https://github.com/sandwich-go/boost/commit/b5a01066cc4d25e6d26350a89bcfb0a21fae2f1f)) (<small>[huangqing.zhu](huangqing.zhu@centurygame.com)@2025-09-02 14:11:18 &#43;0800 &#43;0800</small>)
+
+#### 💪  Commit
+  * Merge branch '1.3/release' of github.com:sandwich-go/boost into 1.3/release ([ca30f7a](https://github.com/sandwich-go/boost/commit/ca30f7a8014903904fa6d790b497dbe898696b69)) (<small>[hui.wang](hui.wang@centurygame.com)@2025-09-18 21:50:00 &#43;0800 &#43;0800</small>)
+
+### v1.3.86 (2025-09-01 12:04:07)
+
+#### 🚀  New Feature
+  * **xdebug**: 当golang版本大于等于1.25，无需校验automaxprocs ([1fd9661](https://github.com/sandwich-go/boost/commit/1fd96615df6b03c0a7e5227c95ab91e68308c984)) (<small>[huangqing.zhu](huangqing.zhu@centurygame.com)@2025-09-01 12:04:07 &#43;0800 &#43;0800</small>)
+
+### v1.3.85 (2025-09-01 11:46:09)
+
+#### 🚀  New Feature
+  * **xdebug**: 当golang版本大于等于1.25，无需校验automaxprocs ([95f2678](https://github.com/sandwich-go/boost/commit/95f2678e6179e2e79556e84c398df611eca08c08)) (<small>[huangqing.zhu](huangqing.zhu@centurygame.com)@2025-09-01 11:46:09 &#43;0800 &#43;0800</small>)
+
+#### 🤖  Tools
+  * **sem**: make changelog ([3f1f5bd](https://github.com/sandwich-go/boost/commit/3f1f5bd6d6310b1dd8f81e93807ebe3acf0a0bc8)) (<small>[zhengyang.zhu](zhengyang.zhu@centurygame.com)@2025-08-13 18:52:37 &#43;0800 &#43;0800</small>)
+
+### v1.3.84 (2025-08-13 18:52:07)
 
 #### 🐛  Bug Fixed
   * cloud s3 url with region ([07afa33](https://github.com/sandwich-go/boost/commit/07afa337c8ae70e19f69735a446b3935e77e01c1)) (<small>[zhengyang.zhu](zhengyang.zhu@centurygame.com)@2025-08-13 18:52:07 &#43;0800 &#43;0800</small>)
