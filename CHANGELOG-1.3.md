@@ -1,4 +1,12 @@
-### v1.3.87 🌈 (2025-09-18 21:50:00)
+### v1.3.88 🌈 (2025-09-18 21:53:23)
+
+#### 🐛  Bug Fixed
+  * etl ([3d7fee5](https://github.com/sandwich-go/boost/commit/3d7fee5f67464078e8b8a2160da4027b94850253)) (<small>[hui.wang](hui.wang@centurygame.com)@2025-09-18 21:53:23 &#43;0800 &#43;0800</small>)
+
+#### 🤖  Tools
+  * **sem**: make changelog ([eb7d857](https://github.com/sandwich-go/boost/commit/eb7d8571cfeedd01deed2ccd3920c7c1553e380f)) (<small>[hui.wang](hui.wang@centurygame.com)@2025-09-18 21:50:23 &#43;0800 &#43;0800</small>)
+
+### v1.3.87 (2025-09-18 21:50:00)
 
 #### 🐛  Bug Fixed
   * etl ([a58a8c9](https://github.com/sandwich-go/boost/commit/a58a8c9402a8a344512a4858653e3875bdd325ad)) (<small>[hui.wang](hui.wang@centurygame.com)@2025-09-18 21:49:51 &#43;0800 &#43;0800</small>)
