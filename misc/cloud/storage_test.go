@@ -65,6 +65,19 @@ func TestAliCloud(t *testing.T) {
 	testUtil(sb, t)
 }
 
+func TestHuaweiRUCloud(t *testing.T) {
+	key := os.Getenv("RELEASE_HUAWEIRU_KEY")
+	secret := os.Getenv("RELEASE_HUAWEIRU_SECRET")
+	bucket := os.Getenv("RELEASE_HUAWEIRU_BUCKET")
+	if len(key) == 0 ||
+		len(secret) == 0 ||
+		len(bucket) == 0 {
+		return
+	}
+	sb := MustNew(StorageTypeHuaweiRU, key, secret, bucket, WithRegion("ru-moscow-1"))
+	testUtil(sb, t)
+}
+
 func testUtil(sb Storage, t *testing.T) {
 	Convey("put/stat/list/copy object", t, func() {
 		str := "test"

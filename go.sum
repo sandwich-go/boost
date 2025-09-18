@@ -95,8 +95,8 @@ github.com/rogpeppe/go-internal v1.8.0 h1:FCbCCtXNOY3UtUuHUYaghJg4y7Fd14rXifAYUA
 github.com/rogpeppe/go-internal v1.8.0/go.mod h1:WmiCO8CzOY8rg0OYDC4/i/2WRWAB6poM+XZ2dLUbcbE=
 github.com/rs/xid v1.5.0 h1:mKX4bl4iPYJtEIxp6CYiUuLQ/8DYMoz0PUdtGgMFRVc=
 github.com/rs/xid v1.5.0/go.mod h1:trrq9SKmegXys3aeAKXMUTdJsYXVwGY3RLcfgqegfbg=
-github.com/sandwich-go/minio-go v1.0.0-beta.1 h1:m8cXGjjz2JRkHyJYo4ecPGOoR11/lkj1/UdOxZTu0cU=
-github.com/sandwich-go/minio-go v1.0.0-beta.1/go.mod h1:Mook4hIwuT2djZFTgHIYRbMoGqhQOzpuH4xHvtrfwTs=
+github.com/sandwich-go/minio-go v1.0.0-beta.2 h1:xsp6hsmpZ9aKthftsDhqJITNCnbMw/0VX6wBQalzGow=
+github.com/sandwich-go/minio-go v1.0.0-beta.2/go.mod h1:Mook4hIwuT2djZFTgHIYRbMoGqhQOzpuH4xHvtrfwTs=
 github.com/smartystreets/assertions v1.2.0 h1:42S6lae5dvLc7BrLu/0ugRtcFVjoJNMC/N3yZFZkDFs=
 github.com/smartystreets/assertions v1.2.0/go.mod h1:tcbTF8ujkAEcZ8TElKY+i30BzYlVhC/LOxJk7iOWnoo=
 github.com/smartystreets/goconvey v1.7.2 h1:9RBaZCeXEQ3UselpuwUQHltGVXvdwm6cv1hgR6gDIPg=

@@ -28,5 +28,8 @@ func newS3Storage(accessKeyID string, secretAccessKey string, bucket string, opt
 }
 
 func (c s3Storage) GetRootUrl() string {
+	if c.baseStorage.spec.Region != "" {
+		return fmt.Sprintf("https://%s.s3.%s.amazonaws.com", c.bucket, c.baseStorage.spec.Region)
+	}
 	return fmt.Sprintf("https://%s.s3.amazonaws.com", c.bucket)
 }

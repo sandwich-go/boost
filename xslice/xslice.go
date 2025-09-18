@@ -104,3 +104,12 @@ func ToAny[T any](s []T) []any {
 	}
 	return result
 }
+
+// Last 最后一个元素
+func Last[T any](s []T) T {
+	if len(s) == 0 {
+		var t T
+		return t
+	}
+	return s[len(s)-1]
+}

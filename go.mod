@@ -18,7 +18,7 @@ require (
 	github.com/golang/snappy v0.0.4
 	github.com/modern-go/reflect2 v1.0.2
 	github.com/rs/xid v1.5.0
-	github.com/sandwich-go/minio-go v1.0.0-beta.1
+	github.com/sandwich-go/minio-go v1.0.0-beta.2
 	github.com/smartystreets/goconvey v1.7.2
 	github.com/stretchr/testify v1.9.0
 	github.com/vmihailenco/msgpack/v5 v5.3.5
