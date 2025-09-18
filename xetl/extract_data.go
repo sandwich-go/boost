@@ -1,4 +1,4 @@
-package scan
+package xetl
 
 // ExtractTableData 表数据
 type ExtractTableData struct {

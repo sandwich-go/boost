@@ -1,4 +1,4 @@
-package scan
+package xetl
 
 // ExtractTableQueryKey 查询参数
 type ExtractTableQueryKey struct {
