@@ -13,6 +13,7 @@ type ExtractTable struct {
 	Multiple bool                   `json:"multiple"`
 	SQL      string                 `json:"sql"`
 	Keys     []ExtractTableQueryKey `json:"keys"`
+	Required bool                   `json:"required"`
 }
 
 // ExtractSchema 数据提取 schema 描述
