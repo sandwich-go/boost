@@ -1,10 +1,11 @@
 package lru
 
 import (
-	"github.com/sandwich-go/boost/xmath"
-	"github.com/sandwich-go/boost/xsync"
 	"sync"
 	"time"
+
+	"github.com/rs/xid"
+	"github.com/sandwich-go/boost/xsync"
 )
 
 type Node[V any] struct {
@@ -31,6 +32,7 @@ type Engine[V any] struct {
 	locker  sync.Locker
 	started xsync.AtomicInt32
 	active  bool
+	id      string
 }
 
 func newEngine[V any](interval time.Duration, locker sync.Locker, expireHandler func(V), active bool) *Engine[V] {
@@ -39,6 +41,7 @@ func newEngine[V any](interval time.Duration, locker sync.Locker, expireHandler 
 		locker:        locker,
 		expireHandler: expireHandler,
 		active:        active,
+		id:            xid.New().String(),
 	}
 }
 
@@ -64,13 +67,8 @@ func (e *Engine[V]) startCleaner() {
 	if !e.started.CompareAndSwap(0, 1) {
 		return
 	}
-	go func() {
-		slept := min(time.Second, e.cleanInterval)
-		for {
-			time.Sleep(xmath.Disturb(slept, 10))
-			e.expire()
-		}
-	}()
+	slept := min(time.Second, e.cleanInterval)
+	DefaultCleanWorker.Clean(slept, e.id, e.expire)
 }
 
 // Add 添加元素

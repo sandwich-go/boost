@@ -1,4 +1,4 @@
-//go:build timingwheel
+//go:build !stdtime
 
 package xtime
 
@@ -8,10 +8,9 @@ import (
 	"github.com/RussellLuo/timingwheel"
 )
 
-// var timeAfterFunc = time.AfterFunc
 var (
 	DefaultTiming = timingwheel.NewTimingWheel(time.Millisecond*100, 128)
-	timeAfterFunc = func(d time.Duration, f func()) internalTimer {
+	AfterFunc     = func(d time.Duration, f func()) internalTimer {
 		t := DefaultTiming.AfterFunc(d, f)
 		return &timer{t: t, fn: f}
 	}
