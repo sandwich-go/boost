@@ -223,7 +223,7 @@ func (d *dispatcher) AfterFuncWithOwnershipTransferInDomain(td time.Duration, cb
 	t := new(DanglingTimer)
 	t.cb = cb
 	t.domain = domain
-	t.t = timeAfterFunc(td, func() {
+	t.t = AfterFunc(td, func() {
 		// callback from another goroutine
 		select {
 		// FIRST read from no buffer chan, even closed, will return false
@@ -251,7 +251,7 @@ func (d *dispatcher) AfterFuncInDomain(td time.Duration, cb func(), domain strin
 	t := new(SafeTimer)
 	t.cb = cb
 	t.domain = domain
-	t.t = timeAfterFunc(td, func() {
+	t.t = AfterFunc(td, func() {
 		// callback from another goroutine
 		select {
 		// FIRST read from no buffer chan, even closed, will return false

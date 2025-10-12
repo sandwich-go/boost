@@ -1,7 +1,7 @@
-//go:build !timingwheel
+//go:build stdtime
 
 package xtime
 
 import "time"
 
-var timeAfterFunc = time.AfterFunc
+var AfterFunc = time.AfterFunc
