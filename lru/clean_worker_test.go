@@ -370,9 +370,9 @@ func BenchmarkWorkerHashPool(b *testing.B) {
 
 // TestWorkerInterface 测试接口兼容性
 func TestWorkerInterface(t *testing.T) {
-	Convey("Both workers should implement ClearnWorker interface", t, func() {
-		var _ ClearnWorker = NewWorkerPerEngine()
-		var _ ClearnWorker = NewWorkerHashPool(4, 100, time.Second)
+	Convey("Both workers should implement CleanWorker interface", t, func() {
+		var _ CleanWorker = NewWorkerPerEngine()
+		var _ CleanWorker = NewWorkerHashPool(4, 100, time.Second)
 	})
 }
 
@@ -381,7 +381,7 @@ func TestWorkerExecution_Timing(t *testing.T) {
 	Convey("Workers should execute at approximately correct intervals", t, func() {
 		interval := 100 * time.Millisecond
 
-		testWorkerTiming := func(worker ClearnWorker, name string) {
+		testWorkerTiming := func(worker CleanWorker, name string) {
 			var timestamps []time.Time
 			var mu sync.Mutex
 
