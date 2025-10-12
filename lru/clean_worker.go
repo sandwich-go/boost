@@ -1,22 +1,23 @@
 package lru
 
 import (
-	"log"
+	"fmt"
 	"time"
 
+	"github.com/sandwich-go/boost/internal/log"
 	"github.com/sandwich-go/boost/module"
 	"github.com/sandwich-go/boost/xmath"
 	"github.com/sandwich-go/boost/xpool"
 	"github.com/sandwich-go/boost/xtime"
 )
 
-type ClearnWorker interface {
+type CleanWorker interface {
 	Clean(d time.Duration, id string, f func())
 }
 
-var DefaultCleanWorker ClearnWorker = NewWorkerPerEngine()
+var DefaultCleanWorker CleanWorker = NewWorkerPerEngine()
 
-func NewWorkerPerEngine() ClearnWorker {
+func NewWorkerPerEngine() CleanWorker {
 	return &workerPerEngine{}
 }
 
@@ -37,14 +38,14 @@ func (w *workerPerEngine) Clean(d time.Duration, _ string, f func()) {
 					ch <- struct{}{}
 				})
 			case <-module.ShutdownNotify():
-				log.Println("shutdown notify")
+				log.Info("shutdown notify")
 				return
 			}
 		}
 	}()
 }
 
-func NewWorkerHashPool(numWorkers int, jobQueueLen int, timeout time.Duration) ClearnWorker {
+func NewWorkerHashPool(numWorkers int, jobQueueLen int, timeout time.Duration) CleanWorker {
 	return &workerHashPool{
 		numWorkers: numWorkers,
 		pool:       xpool.NewHashGoroutinePool(numWorkers, jobQueueLen, timeout),
@@ -68,10 +69,14 @@ func (w *workerHashPool) Clean(d time.Duration, id string, f func()) {
 		}
 
 		xtime.AfterFunc(xmath.Disturb(d, 10), func() {
-			w.pool.PushJob(id, cleanFunc)
+			if err := w.pool.PushJob(id, cleanFunc); err != nil {
+				log.Error(fmt.Sprintf("lru worker push job error:%v", err))
+			}
 		})
 	}
 	xtime.AfterFunc(d, func() {
-		w.pool.PushJob(id, cleanFunc)
+		if err := w.pool.PushJob(id, cleanFunc); err != nil {
+			log.Error(fmt.Sprintf("lru worker push job error:%v", err))
+		}
 	})
 }
