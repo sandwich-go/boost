@@ -2,10 +2,11 @@ package httputil
 
 import (
 	"crypto/tls"
-	"github.com/sandwich-go/boost/httputil/dns"
 	"io"
 	"net/http"
 	"time"
+
+	"github.com/sandwich-go/boost/httputil/dns"
 )
 
 var (
@@ -19,6 +20,11 @@ func SetDefaultHTTPClient(c *http.Client) { globalClient.Client = c }
 
 // SetDefaultTimeout 设置默认的超时时间
 func SetDefaultTimeout(timeout time.Duration) { globalClient.Client.Timeout = timeout }
+
+// Request 使用默认的 Client 发送 HTTP 请求
+func Request(req *http.Request) (*http.Response, error) {
+	return globalClient.Do(req)
+}
 
 // Post 使用默认的 Client 发送 POST 请求
 func Post(url, contentType string, body io.Reader) (resp *http.Response, err error) {
