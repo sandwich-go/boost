@@ -1,4 +1,13 @@
-### v1.3.89 🌈 (2025-09-26 22:02:11)
+### v1.3.90 🌈 (2025-10-15 11:11:18)
+
+#### 🛠  Refactor
+  * httputil add request ([11f1e2e](https://github.com/sandwich-go/boost/commit/11f1e2e864020a23430d40ed0c34a2b3ce566c04)) (<small>[daming.yang](daming.yang@centurygame.con)@2025-10-15 11:11:18 &#43;0800 &#43;0800</small>)
+  * lru增加支持hash pool ([c07b6ff](https://github.com/sandwich-go/boost/commit/c07b6ffb72eacfda359d3d68489ae769e7ffc962) , [b8b2619](https://github.com/sandwich-go/boost/commit/b8b26197231c6975c038bf4c3fb5e4651fa8fa18)) (<small>[daming.yang](daming.yang@centurygame.con)@2025-10-12 20:48:29 &#43;0800 &#43;0800</small>)
+
+#### 🤖  Tools
+  * **sem**: make changelog ([91cadd7](https://github.com/sandwich-go/boost/commit/91cadd7f097537a854a2e61bcd327c057faa6be0)) (<small>[hui.wang](hui.wang@centurygame.com)@2025-09-26 22:02:27 &#43;0800 &#43;0800</small>)
+
+### v1.3.89 (2025-09-26 22:02:11)
 
 #### 🐛  Bug Fixed
   * required ([e09514a](https://github.com/sandwich-go/boost/commit/e09514a643a11900ee7fc69975add991bf4f96a8)) (<small>[hui.wang](hui.wang@centurygame.com)@2025-09-26 22:02:11 &#43;0800 &#43;0800</small>)
