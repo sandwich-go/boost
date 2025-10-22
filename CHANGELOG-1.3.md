@@ -1,4 +1,12 @@
-### v1.3.90 🌈 (2025-10-15 11:11:18)
+### v1.3.91 🌈 (2025-10-22 15:35:34)
+
+#### 🛠  Refactor
+  * add extend ([abfb57c](https://github.com/sandwich-go/boost/commit/abfb57c698950ee63c718de87c3504e7d5e32029)) (<small>[daming.yang](daming.yang@centurygame.con)@2025-10-22 15:35:34 &#43;0800 &#43;0800</small>)
+
+#### 🤖  Tools
+  * **sem**: make changelog ([3745e12](https://github.com/sandwich-go/boost/commit/3745e121a742b84314e562e245413ef0b4ebf6c0)) (<small>[daming.yang](daming.yang@centurygame.con)@2025-10-15 11:12:33 &#43;0800 &#43;0800</small>)
+
+### v1.3.90 (2025-10-15 11:11:18)
 
 #### 🛠  Refactor
   * httputil add request ([11f1e2e](https://github.com/sandwich-go/boost/commit/11f1e2e864020a23430d40ed0c34a2b3ce566c04)) (<small>[daming.yang](daming.yang@centurygame.con)@2025-10-15 11:11:18 &#43;0800 &#43;0800</small>)
