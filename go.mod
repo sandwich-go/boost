@@ -1,8 +1,6 @@
 module github.com/sandwich-go/boost
 
-go 1.22.0
-
-toolchain go1.22.4
+go 1.24.0
 
 require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
@@ -24,7 +22,7 @@ require (
 	github.com/vmihailenco/msgpack/v5 v5.3.5
 	go.uber.org/goleak v1.3.0
 	go.uber.org/mock v0.4.0
-	golang.org/x/crypto v0.29.0
+	golang.org/x/crypto v0.45.0
 	golang.org/x/exp v0.0.0-20240325151524-a685a6edb6d8
 	google.golang.org/protobuf v1.33.0
 )
@@ -34,9 +32,9 @@ replace github.com/RussellLuo/timingwheel => github.com/sandwich-go/timingwheel 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
-	golang.org/x/net v0.31.0 // indirect
-	golang.org/x/sys v0.27.0 // indirect
-	golang.org/x/text v0.20.0
+	golang.org/x/net v0.47.0 // indirect
+	golang.org/x/sys v0.38.0 // indirect
+	golang.org/x/text v0.31.0
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
