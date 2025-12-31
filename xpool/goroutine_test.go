@@ -12,6 +12,13 @@ func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 }
 
+func TestNewPool1(t *testing.T) {
+	pool := NewGoroutinePool(10, 100, time.Duration(0))
+	pool.SetSize(5)
+	pool.SetSize(8)
+	pool.SetSize(20)
+}
+
 func TestNewPool(t *testing.T) {
 	pool := NewGoroutinePool(10, 100, time.Duration(0))
 	defer pool.Close()

@@ -104,25 +104,32 @@ func (p *GoroutinePool) SetSize(n int) {
 		return
 	}
 
+	if lWorkers > n {
+		// Asynchronously stop all workers > N
+		for i := n; i < lWorkers; i++ {
+			p.workers[i].stop()
+		}
+
+		// Synchronously wait for all workers > N to stop
+		for i := n; i < lWorkers; i++ {
+			p.workers[i].join()
+		}
+
+		// Remove stopped workers from slice
+		p.workers = p.workers[:n]
+
+		return
+	}
+
 	// Add extra workers if N > len(workers)
+	workers := make([]*worker, n)
+	copy(workers, p.workers)
 	for i := lWorkers; i < n; i++ {
 		w := newWorker()
 		w.Start(p.jobQueue)
-		p.workers = append(p.workers, w)
+		workers[i] = w
 	}
-
-	// Asynchronously stop all workers > N
-	for i := n; i < lWorkers; i++ {
-		p.workers[i].stop()
-	}
-
-	// Synchronously wait for all workers > N to stop
-	for i := n; i < lWorkers; i++ {
-		p.workers[i].join()
-	}
-
-	// Remove stopped workers from slice
-	p.workers = p.workers[:n]
+	p.workers = workers
 }
 
 // IsClosed 协程竞争池是否已关闭
