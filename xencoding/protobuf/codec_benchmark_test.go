@@ -7,7 +7,7 @@ import (
 	"github.com/sandwich-go/boost/xencoding/protobuf/test_perf"
 	"testing"
 
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 )
 
 func setupBenchmarkProtoCodecInputs(payloadBaseSize uint32) []proto.Message {

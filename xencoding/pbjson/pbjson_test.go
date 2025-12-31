@@ -3,9 +3,10 @@ package pbjson
 import (
 	"bytes"
 	"context"
-	"github.com/sandwich-go/boost/xencoding"
 	"sync"
 	"testing"
+
+	"github.com/sandwich-go/boost/xencoding"
 
 	"github.com/sandwich-go/boost/xencoding/protobuf/test_perf"
 )
@@ -17,8 +18,8 @@ func TestEmitUnpopulated(t *testing.T) {
 	if err != nil {
 		t.Errorf("codec.Marshal(_) returned an error:%v", err)
 	}
-	if string(marshalledBytes) != `{"body":null}` {
-		t.Errorf("codec.Marshal(_) returned empty on emit unpopulated")
+	if string(marshalledBytes) != `{"body":""}` {
+		t.Errorf("codec.Marshal() returned %s on emit unpopulated", string(marshalledBytes))
 	}
 }
 

@@ -4,8 +4,7 @@ import (
 	"reflect"
 	"time"
 
-	proto1 "github.com/golang/protobuf/proto"
-	proto2 "google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 )
 
 // DeepCopyInterface for delegating copy process to type
@@ -15,10 +14,7 @@ type DeepCopyInterface interface {
 
 func fastDeepCopy(src interface{}) (interface{}, bool) {
 	switch v := src.(type) {
-	case interface{ Clone() proto1.Message }:
-		// protokitgo 激活 golang.proto_enable_clone 属性加速拷贝
-		return v.Clone(), true
-	case interface{ Clone() proto2.Message }:
+	case interface{ Clone() proto.Message }:
 		// protokitgo 激活 golang.proto_enable_clone 属性加速拷贝
 		return v.Clone(), true
 	case DeepCopyInterface:
@@ -30,9 +26,8 @@ func fastDeepCopy(src interface{}) (interface{}, bool) {
 // DeepCopy creates a deep copy of whatever is passed to it and returns the copy
 // in an interface{}.  The returned value will need to be asserted to the
 // correct type.
-// 1. if src has 'Clone() proto1.Message' function, use src.Clone()
-// 2. if src has 'Clone() proto2.Message' function, use src.Clone()
-// 3. if src has 'DeepCopy() interface{}' function, use src.DeepCopy()
+// 1. if src has 'Clone() proto.Message' function, use src.Clone()
+// 2. if src has 'DeepCopy() interface{}' function, use src.DeepCopy()
 func DeepCopy(src interface{}) interface{} {
 	if src == nil {
 		return nil
