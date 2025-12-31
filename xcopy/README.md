@@ -2,8 +2,7 @@
 
 深拷贝
 
-- 若实现 Clone() [proto1](https://github.com/golang/protobuf/tree/master/proto).Message 接口，可快速深拷贝
-- 若实现 Clone() [proto2](https://github.com/protocolbuffers/protobuf-go/tree/master/proto).Message 接口，可快速深拷贝
+- 若实现 Clone() [proto](https://github.com/protocolbuffers/protobuf-go/tree/master/proto).Message 接口，可快速深拷贝
 - 若实现 `DeepCopy() interface{}` 接口，可快速深拷贝
 - 其他形式则通过反射进行深拷贝
 
@@ -18,7 +17,7 @@ type sub0 struct {
 }
 
 type sub1 struct {
-    i uint32    // 含有未导出的属性，但实现了 Clone() proto1.Message、Clone() proto2.Message、DeepCopyInterface，可以深拷贝
+    i uint32    // 含有未导出的属性，但实现了 Clone() proto.Message、DeepCopyInterface，可以深拷贝
 }
 
 func (s *sub1) DeepCopy() interface{} {

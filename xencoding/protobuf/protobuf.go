@@ -1,17 +1,16 @@
 package protobuf
 
 import (
-	"bytes"
 	"context"
 	"errors"
+	"reflect"
+
 	"github.com/sandwich-go/boost/xencoding"
 	"github.com/sandwich-go/boost/xerror"
-	"math"
-	"reflect"
-	"sync"
-
-	"github.com/golang/protobuf/jsonpb"
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/reflect/protoregistry"
 )
 
 var (
@@ -42,92 +41,42 @@ func (p codec) Name() string { return p.name }
 
 // Marshal 编码
 func (p codec) Marshal(_ context.Context, v interface{}) ([]byte, error) {
-	if pm, ok := v.(proto.Marshaler); ok {
-		// object can marshal itself, no need for buffer
-		return pm.Marshal()
-	}
 	if pm, ok := v.(proto.Message); ok {
-		if p.usingPool {
-			cb := protoBufferPool.Get().(*cachedProtoBuffer)
-			out, err := marshal(pm, cb)
-			// put back buffer and lose the ref to the slice
-			cb.SetBuf(nil)
-			protoBufferPool.Put(cb)
-			return out, err
-		}
 		return proto.Marshal(pm)
 	}
-	return nil, xerror.NewText("%T is not a proto.Marshaler", v)
+	return nil, xerror.NewText("%T is not a proto.Message", v)
 }
 
 // Uri 获取 Message Name
-func (codec) Uri(t interface{}) string { return proto.MessageName(t.(proto.Message)) }
+func (codec) Uri(t interface{}) string {
+	return string(t.(proto.Message).ProtoReflect().Descriptor().FullName())
+}
 
 // Type 获取 Message Type
-func (codec) Type(uri string) reflect.Type { return proto.MessageType(uri) }
+func (codec) Type(uri string) reflect.Type {
+	mt, err := protoregistry.GlobalTypes.FindMessageByName(protoreflect.FullName(uri))
+	if err != nil {
+		return nil
+	}
+	return reflect.TypeOf(mt.Zero().Interface())
+}
 
 // Unmarshal 解码
 func (p codec) Unmarshal(ctx context.Context, data []byte, v interface{}) error {
-	if pu, ok := v.(proto.Unmarshaler); ok {
-		// object can unmarshal itself, no need for buffer
-		return pu.Unmarshal(data)
-	}
-
 	if m, ok := v.(proto.Message); ok {
-		m.Reset()
-		if p.usingPool {
-			cb := protoBufferPool.Get().(*cachedProtoBuffer)
-			cb.SetBuf(data)
-			err := cb.Unmarshal(m)
-			cb.SetBuf(nil)
-			protoBufferPool.Put(cb)
-			return err
-		}
+		proto.Reset(m)
 		return proto.Unmarshal(data, m)
 	}
 
-	return xerror.NewText("%T is not a proto.Unmarshaler", v)
+	return xerror.NewText("%T is not a proto.Message", v)
 }
 
 func (codec) JSONMarshal(obj interface{}) ([]byte, error) {
 	if pm, ok := obj.(proto.Message); ok {
-		m := jsonpb.Marshaler{EmitDefaults: false}
-		var buf bytes.Buffer
-		return buf.Bytes(), m.Marshal(&buf, pm)
+		return protojson.MarshalOptions{
+			EmitUnpopulated: false,
+		}.Marshal(pm)
 	}
 	return nil, errors.New("not proto message")
 }
 
-func marshal(pm proto.Message, cb *cachedProtoBuffer) ([]byte, error) {
-	newSlice := make([]byte, 0, cb.lastMarshaledSize)
-
-	cb.SetBuf(newSlice)
-	cb.Reset()
-	if err := cb.Marshal(pm); err != nil {
-		return nil, err
-	}
-	out := cb.Bytes()
-	cb.lastMarshaledSize = capToMaxInt32(len(out))
-	return out, nil
-}
-
-func capToMaxInt32(val int) uint32 {
-	if val > math.MaxInt32 {
-		return uint32(math.MaxInt32)
-	}
-	return uint32(val)
-}
-
-type cachedProtoBuffer struct {
-	lastMarshaledSize uint32
-	proto.Buffer
-}
-
-var protoBufferPool = &sync.Pool{
-	New: func() interface{} {
-		return &cachedProtoBuffer{
-			Buffer:            proto.Buffer{},
-			lastMarshaledSize: 16,
-		}
-	},
-}

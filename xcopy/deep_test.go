@@ -1,11 +1,10 @@
 package xcopy
 
 import (
-	proto1 "github.com/golang/protobuf/proto"
 	"github.com/sandwich-go/boost/xrand"
 	"github.com/sandwich-go/boost/z"
 	. "github.com/smartystreets/goconvey/convey"
-	proto2 "google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"reflect"
 	"strconv"
@@ -132,11 +131,11 @@ func randWithClone1() *withClone1 {
 	}
 }
 
-func (w withClone1) getCloneFlag() int { return w.cloneF }
-func (*withClone1) Reset()             {}
-func (*withClone1) String() string     { return "" }
-func (*withClone1) ProtoMessage()      {}
-func (w *withClone1) Clone() proto1.Message {
+func (w withClone1) getCloneFlag() int                { return w.cloneF }
+func (*withClone1) Reset()                            {}
+func (*withClone1) String() string                    { return "" }
+func (withClone1) ProtoReflect() protoreflect.Message { return nil }
+func (w *withClone1) Clone() proto.Message {
 	c := &withClone1{
 		stringF: w.stringF,
 		intF:    w.intF,
@@ -182,7 +181,7 @@ func randWithClone2() *withClone2 {
 
 func (w withClone2) getCloneFlag() int                { return w.cloneF }
 func (withClone2) ProtoReflect() protoreflect.Message { return nil }
-func (w *withClone2) Clone() proto2.Message {
+func (w *withClone2) Clone() proto.Message {
 	c := &withClone2{
 		stringF: w.stringF,
 		intF:    w.intF,

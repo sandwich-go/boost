@@ -12,9 +12,9 @@ require (
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
 	github.com/go-playground/validator/v10 v10.22.0
-	github.com/golang/protobuf v1.5.3
 	github.com/golang/snappy v0.0.4
 	github.com/modern-go/reflect2 v1.0.2
+	github.com/planetscale/vtprotobuf v0.6.1-0.20250313105119-ba97887b0a25
 	github.com/rs/xid v1.5.0
 	github.com/sandwich-go/minio-go v1.0.0-beta.2
 	github.com/smartystreets/goconvey v1.7.2
@@ -24,7 +24,7 @@ require (
 	go.uber.org/mock v0.4.0
 	golang.org/x/crypto v0.45.0
 	golang.org/x/exp v0.0.0-20240325151524-a685a6edb6d8
-	google.golang.org/protobuf v1.33.0
+	google.golang.org/protobuf v1.36.11
 )
 
 replace github.com/RussellLuo/timingwheel => github.com/sandwich-go/timingwheel v0.0.0-20251228060126-9b349bf51c04
@@ -47,7 +47,6 @@ require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/google/cel-go v0.20.1 // indirect
-	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1 // indirect
 	github.com/huandu/xstrings v1.4.0 // indirect
