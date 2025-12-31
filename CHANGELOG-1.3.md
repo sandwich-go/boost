@@ -1,4 +1,20 @@
-### v1.3.93 🌈 (2025-12-28 14:06:31)
+### v1.3.94 🌈 (2025-12-31 18:58:53)
+
+#### 🚀  New Feature
+  * proto codec 支持 vtprotoMessage ([af2142f](https://github.com/sandwich-go/boost/commit/af2142ffc3d301a4152e03303d561e81bb39ed22)) (<small>[zhengyang.zhu](zhengyang.zhu@centurygame.com)@2025-12-31 18:58:53 &#43;0800 &#43;0800</small>)
+
+#### 🛠  Refactor
+  * rm github.com/golang/protobuf ([bd763fa](https://github.com/sandwich-go/boost/commit/bd763fad92082c1bc5302619d7797ae0f1db994a)) (<small>[zhengyang.zhu](zhengyang.zhu@centurygame.com)@2025-12-31 10:56:31 &#43;0800 &#43;0800</small>)
+  * up golang.org/x/crypto ([e2384b1](https://github.com/sandwich-go/boost/commit/e2384b1b8d6095b316760593e63165d7f9fc40b8)) (<small>[zhengyang.zhu](zhengyang.zhu@centurygame.com)@2025-12-30 19:12:19 &#43;0800 &#43;0800</small>)
+
+#### 🤖  Tools
+  * **sem**: make changelog ([8228eb5](https://github.com/sandwich-go/boost/commit/8228eb5e3459f1d4793292e5f5baa72938153f53)) (<small>[daming.yang](daming.yang@centurygame.com)@2025-12-28 14:06:50 &#43;0800 &#43;0800</small>)
+
+#### 💪  Commit
+  * Merge branch '1.3/release' of github.com:sandwich-go/boost into 1.3/release ([e21a765](https://github.com/sandwich-go/boost/commit/e21a765de8480f036c29e22cf034c9aeecb342b6)) (<small>[huangqing.zhu](huangqing.zhu@centurygame.com)@2025-12-31 12:59:16 &#43;0800 &#43;0800</small>)
+  * refactor ([5012918](https://github.com/sandwich-go/boost/commit/50129181af254a33bd5b1eed91bf941aee6a031f)) (<small>[huangqing.zhu](huangqing.zhu@centurygame.com)@2025-12-31 12:59:03 &#43;0800 &#43;0800</small>)
+
+### v1.3.93 (2025-12-28 14:06:31)
 
 #### 🐛  Bug Fixed
   * upgrade timingwheel; fix dead lock in bucket.Flush ([b01df93](https://github.com/sandwich-go/boost/commit/b01df932a22aea3c3362b6dd1c8afb748a9e18a8)) (<small>[daming.yang](daming.yang@centurygame.com)@2025-12-28 14:06:31 &#43;0800 &#43;0800</small>)
