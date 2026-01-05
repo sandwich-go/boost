@@ -23,7 +23,7 @@ func Min[T cmp.Ordered](a, b T) T {
 }
 
 // Abs 返回绝对值
-func Abs[T constraints.Unsigned](v T) T {
+func Abs[T constraints.Unsigned | constraints.Signed](v T) T {
 	if v < 0 {
 		return -v
 	}
@@ -31,7 +31,7 @@ func Abs[T constraints.Unsigned](v T) T {
 }
 
 // EffectZeroLimit 加 change 值，返回值，该值不会小于0
-func EffectZeroLimit[T constraints.Unsigned](v, change T) T {
+func EffectZeroLimit[T constraints.Unsigned | constraints.Signed](v, change T) T {
 	v += change
 	if v < 0 {
 		v = 0
