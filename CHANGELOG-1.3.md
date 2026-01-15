@@ -1,4 +1,17 @@
-### v1.3.94 🌈 (2025-12-31 18:58:53)
+### v1.3.96 🌈 (2026-01-15 20:37:16)
+
+#### 🐛  Bug Fixed
+  * WhenErrorAsFmtFirst use Sprintf ([609e776](https://github.com/sandwich-go/boost/commit/609e77666896c9472ee41092600720bac482ba8a)) (<small>[zhengyang.zhu](zhengyang.zhu@centurygame.com)@2026-01-15 20:37:16 &#43;0800 &#43;0800</small>)
+
+### v1.3.95 (2026-01-05 19:47:02)
+
+#### 🐛  Bug Fixed
+  * **xmath**: abs和EffectZeroLimit参数错误 ([2e4a317](https://github.com/sandwich-go/boost/commit/2e4a317ba09d9bb2a7290418ee37a27bd3b111f9)) (<small>[huangqing.zhu](huangqing.zhu@centurygame.com)@2026-01-05 19:47:02 &#43;0800 &#43;0800</small>)
+
+#### 🤖  Tools
+  * **sem**: make changelog ([7b28c46](https://github.com/sandwich-go/boost/commit/7b28c46f8ca3deda44c59861ce97cb3e8377d8d7)) (<small>[zhengyang.zhu](zhengyang.zhu@centurygame.com)@2025-12-31 18:59:44 &#43;0800 &#43;0800</small>)
+
+### v1.3.94 (2025-12-31 18:58:53)
 
 #### 🚀  New Feature
   * proto codec 支持 vtprotoMessage ([af2142f](https://github.com/sandwich-go/boost/commit/af2142ffc3d301a4152e03303d561e81bb39ed22)) (<small>[zhengyang.zhu](zhengyang.zhu@centurygame.com)@2025-12-31 18:58:53 &#43;0800 &#43;0800</small>)
