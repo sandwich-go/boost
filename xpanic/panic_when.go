@@ -16,7 +16,7 @@ func WhenErrorAsFmtFirst(err error, fmtStr string, args ...interface{}) {
 	var argList = make([]interface{}, 0, len(args)+1)
 	argList = append(argList, err)
 	argList = append(argList, args...)
-	panic(fmt.Errorf(fmtStr, argList...))
+	panic(fmt.Sprintf(fmtStr, argList...))
 }
 
 // WhenError err 不为 nil 则 panic
