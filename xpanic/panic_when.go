@@ -36,7 +36,7 @@ func WhenTrue(condition bool, fmtStr string, args ...interface{}) {
 	if !condition {
 		return
 	}
-	panic(fmt.Errorf(fmtStr, args...))
+	panic(fmt.Sprintf(fmtStr, args...))
 }
 
 // WhenFalse 当 condition 为 false 时 panic
@@ -50,7 +50,7 @@ func WhenHereNotNil(err error) {
 	if err == nil {
 		return
 	}
-	panic(fmt.Errorf("err should be nil when here, got:%w", err))
+	panic(fmt.Sprintf("err should be nil when here, got:%w", err))
 }
 
 // WhenNil 如果v为nil则panic
