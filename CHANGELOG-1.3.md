@@ -1,4 +1,12 @@
-### v1.3.96 🌈 (2026-01-15 20:37:16)
+### v1.3.97 🌈 (2026-01-16 10:39:51)
+
+#### 🐛  Bug Fixed
+  * panic Errorf -> Sprintf ([f7dd56a](https://github.com/sandwich-go/boost/commit/f7dd56ab57e203e2f418439c011b8cf2b78196dc)) (<small>[zhengyang.zhu](zhengyang.zhu@centurygame.com)@2026-01-16 10:39:51 &#43;0800 &#43;0800</small>)
+
+#### 🤖  Tools
+  * **sem**: make changelog ([4bf8c4e](https://github.com/sandwich-go/boost/commit/4bf8c4eb8dc6b4eee564df4da68022c0fd6e2790)) (<small>[zhengyang.zhu](zhengyang.zhu@centurygame.com)@2026-01-15 20:37:29 &#43;0800 &#43;0800</small>)
+
+### v1.3.96 (2026-01-15 20:37:16)
 
 #### 🐛  Bug Fixed
   * WhenErrorAsFmtFirst use Sprintf ([609e776](https://github.com/sandwich-go/boost/commit/609e77666896c9472ee41092600720bac482ba8a)) (<small>[zhengyang.zhu](zhengyang.zhu@centurygame.com)@2026-01-15 20:37:16 &#43;0800 &#43;0800</small>)
