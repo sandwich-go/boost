@@ -1,4 +1,12 @@
-### v1.3.97 🌈 (2026-01-16 10:39:51)
+### v1.3.98 🌈 (2026-01-31 07:54:45)
+
+#### 🛠  Refactor
+  * xtime default std time.After ([397a823](https://github.com/sandwich-go/boost/commit/397a8235f14835e389955f043113f7f5a16e42fd)) (<small>[daming.yang](daming.yang@centurygame.com)@2026-01-31 07:54:45 &#43;0800 &#43;0800</small>)
+
+#### 🤖  Tools
+  * **sem**: make changelog ([285b315](https://github.com/sandwich-go/boost/commit/285b3150003861b29662fa3595975729b198aa19)) (<small>[zhengyang.zhu](zhengyang.zhu@centurygame.com)@2026-01-16 11:40:53 &#43;0800 &#43;0800</small>)
+
+### v1.3.97 (2026-01-16 10:39:51)
 
 #### 🐛  Bug Fixed
   * panic Errorf -> Sprintf ([f7dd56a](https://github.com/sandwich-go/boost/commit/f7dd56ab57e203e2f418439c011b8cf2b78196dc)) (<small>[zhengyang.zhu](zhengyang.zhu@centurygame.com)@2026-01-16 10:39:51 &#43;0800 &#43;0800</small>)
