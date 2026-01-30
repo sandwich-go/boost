@@ -1,4 +1,4 @@
-//go:build !stdtime
+//go:build timewheel
 
 package xtime
 
