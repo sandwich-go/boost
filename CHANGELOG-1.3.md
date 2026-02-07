@@ -1,4 +1,12 @@
-### v1.3.98 🌈 (2026-01-31 07:54:45)
+### v1.3.99 🌈 (2026-02-07 18:42:12)
+
+#### 🛠  Refactor
+  * 支持k8s pod ip ([fcba94a](https://github.com/sandwich-go/boost/commit/fcba94a498a9060f6b95353f61557a6a7436a14d)) (<small>[daming.yang](daming.yang@centurygame.com)@2026-02-07 18:42:12 &#43;0800 &#43;0800</small>)
+
+#### 🤖  Tools
+  * **sem**: make changelog ([ce54baf](https://github.com/sandwich-go/boost/commit/ce54baf9e62a02981f7a3331b58321dbcb46c762)) (<small>[daming.yang](daming.yang@centurygame.com)@2026-01-31 07:55:29 &#43;0800 &#43;0800</small>)
+
+### v1.3.98 (2026-01-31 07:54:45)
 
 #### 🛠  Refactor
   * xtime default std time.After ([397a823](https://github.com/sandwich-go/boost/commit/397a8235f14835e389955f043113f7f5a16e42fd)) (<small>[daming.yang](daming.yang@centurygame.com)@2026-01-31 07:54:45 &#43;0800 &#43;0800</small>)
