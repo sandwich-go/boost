@@ -11,6 +11,7 @@ import (
 )
 
 const boostIPPreferVPN = "boost_ip_prefer_vpn"
+const cmdEnvKeyForServiceHost = "x_sandwich_service_host"
 
 // LocalIpv4Addrs scan all ip addresses with loopback excluded.
 // If VPN is connected, prioritize returning the VPN IP address.
@@ -38,6 +39,12 @@ func LocalIpv4Addrs() (ips []string, err error) {
 					}
 				}
 			}
+		}
+	}
+	// 检查 K8S 环境变量注入的
+	if k8sIP := xos.EnvGetCaseInsensitive(cmdEnvKeyForServiceHost); k8sIP != "" {
+		if IsValidIP4(k8sIP) {
+			ips = append(ips, k8sIP)
 		}
 	}
 
