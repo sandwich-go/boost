@@ -31,5 +31,7 @@ func StorageOptionsOptionDeclareWithDefault() interface{} {
 		"Region": "",
 		// annotation@StorageType(comment="云存储类型")
 		"StorageType": StorageType(""),
+		// annotation@S3EnableDualstack(comment="是否启用S3双栈(IPv4/IPv6)端点")
+		"S3EnableDualstack": false,
 	}
 }

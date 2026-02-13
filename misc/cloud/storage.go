@@ -71,6 +71,7 @@ func newBaseBucket(accessKeyID string, secretAccessKey string, bucket string, ge
 	if err != nil {
 		return nil, err
 	}
+	cli.SetS3EnableDualstack(spec.GetS3EnableDualstack())
 	return &baseStorage{cli: cli, bucket: bucket, spec: spec}, nil
 }
 

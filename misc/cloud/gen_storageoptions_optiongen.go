@@ -9,6 +9,8 @@ type StorageOptions struct {
 	Region string
 	// annotation@StorageType(comment="云存储类型")
 	StorageType StorageType
+	// annotation@S3EnableDualstack(comment="是否启用S3双栈(IPv4/IPv6)端点")
+	S3EnableDualstack bool
 }
 
 // NewStorageOptions new StorageOptions
@@ -57,6 +59,13 @@ func WithStorageType(v StorageType) StorageOptionFunc {
 	}
 }
 
+// WithS3EnableDualstack 是否启用S3双栈(IPv4/IPv6)端点
+func WithS3EnableDualstack(v bool) StorageOptionFunc {
+	return func(cc *StorageOptions) {
+		cc.S3EnableDualstack = v
+	}
+}
+
 // InstallStorageOptionsWatchDog the installed func will called when NewStorageOptions  called
 func InstallStorageOptionsWatchDog(dog func(cc *StorageOptions)) { watchDogStorageOptions = dog }
 
@@ -68,6 +77,7 @@ func setStorageOptionsDefaultValue(cc *StorageOptions) {
 	for _, opt := range [...]StorageOptionFunc{
 		WithRegion(""),
 		WithStorageType(""),
+		WithS3EnableDualstack(false),
 	} {
 		opt(cc)
 	}
@@ -81,13 +91,15 @@ func newDefaultStorageOptions() *StorageOptions {
 }
 
 // all getter func
-func (cc *StorageOptions) GetRegion() string           { return cc.Region }
-func (cc *StorageOptions) GetStorageType() StorageType { return cc.StorageType }
+func (cc *StorageOptions) GetRegion() string             { return cc.Region }
+func (cc *StorageOptions) GetStorageType() StorageType    { return cc.StorageType }
+func (cc *StorageOptions) GetS3EnableDualstack() bool     { return cc.S3EnableDualstack }
 
 // StorageOptionsVisitor visitor interface for StorageOptions
 type StorageOptionsVisitor interface {
 	GetRegion() string
 	GetStorageType() StorageType
+	GetS3EnableDualstack() bool
 }
 
 // StorageOptionsInterface visitor + ApplyOption interface for StorageOptions
