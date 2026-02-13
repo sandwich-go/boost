@@ -1,4 +1,12 @@
-### v1.3.99 🌈 (2026-02-07 18:42:12)
+### v1.3.100 🌈 (2026-02-13 19:50:50)
+
+#### 🚀  New Feature
+  * **cloud**: add S3 dualstack option ([345eaa9](https://github.com/sandwich-go/boost/commit/345eaa9945e8312140c2c5d50065f72bf8377bd5)) (<small>[ruoyu.chen](ruoyu.chen@ddhd.cn)@2026-02-13 19:50:50 &#43;0800 &#43;0800</small>)
+
+#### 🤖  Tools
+  * **sem**: make changelog ([05ec176](https://github.com/sandwich-go/boost/commit/05ec1762c39625350af8fdddaf2ceabf681606b4)) (<small>[daming.yang](daming.yang@centurygame.com)@2026-02-07 18:51:17 &#43;0800 &#43;0800</small>)
+
+### v1.3.99 (2026-02-07 18:42:12)
 
 #### 🛠  Refactor
   * 支持k8s pod ip ([fcba94a](https://github.com/sandwich-go/boost/commit/fcba94a498a9060f6b95353f61557a6a7436a14d)) (<small>[daming.yang](daming.yang@centurygame.com)@2026-02-07 18:42:12 &#43;0800 &#43;0800</small>)
