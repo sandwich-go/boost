@@ -79,8 +79,11 @@ func (c *baseStorage) setObjectNameResolver(resolver objectNameResolver) {
 	c.resolver = resolver
 }
 
-// normalizeObjectName 统一规范对象名，避免以 "/" 开头导致部分存储后端不兼容
-func normalizeObjectName(name string) string {
+// normalizeObjectName 统一规范对象名，避免以 "/" 开头导致部分存储后端不兼容；可通过 WithDisableTrimLeadingSlash(true) 禁用以兼容老数据
+func (c baseStorage) normalizeObjectName(name string) string {
+	if c.spec.GetDisableTrimLeadingSlash() {
+		return name
+	}
 	return strings.TrimPrefix(name, "/")
 }
 
@@ -104,12 +107,12 @@ func (c baseStorage) String() string {
 }
 
 func (c baseStorage) DelObject(ctx context.Context, objName string) error {
-	objName = normalizeObjectName(objName)
+	objName = c.normalizeObjectName(objName)
 	return c.cli.RemoveObject(ctx, c.bucket, objName, minio.RemoveObjectOptions{})
 }
 
 func (c baseStorage) PutObject(ctx context.Context, objName string, reader io.Reader, objSize int, opts ...PutOption) (err error) {
-	objName = normalizeObjectName(objName)
+	objName = c.normalizeObjectName(objName)
 	spec, err := c.toSpec(opts...)
 	if err != nil {
 		return err
@@ -131,7 +134,7 @@ func (c baseStorage) PutObject(ctx context.Context, objName string, reader io.Re
 }
 
 func (c baseStorage) StatObject(ctx context.Context, objName string) (ObjectInfo, error) {
-	objName = normalizeObjectName(objName)
+	objName = c.normalizeObjectName(objName)
 	info, err := c.cli.StatObject(ctx, c.bucket, objName, minio.StatObjectOptions{})
 	if err != nil {
 		return emptyObjectInfo, err
@@ -168,7 +171,7 @@ func (c baseStorage) ListObjects(ctx context.Context, prefix string) <-chan Obje
 }
 
 func (c baseStorage) GetObject(ctx context.Context, objName string) (io.Reader, error) {
-	objName = normalizeObjectName(objName)
+	objName = c.normalizeObjectName(objName)
 	obj, err := c.cli.GetObject(ctx, c.bucket, objName, minio.GetObjectOptions{})
 	if err != nil {
 		return nil, err
@@ -185,8 +188,8 @@ func (c baseStorage) GetObject(ctx context.Context, objName string) (io.Reader, 
 }
 
 func (c baseStorage) CopyObject(ctx context.Context, destObjName, srcObjName string) error {
-	destObjName = normalizeObjectName(destObjName)
-	srcObjName = normalizeObjectName(srcObjName)
+	destObjName = c.normalizeObjectName(destObjName)
+	srcObjName = c.normalizeObjectName(srcObjName)
 	_, err := c.cli.CopyObject(ctx, minio.CopyDestOptions{
 		Bucket: c.bucket,
 		Object: destObjName,

@@ -33,5 +33,7 @@ func StorageOptionsOptionDeclareWithDefault() interface{} {
 		"StorageType": StorageType(""),
 		// annotation@S3EnableDualstack(comment="是否启用S3双栈(IPv4/IPv6)端点")
 		"S3EnableDualstack": false,
+		// annotation@DisableTrimLeadingSlash(comment="禁用对象名前缀 '/' 的 trim；设为 true 时可兼容升级前已上传的对象名，避免无法下载")
+		"DisableTrimLeadingSlash": false,
 	}
 }

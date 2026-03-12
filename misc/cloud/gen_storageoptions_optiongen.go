@@ -11,6 +11,8 @@ type StorageOptions struct {
 	StorageType StorageType
 	// annotation@S3EnableDualstack(comment="是否启用S3双栈(IPv4/IPv6)端点")
 	S3EnableDualstack bool
+	// annotation@DisableTrimLeadingSlash(comment="禁用对象名前缀 '/' 的 trim；设为 true 时可兼容升级前已上传的对象名，避免无法下载")
+	DisableTrimLeadingSlash bool
 }
 
 // NewStorageOptions new StorageOptions
@@ -66,6 +68,13 @@ func WithS3EnableDualstack(v bool) StorageOptionFunc {
 	}
 }
 
+// WithDisableTrimLeadingSlash 禁用对象名前缀 '/' 的 trim；设为 true 时可兼容升级前已上传的对象名，避免无法下载
+func WithDisableTrimLeadingSlash(v bool) StorageOptionFunc {
+	return func(cc *StorageOptions) {
+		cc.DisableTrimLeadingSlash = v
+	}
+}
+
 // InstallStorageOptionsWatchDog the installed func will called when NewStorageOptions  called
 func InstallStorageOptionsWatchDog(dog func(cc *StorageOptions)) { watchDogStorageOptions = dog }
 
@@ -78,6 +87,7 @@ func setStorageOptionsDefaultValue(cc *StorageOptions) {
 		WithRegion(""),
 		WithStorageType(""),
 		WithS3EnableDualstack(false),
+		WithDisableTrimLeadingSlash(false),
 	} {
 		opt(cc)
 	}
@@ -91,15 +101,17 @@ func newDefaultStorageOptions() *StorageOptions {
 }
 
 // all getter func
-func (cc *StorageOptions) GetRegion() string             { return cc.Region }
-func (cc *StorageOptions) GetStorageType() StorageType    { return cc.StorageType }
-func (cc *StorageOptions) GetS3EnableDualstack() bool     { return cc.S3EnableDualstack }
+func (cc *StorageOptions) GetRegion() string                { return cc.Region }
+func (cc *StorageOptions) GetStorageType() StorageType      { return cc.StorageType }
+func (cc *StorageOptions) GetS3EnableDualstack() bool       { return cc.S3EnableDualstack }
+func (cc *StorageOptions) GetDisableTrimLeadingSlash() bool { return cc.DisableTrimLeadingSlash }
 
 // StorageOptionsVisitor visitor interface for StorageOptions
 type StorageOptionsVisitor interface {
 	GetRegion() string
 	GetStorageType() StorageType
 	GetS3EnableDualstack() bool
+	GetDisableTrimLeadingSlash() bool
 }
 
 // StorageOptionsInterface visitor + ApplyOption interface for StorageOptions
