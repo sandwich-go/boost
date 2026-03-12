@@ -1,4 +1,12 @@
-### v1.3.100 🌈 (2026-02-13 19:50:50)
+### v1.3.101 🌈 (2026-03-12 20:42:05)
+
+#### 🐛  Bug Fixed
+  * **cloud**: trim导致下载文件不兼容 ([e08d485](https://github.com/sandwich-go/boost/commit/e08d4859296beb93766401bc59a4e21f5fb45306)) (<small>[daming.yang](daming.yang@centurygame.com)@2026-03-12 20:42:05 &#43;0800 &#43;0800</small>)
+
+#### 🤖  Tools
+  * **sem**: make changelog ([083eaa7](https://github.com/sandwich-go/boost/commit/083eaa7006f1f693f6e68838f1d3666a91a7e7b6)) (<small>[ruoyu.chen](ruoyu.chen@ddhd.cn)@2026-02-13 19:51:02 &#43;0800 &#43;0800</small>)
+
+### v1.3.100 (2026-02-13 19:50:50)
 
 #### 🚀  New Feature
   * **cloud**: add S3 dualstack option ([345eaa9](https://github.com/sandwich-go/boost/commit/345eaa9945e8312140c2c5d50065f72bf8377bd5)) (<small>[ruoyu.chen](ruoyu.chen@ddhd.cn)@2026-02-13 19:50:50 &#43;0800 &#43;0800</small>)
