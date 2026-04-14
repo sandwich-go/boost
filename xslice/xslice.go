@@ -113,3 +113,15 @@ func Last[T any](s []T) T {
 	}
 	return s[len(s)-1]
 }
+
+func To[F any, T any](from []F, cb func(F) T) []T {
+	if from == nil {
+		return nil
+	}
+
+	to := make([]T, len(from))
+	for i, f := range from {
+		to[i] = cb(f)
+	}
+	return to
+}
