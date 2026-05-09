@@ -30,14 +30,14 @@ func pointerShift(p unsafe.Pointer, offset uintptr, sign int) unsafe.Pointer {
 		return p
 	}
 
-	up := uintptr(p)
+	// 使用 unsafe.Add 以满足 unsafe.Pointer 的安全规则：指针算术必须在
+	// 单个表达式内完成，避免产生裸 uintptr 中间值。否则在开启 -race
+	// （同时启用 -d=checkptr）时，会触发
+	// "checkptr: pointer arithmetic result points to invalid allocation"。
 	if sign > 0 {
-		up += offset
-	} else {
-		up -= offset
+		return unsafe.Add(p, offset)
 	}
-
-	return unsafe.Pointer(up)
+	return unsafe.Add(p, -int64(offset))
 }
 
 // SliceCast slice 转换
