@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-var globalCop *Cop = NewCop(func() time.Time { return time.Now() })
+var globalCop *Cop = NewCop(func() time.Time { return NowFunc() })
 
 // Stop 停止globalCop的时间，使用系统时间
 func Stop() { globalCop.Stop() }

@@ -13,7 +13,7 @@ func TestWheel(t *testing.T) {
 		defer w.Stop()
 
 		time.Sleep(500 * time.Millisecond)
-		t1 := time.Now()
+		t1 := NowFunc()
 
 		go func() {
 			select {
@@ -23,7 +23,7 @@ func TestWheel(t *testing.T) {
 		}()
 
 		time.Sleep(490 * time.Millisecond)
-		t2 := time.Now()
+		t2 := NowFunc()
 
 		go func() {
 			select {

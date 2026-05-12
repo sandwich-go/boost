@@ -9,7 +9,7 @@ import (
 
 func BenchmarkTimeUnixWithSystem(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		_ = time.Now().Unix()
+		_ = NowFunc().Unix()
 	}
 }
 
@@ -30,8 +30,8 @@ func BenchmarkCompareSystemAndCop(b *testing.B) {
 
 			for i := 0; i < b.N; i++ {
 				n := Unix()
-				if n > (time.Now().Unix()+1) || n < (time.Now().Unix()-1) {
-					fmt.Println("Error Cop:", n, "time.Now().Unix():", time.Now().Unix())
+				if n > (NowFunc().Unix()+1) || n < (NowFunc().Unix()-1) {
+					fmt.Println("Error Cop:", n, "NowFunc().Unix():", NowFunc().Unix())
 					b.Fail()
 					return
 				}

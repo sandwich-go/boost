@@ -276,7 +276,7 @@ func (d *dispatcher) AfterFuncInDomain(td time.Duration, cb func(), domain strin
 func (d *dispatcher) CronFunc(cronExpr *cron.Expression, callBack func()) *Cron {
 	c := new(Cron)
 
-	now := time.Now()
+	now := NowFunc()
 	nextTime := cronExpr.Next(now)
 	if nextTime.IsZero() {
 		return c
@@ -286,7 +286,7 @@ func (d *dispatcher) CronFunc(cronExpr *cron.Expression, callBack func()) *Cron 
 	var cb func()
 	cb = func() {
 		defer callBack()
-		now := time.Now()
+		now := NowFunc()
 		nextTime := cronExpr.Next(now)
 		if nextTime.IsZero() {
 			return

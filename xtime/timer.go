@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+var NowFunc = time.Now
+
 type internalTimer interface {
 	Stop() bool
 	Reset(time.Duration) bool
