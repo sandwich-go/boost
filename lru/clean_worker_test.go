@@ -188,14 +188,25 @@ func TestWorkerHashPool_DifferentIDParallel(t *testing.T) {
 	})
 }
 
-// TestWorkerComparison_GoroutineCount 对比两种 worker 的 goroutine 数量
+// TestWorkerComparison_GoroutineCount 验证两种 worker 都不会随 engine
+// 数量线性起 goroutine：CleanWorker 接口只承诺周期性执行 f，goroutine
+// 数量是实现细节，但「不应随 engine 数量线性增长」是性能约束。
+//
+// 历史背景：旧版 workerPerEngine 为每个 engine 起一个常驻 channel
+// 中转 goroutine，本测试一度以「per-engine 应增加 ≈engineCount 个
+// goroutine」为断言记录该实现细节。后续优化把 channel 中转去掉、改用
+// timer 回调链，断言反转——现在两者都属于「不起 per-engine goroutine」
+// 的实现，本测试统一限制为「增量远小于 engineCount」。
 func TestWorkerComparison_GoroutineCount(t *testing.T) {
-	Convey("workerHashPool should use fewer goroutines than workerPerEngine", t, func() {
+	Convey("Neither worker should spawn per-engine goroutines", t, func() {
 		engineCount := 50
 		interval := 100 * time.Millisecond
+		// 阈值 = engineCount/2：足够松到容纳 timer 派发栈临时 goroutine
+		// 与 timingwheel 自身辅助 goroutine，又能在「真的退化为 per-engine
+		// goroutine」时立刻报警。
+		threshold := engineCount / 2
 
-		// 测试 workerPerEngine
-		Convey("workerPerEngine creates one goroutine per engine", func() {
+		Convey("workerPerEngine should not grow goroutine count linearly", func() {
 			runtime.GC()
 			time.Sleep(50 * time.Millisecond)
 			baseGoroutines := runtime.NumGoroutine()
@@ -212,13 +223,11 @@ func TestWorkerComparison_GoroutineCount(t *testing.T) {
 			goroutinesWithPer := runtime.NumGoroutine()
 			increasedPer := goroutinesWithPer - baseGoroutines
 
-			// workerPerEngine 应该增加接近 engineCount 个 goroutine
-			So(increasedPer, ShouldBeGreaterThanOrEqualTo, engineCount-5)
-			t.Logf("workerPerEngine: base=%d, current=%d, increased=%d",
-				baseGoroutines, goroutinesWithPer, increasedPer)
+			So(increasedPer, ShouldBeLessThan, threshold)
+			t.Logf("workerPerEngine: base=%d, current=%d, increased=%d (threshold=%d)",
+				baseGoroutines, goroutinesWithPer, increasedPer, threshold)
 		})
 
-		// 测试 workerHashPool
 		Convey("workerHashPool uses fixed number of goroutines", func() {
 			runtime.GC()
 			time.Sleep(50 * time.Millisecond)
@@ -237,8 +246,6 @@ func TestWorkerComparison_GoroutineCount(t *testing.T) {
 			goroutinesWithHash := runtime.NumGoroutine()
 			increasedHash := goroutinesWithHash - baseGoroutines
 
-			// workerHashPool 应该只增加接近 numWorkers 个 goroutine
-			// 考虑到 timingwheel 和其他辅助 goroutine，放宽限制
 			So(increasedHash, ShouldBeLessThan, numWorkers+10)
 			t.Logf("workerHashPool: base=%d, current=%d, increased=%d, workers=%d",
 				baseGoroutines, goroutinesWithHash, increasedHash, numWorkers)
