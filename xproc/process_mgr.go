@@ -24,10 +24,16 @@ func (m *Manager) GetProcess(pid int) *Process {
 	return nil
 }
 
+// AddProcess 通过 pid 把已存在的 OS 进程登记到 Manager。
+// 仅做"接管 / 登记"，不会启动新进程；若 pid 已在 Manager 中则忽略。
+//
+// 注意：Manager.NewProcess 的 opt 是 variadic，不传等于空 slice，
+// NewProcessOptions for-range 不会迭代 nil opt（详见 §历史 bug：传
+// nil ProcessOption 会让 opt.Apply 在 nil interface 上 panic）。
 func (m *Manager) AddProcess(pid int) {
 	if _, ok := m.processes.Load(pid); !ok {
 		if process, err := os.FindProcess(pid); err == nil {
-			p := m.NewProcess("", nil, nil)
+			p := m.NewProcess("")
 			p.Process = process
 			m.processes.Store(pid, p)
 		}

@@ -42,13 +42,28 @@ func TestManager_BasicAPI(t *testing.T) {
 		So(p.Manager, ShouldEqual, m)
 	})
 
-	Convey("Manager.AddProcess 已知 pre-existing bug：m.NewProcess(\"\", nil, nil) 传 nil opt panic", t, func() {
-		// AddProcess 实现：m.NewProcess("", nil, nil) 把 nil 作为 ProcessOption
-		// 传给 NewProcessOptions，opt.Apply 在 nil interface 上 panic。
-		// 这是源码 bug，需要独立 PR 修。本测试 doc 化此契约：AddProcess 当前
-		// 不可用。
+	Convey("Manager.AddProcess 把已存在的 pid 登记进 Manager", t, func() {
+		// 历史 bug：AddProcess 调 m.NewProcess("", nil, nil) 传 nil opt
+		// 让 NewProcessOptions for-range 时 opt.Apply 在 nil interface 上 panic。
+		// 修复：改成 m.NewProcess("")（variadic 空 slice 不迭代）。
 		m := NewManager()
-		So(func() { m.AddProcess(os.Getpid()) }, ShouldPanic)
+		pid := os.Getpid() // 当前测试进程一定存在
+		So(func() { m.AddProcess(pid) }, ShouldNotPanic)
+
+		// 端到端断言：登记成功后能查到
+		So(m.Size(), ShouldEqual, 1)
+		So(m.GetProcess(pid), ShouldNotBeNil)
+		So(m.GetProcess(pid).Process, ShouldNotBeNil)
+		So(m.GetProcess(pid).Process.Pid, ShouldEqual, pid)
+		So(m.Pids(), ShouldResemble, []int{pid})
+
+		// 重复 AddProcess 同一 pid 不会重复登记
+		m.AddProcess(pid)
+		So(m.Size(), ShouldEqual, 1)
+
+		// 清理
+		m.RemoveProcess(pid)
+		So(m.Size(), ShouldEqual, 0)
 	})
 
 	Convey("Manager.RemoveProcess + Clear（不通过 AddProcess）", t, func() {
