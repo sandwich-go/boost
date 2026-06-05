@@ -1,9 +1,15 @@
-# boost 仓 CI：vet / build / test / race 是硬门槛（参考 AGENTS.md §4.1）
-# lint 是软门槛（参考 AGENTS.md §4.5）：当前仓库未钉 .golangci.yml，
-# 跑 lint 只是给信号，不阻断 PR
+# boost 仓 CI：vet / build / test / race / lint / vuln 全部硬门槛
+# （参考 AGENTS.md §4.1 / §4.1.1）。
 #
 # 风格参考姊妹仓 myproxy 的 .gitlab-ci.yml，但 boost 在 GitHub 用 Actions。
 # 不跑：docker e2e / chaos / fuzz —— boost 是库，没有这些场景。
+#
+# Action 版本钉到 Node 24 兼容（GitHub 9/16/2026 移除 Node 20 runner）：
+#   actions/checkout@v6 / actions/setup-go@v6 / actions/upload-artifact@v7
+#   golangci/golangci-lint-action@v7（v7+ 支持 lint v2 schema）
+#
+# setup-go cache 关掉：boost 是工具库，go mod 依赖少，下载 < 5s；开 cache
+# 反而偶发 'tar exit code 2 / Failed to restore' noise，不值。
 
 name: ci
 
@@ -42,11 +48,11 @@ jobs:
     # 剩余 ~20 处全在 fork 代码（xhash/nhash/jenkins / xsync/cond_test.go），
     # `make vet` 内置 fork 豁免（按 §4.6 fork 不动）。
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GO_VERSION }}
-          cache: true
+          cache: false
       - name: make vet
         run: make vet
 
@@ -57,11 +63,11 @@ jobs:
     # misc/hrff / xencoding/protobuf / types/internal/mydecimal /
     # xdebug/internal/template2 / xcontainer/templates）整体豁免（§4.6）。
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GO_VERSION }}
-          cache: true
+          cache: false
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v7
         with:
@@ -75,11 +81,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GO_VERSION }}
-          cache: true
+          cache: false
       - name: go build
         run: go build ./...
 
@@ -94,11 +100,11 @@ jobs:
     # misc/cloud TestCloud 在无 env 时早返不阻断（CI 不设 RELEASE_CLOUD_*）。
     # -vet=off 跳过 test 自带的前置 vet（vet 已是独立 job）。
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GO_VERSION }}
-          cache: true
+          cache: false
       - name: go test (cover)
         # -timeout=5m：boost 单测应远快于此，超时多半是 deadlock
         # -parallel=4：与 Makefile 的 test target 一致
@@ -106,7 +112,7 @@ jobs:
         run: go test ./... -vet=off -cover -timeout=5m -parallel=4
       - name: upload coverage
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage
           path: coverage.out
@@ -124,16 +130,17 @@ jobs:
     # AGENTS.md §4.4：race 是仓库硬门槛。pre-existing race 已系统性修完：
     # - xtime.SetNowProvider (commit f57991b)
     # - module.allAgents+ctx (commit b8f2162)
-    # - xchan.UnboundedChan{Len,BufLen} value receiver (commit <本批>)
-    # - xtime.TestTimerResetDispatcher 测试代码 race (commit <本批>)
+    # - module.plugins (commit c046077)
+    # - xchan.UnboundedChan{Len,BufLen} value receiver (commit 2fe37ec)
+    # - xtime.TestTimerResetDispatcher 测试代码 race (commit 309bba2)
     # 上游 lib race（vmihailenco/msgpack pool reuse）在 -race 模式 t.Skip。
-    # misc/cloud TestCloud 在无 env 时早返，不阻断（CI 不设 RELEASE_CLOUD_*）。
+    # misc/cloud TestCloud 在无 env 时 t.Skipf 不阻断（CI 不设 RELEASE_CLOUD_*）。
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GO_VERSION }}
-          cache: true
+          cache: false
       - name: go test -race
         # -timeout=10m：race 会让测试慢 2-10x，给足预算
         # -count=1：禁 test cache，确保 race 检测器每次真跑
@@ -154,18 +161,18 @@ jobs:
     # govulncheck 在有 affecting CVE 时 exit code 非 0；其它非阻断告警走
     # stdout 不影响 exit code。
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GO_VERSION }}
-          cache: true
+          cache: false
       - name: govulncheck
         run: |
           go install golang.org/x/vuln/cmd/govulncheck@latest
           $(go env GOPATH)/bin/govulncheck ./... | tee govulncheck.out
       - name: upload govulncheck output
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: govulncheck
           path: govulncheck.out
