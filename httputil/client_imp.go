@@ -3,7 +3,7 @@ package httputil
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -38,7 +38,7 @@ func (c *httpClient) Bytes(url string) ([]byte, error) {
 	if resp.StatusCode != http.StatusOK {
 		return nil, c.err(resp, "")
 	}
-	return ioutil.ReadAll(resp.Body)
+	return io.ReadAll(resp.Body)
 }
 
 func (c *httpClient) String(url string) (string, error) {

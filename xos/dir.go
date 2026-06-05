@@ -270,7 +270,7 @@ func ReadDirWithExt(root, ext string) ([]string, error) {
 // to dir. It returns nil if dir is writable.
 func IsDirWriteable(dir string) error {
 	f := filepath.Join(dir, ".touch")
-	if err := ioutil.WriteFile(f, []byte(""), 0600); err != nil {
+	if err := os.WriteFile(f, []byte(""), 0600); err != nil {
 		return err
 	}
 	return os.Remove(f)

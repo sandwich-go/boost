@@ -17,7 +17,7 @@ type Scanner func(row []string, dst interface{}) error
 // and builds a Scanner that maps []interface{} rows into the struct fields.
 func NewScanner(header []string, dst interface{}) (Scanner, error) {
 	st := reflect.ValueOf(dst)
-	if st.Kind() != reflect.Ptr {
+	if st.Kind() != reflect.Pointer {
 		panic("scan: dst must be a pointer to a struct type")
 	}
 	st = reflect.Indirect(st)
@@ -181,7 +181,7 @@ func indexOf(s []string, x string) int {
 // 目标类型可以是基本类型、[]byte、interface{}，也支持指针（会返回指向目标类型的指针）。
 func parseBasic(s string, t reflect.Type) (reflect.Value, error) {
 	// handle pointer target: produce a pointer to parsed element
-	if t.Kind() == reflect.Ptr {
+	if t.Kind() == reflect.Pointer {
 		ev, err := parseBasic(s, t.Elem())
 		if err != nil {
 			return reflect.Value{}, err

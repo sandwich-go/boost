@@ -38,11 +38,6 @@ linters:
         - fieldalignment
         # shadow 在 Go 项目里普遍 case-by-case 判断，先关。
         - shadow
-        # inline analyzer (Go 1.23+) 报 "ioutil.ReadAll should be inlined" /
-        # "reflect.Ptr should be inlined to reflect.Pointer" 等。这些是 stdlib
-        # 现代化重写（io vs ioutil / reflect.Pointer vs Ptr），按 §2.4 应当
-        # 单独 PR 治理，不混进 lint 接入 PR。
-        - inline
     staticcheck:
       # 与 myproxy 一致：行为对齐 v1 的"只启 SA*"，禁 SA1019（deprecated API
       # 由独立 PR 治理；如 z/conv.go reflect.StringHeader 已迁 unsafe.String）。

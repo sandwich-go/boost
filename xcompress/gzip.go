@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"sync"
 
 	"github.com/sandwich-go/boost"
@@ -92,5 +92,5 @@ func (c *gzipCompressor) Inflate(data []byte) ([]byte, error) {
 	defer func() {
 		boost.LogErrorAndEatError(gr.Close())
 	}()
-	return ioutil.ReadAll(gr)
+	return io.ReadAll(gr)
 }

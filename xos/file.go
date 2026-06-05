@@ -2,7 +2,6 @@ package xos
 
 import (
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -47,14 +46,14 @@ func Ext(path string) string {
 
 // FileGetContents 获取文件内容
 func FileGetContents(filename string) ([]byte, error) {
-	return ioutil.ReadFile(filename)
+	return os.ReadFile(filename)
 }
 
 // MustFilePutContents 写入文件，如果发生错误则panic
 func MustFilePutContents(filename string, content []byte) {
 	dirName := filepath.Dir(filename)
 	xpanic.WhenErrorAsFmtFirst(os.MkdirAll(dirName, os.ModePerm), "got error:%w while MkdirAll with:%s", dirName)
-	xpanic.WhenErrorAsFmtFirst(ioutil.WriteFile(filename, content, 0644), "got error:%w while WriteFile with:%s", filename)
+	xpanic.WhenErrorAsFmtFirst(os.WriteFile(filename, content, 0644), "got error:%w while WriteFile with:%s", filename)
 }
 
 // FilePutContents 写入文件
@@ -64,7 +63,7 @@ func FilePutContents(filename string, content []byte) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(filename, content, 0644)
+	return os.WriteFile(filename, content, 0644)
 }
 
 // MustGetFileWriter 获取写文件句柄

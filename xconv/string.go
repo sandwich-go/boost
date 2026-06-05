@@ -92,7 +92,7 @@ func String(any interface{}) string {
 			reflect.Map,
 			reflect.Slice,
 			reflect.Func,
-			reflect.Ptr,
+			reflect.Pointer,
 			reflect.Interface,
 			reflect.UnsafePointer:
 			if rv.IsNil() {
@@ -101,7 +101,7 @@ func String(any interface{}) string {
 		case reflect.String:
 			return rv.String()
 		}
-		if kind == reflect.Ptr {
+		if kind == reflect.Pointer {
 			return String(rv.Elem().Interface())
 		}
 		if jsonContent, err := json.Marshal(value); err != nil {

@@ -46,7 +46,7 @@ func Bool(any interface{}) bool {
 		}
 		rv := reflect.ValueOf(any)
 		switch rv.Kind() {
-		case reflect.Ptr:
+		case reflect.Pointer:
 			return !rv.IsNil()
 		case reflect.Map:
 			fallthrough
