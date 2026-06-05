@@ -26,9 +26,12 @@ func TestTimeout(t *testing.T) {
 			So(os.IsTimeout(err), ShouldBeFalse)
 		}
 		{
-			c, cancel := ctx.WithTimeout(ctx.Background(), time.Millisecond)
+			// 用 10ms timeout + 显式 <-c.Done() 等 ctx 真到期。CI runner
+			// clock 精度低（time.Sleep(2ms) 实际可能 < 1ms），原 'sleep 2ms
+			// 后读 c.Err()' 在 CI 上偶发 c.Err()==nil 触发 fail。
+			c, cancel := ctx.WithTimeout(ctx.Background(), 10*time.Millisecond)
 			defer cancel()
-			time.Sleep(time.Millisecond * 2)
+			<-c.Done()
 			err := c.Err()
 			So(err, ShouldNotBeNil)
 			So(os.IsTimeout(err), ShouldBeTrue)

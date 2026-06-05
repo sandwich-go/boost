@@ -11,16 +11,21 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-// quietOpts 是测试启动子进程的标配：把子进程 stdout/stderr 重定向到
-// io.Discard，避免继承 CI runner 的 stdout pipe（GitHub Actions logger
-// 持有 fd），子进程 fork 后 dup 到 stdout fd，子进程退出后 fd 引用还
+// quietOpts 是测试启动子进程的标配：把子进程 stdin/stdout/stderr 全部
+// 切到 nil 或 io.Discard，避免继承 CI runner 的 std fd（GitHub Actions
+// logger 持有），子进程 fork 后 dup 到 std fd，子进程退出后 fd 引用还
 // 活着 → Go runtime exec.Cmd.WaitDelay 30s 超时强制 kill 测试进程
 // （"Test I/O incomplete 30s after exiting"）。
 //
-// 默认 ProcessOptions 把 Stdout/Stderr = os.Stdout/os.Stderr（见
-// gen_processoptions_optiongen.go:119-121），CI 上必须显式 Discard。
+// 默认 ProcessOptions 把 Stdin/Stdout/Stderr = os.Stdin/os.Stdout/os.Stderr
+// （见 process_option.go:12-14），CI 上必须显式覆盖。
+//
+// stdin 设 nil → exec.Cmd 内部 fallback 到 /dev/null（不持有任何 fd）；
+// stdout/stderr 设 io.Discard → 子进程 write 走 io.Discard pipe，子进
+// 程退出时 pipe write 端关闭、reader 端 io.Discard 退出，不悬挂。
 func quietOpts(extra ...ProcessOption) []ProcessOption {
 	return append([]ProcessOption{
+		WithStdin(nil),
 		WithStdout(io.Discard),
 		WithStderr(io.Discard),
 	}, extra...)
@@ -107,20 +112,24 @@ func TestProcess_Run(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("uses /bin/echo")
 	}
+	// Run / ShellRun 内部把 cc.Stdout/Stderr 设成 bytes.Buffer，但 cc.Stdin
+	// 仍是默认 os.Stdin。CI runner 上 os.Stdin 持有 GitHub Actions logger
+	// fd，子进程 fork 时继承 → 子进程退出后 fd 仍引用活 → WaitDelay 30s
+	// 触发。显式 WithStdin(nil) 让 stdin 走 /dev/null。
 	Convey("ShellRun 跑简单 echo", t, func() {
-		out, err := ShellRun("echo hello")
+		out, err := ShellRun("echo hello", WithStdin(nil))
 		So(err, ShouldBeNil)
 		So(out, ShouldContainSubstring, "hello")
 	})
 
 	Convey("Run 跑可执行文件（/bin/echo）", t, func() {
-		out, err := Run("/bin/echo", WithArgs("world"))
+		out, err := Run("/bin/echo", WithStdin(nil), WithArgs("world"))
 		So(err, ShouldBeNil)
 		So(out, ShouldContainSubstring, "world")
 	})
 
 	Convey("Run 在不存在的可执行文件上返错误", t, func() {
-		_, err := Run("/nonexistent/path/that/should/not/exist")
+		_, err := Run("/nonexistent/path/that/should/not/exist", WithStdin(nil))
 		So(err, ShouldNotBeNil)
 	})
 }
