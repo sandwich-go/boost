@@ -62,7 +62,9 @@ func From(any interface{}) string {
 		}
 		return value.String()
 	default:
-		// Empty checks.
+		// Empty checks. govet 静态分析认为入口已排除 nil，但 type switch
+		// 的 default 可能匹配到 typed nil（typed nil interface），仍是合法防御。
+		//nolint:govet // typed nil 检查，非 false alarm
 		if value == nil {
 			return ""
 		}

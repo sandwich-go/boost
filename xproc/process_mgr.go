@@ -65,7 +65,10 @@ func (m *Manager) WaitAll() {
 	processes := m.Processes()
 	if len(processes) > 0 {
 		for _, p := range processes {
-			p.Wait()
+			// WaitAll 语义是"等所有进程结束"，单个 Wait 错误不阻断其他进程
+			// 等待，显式忽略。调用方需要单进程错误的话用 Manager.Processes
+			// 拿到 *Process 后自行 Wait。
+			_ = p.Wait()
 		}
 	}
 }

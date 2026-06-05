@@ -47,7 +47,7 @@ func (x Line[T]) RangePoints(with func(p Point[T]) bool) {
 	xx := float64(x.end.x - x.start.x)
 	xyabs := math.Abs(xy)
 	xxabs := math.Abs(xx)
-	var positive = false
+	var positive bool
 	if cmp.Compare(xyabs, xxabs) >= 0 {
 		positive = cmp.Compare(xy, 0) >= 0
 		per := xx / xy

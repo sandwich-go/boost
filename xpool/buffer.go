@@ -34,7 +34,7 @@ type SyncBytesPool struct {
 func NewSyncBytesPool(minSize, maxSize, factor int) BytesPool {
 	n := 0
 	if minSize <= 0 || factor <= 0 {
-		panic(fmt.Sprintf("invalid paramter, minSize/factor should greater than 0"))
+		panic(fmt.Sprintf("invalid parameter, minSize/factor should greater than 0"))
 	}
 	for chunkSize := minSize; chunkSize <= maxSize; chunkSize *= factor {
 		n++

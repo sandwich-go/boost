@@ -46,7 +46,6 @@ func (cc *Error) Stack() string {
 			curr = e
 		} else {
 			_, _ = buffer.WriteString(fmt.Sprintf("%d. %s\n", index, curr.err.Error()))
-			index++
 			break
 		}
 	}

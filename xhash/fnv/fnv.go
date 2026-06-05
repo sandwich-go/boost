@@ -2,7 +2,6 @@ package fnv
 
 import (
 	"bytes"
-	"encoding/binary"
 )
 
 const (
@@ -55,8 +54,9 @@ func Hash(value interface{}) uint64 {
 		}
 		return (uint64)(v)
 	case string:
-		data := []byte(v)
-		binary.Write(&buf, binary.LittleEndian, data)
+		// 直接 buf.Write 即可：[]byte 的 binary.Write 等价于按字节顺序写入，
+		// 不需要 LittleEndian 转换。bytes.Buffer.Write 永远不返回 err。
+		buf.WriteString(v)
 	default:
 		panic("unsupported type")
 	}

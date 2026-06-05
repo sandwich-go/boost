@@ -19,17 +19,16 @@ func Wrap(s string, lim uint) string {
 
 	for _, char := range s {
 		if char == '\n' {
+			// 注意 char=='\n' 分支末尾 current = 0 重置；上面 if/else 中对
+			// current 的赋值是 ineffective（被 line 末尾覆盖），仅保留有副
+			// 作用的 spaceBuf.WriteTo / Reset 操作。
 			if wordBuf.Len() == 0 {
-				if current+spaceBufLen > lim {
-					current = 0
-				} else {
-					current += spaceBufLen
+				if current+spaceBufLen <= lim {
 					_, _ = spaceBuf.WriteTo(buf)
 				}
 				spaceBuf.Reset()
 				spaceBufLen = 0
 			} else {
-				current += spaceBufLen + wordBufLen
 				_, _ = spaceBuf.WriteTo(buf)
 				spaceBuf.Reset()
 				spaceBufLen = 0

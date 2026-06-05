@@ -107,7 +107,10 @@ func dcopy(srcdir, destdir string, info os.FileInfo, opt *CopyOptions) (err erro
 	return
 }
 
-func onsymlink(src, dest string, info os.FileInfo, opt *CopyOptions) error {
+// onsymlink 处理 symlink。入参 info 是符号链接自身的 lstat 信息，仅
+// 与 fcopy/dcopy 保持签名一致（switchboard 多态调用），各分支均不直接读：
+// Shallow 仅复制链接本身；Deep 解析后重新 Lstat 目标；Skip 不做事。
+func onsymlink(src, dest string, _ os.FileInfo, opt *CopyOptions) error {
 	switch opt.OnSymlink(src) {
 	case Shallow:
 		return lcopy(src, dest)
@@ -116,7 +119,7 @@ func onsymlink(src, dest string, info os.FileInfo, opt *CopyOptions) error {
 		if err != nil {
 			return err
 		}
-		info, err = os.Lstat(orig)
+		info, err := os.Lstat(orig)
 		if err != nil {
 			return err
 		}

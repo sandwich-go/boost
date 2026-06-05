@@ -69,7 +69,10 @@ func String(any interface{}) string {
 		}
 		return value.String()
 	default:
-		// Empty checks.
+		// Empty checks. govet 静态分析认为 line 16 已排除 nil，但 type switch
+		// 的 default 可能匹配到 typed nil（如 (*MyType)(nil) 包成 interface{}
+		// 后既不是 untyped nil 也不进任何 case），这里仍是合法防御。
+		//nolint:govet // typed nil 检查，非 false alarm
 		if value == nil {
 			return ""
 		}

@@ -2,10 +2,12 @@ package validator
 
 import (
 	"context"
+	"reflect"
+
 	ut "github.com/go-playground/universal-translator"
 	validator2 "github.com/go-playground/validator/v10"
+
 	"github.com/sandwich-go/boost/xerror"
-	"reflect"
 )
 
 type (
@@ -37,7 +39,7 @@ type (
 	TranslationFunc = validator2.TranslationFunc
 	// FilterFunc is the type used to filter fields using
 	// StructFiltered(...) function.
-	// returning true results in the field being filtered/skiped from
+	// returning true results in the field being filtered/skipped from
 	// validation
 	FilterFunc = validator2.FilterFunc
 
