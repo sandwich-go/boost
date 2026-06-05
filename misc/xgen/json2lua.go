@@ -59,9 +59,12 @@ func json2LuaWithType(inBytes []byte, dataType jsonparser.ValueType, gen *Gen, i
 				gen.PFormat("\"%s\",", string(value))
 			} else if dataType == jsonparser.Boolean || dataType == jsonparser.Number || dataType == jsonparser.Null || dataType == jsonparser.Unknown {
 				gen.PFormat("%s,", string(value))
-			} else if dataType == jsonparser.NotExist {
-				err = errors.New("unsupported type")
 			}
+			// NotExist 分支：jsonparser.ArrayEach 的 callback 签名不返回 error，
+			// 外层 _, err 检查的是 ArrayEach 自身的错误，与 callback 内同名的 err
+			// 形参无关。这里无法像 ObjectEach 路径那样在 callback 里中止迭代+
+			// 透出错误，故 NotExist 在数组元素中被静默跳过。如需行为改变（让
+			// NotExist 触发 panic），需要在闭包外捕获一个 *error 再 xpanic。
 		})
 		xpanic.WhenError(err)
 		gen.Out()
