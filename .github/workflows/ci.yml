@@ -6,7 +6,13 @@
 #
 # Action 版本钉到 Node 24 兼容（GitHub 9/16/2026 移除 Node 20 runner）：
 #   actions/checkout@v6 / actions/setup-go@v6 / actions/upload-artifact@v7
-#   golangci/golangci-lint-action@v7（v7+ 支持 lint v2 schema）
+#   golangci/golangci-lint-action@v9.2.1（v9 起 Node 24，仍支持 lint v2 schema）
+#
+# setup-go 用 go-version-file: go.mod 自动跟随 toolchain directive：
+# go.mod 写 'toolchain go1.25.11'，CI 装 1.25.11（vuln 报的 stdlib CVE 都
+# 在 1.25.11 backport 内）。原 'go-version: 1.25.x' 给的是当时最新 1.25
+# patch 但不一定是 1.25.11，govulncheck 看 GOVERSION 报 4 处 stdlib CVE
+# affecting—和本地（toolchain 自动拉 1.25.11）不一致。
 #
 # setup-go cache 关掉：boost 是工具库，go mod 依赖少，下载 < 5s；开 cache
 # 反而偶发 'tar exit code 2 / Failed to restore' noise，不值。
@@ -32,10 +38,12 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # AGENTS.md §4.2：Go 版本钉 1.25.0 + toolchain 1.25.11；CI 用 1.25.x patch
-  # 最新版（不影响主版本号语义）。下游 myproxy/dataserver 都已 1.25.x，与
-  # boost 同步避免 stdlib CVE 长期 affecting。
-  GO_VERSION: "1.25.x"
+  # AGENTS.md §4.2：Go 版本由 go.mod 'toolchain' directive 决定（当前
+  # go1.25.11）。CI setup-go 用 go-version-file: go.mod 自动跟随，避免
+  # 1.25.x 通配符 patch 漂移导致 vuln 检测结果与本地不一致。
+  # 下游 myproxy / dataserver 都已 1.25.x，本仓 toolchain 升级时所有人
+  # 一起升（独立 PR）。
+  GO_VERSION_FILE: "go.mod"
 
 jobs:
   # ---------------------------------------------------------------------------
@@ -51,7 +59,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-go@v6
         with:
-          go-version: ${{ env.GO_VERSION }}
+          go-version-file: ${{ env.GO_VERSION_FILE }}
           cache: false
       - name: make vet
         run: make vet
@@ -66,10 +74,10 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-go@v6
         with:
-          go-version: ${{ env.GO_VERSION }}
+          go-version-file: ${{ env.GO_VERSION_FILE }}
           cache: false
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v7
+        uses: golangci/golangci-lint-action@v9.2.1
         with:
           version: v2.12.2
           args: --timeout=5m
@@ -84,7 +92,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-go@v6
         with:
-          go-version: ${{ env.GO_VERSION }}
+          go-version-file: ${{ env.GO_VERSION_FILE }}
           cache: false
       - name: go build
         run: go build ./...
@@ -103,7 +111,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-go@v6
         with:
-          go-version: ${{ env.GO_VERSION }}
+          go-version-file: ${{ env.GO_VERSION_FILE }}
           cache: false
       - name: go test (cover)
         # -timeout=5m：boost 单测应远快于此，超时多半是 deadlock
@@ -139,7 +147,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-go@v6
         with:
-          go-version: ${{ env.GO_VERSION }}
+          go-version-file: ${{ env.GO_VERSION_FILE }}
           cache: false
       - name: go test -race
         # -timeout=10m：race 会让测试慢 2-10x，给足预算
@@ -164,7 +172,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-go@v6
         with:
-          go-version: ${{ env.GO_VERSION }}
+          go-version-file: ${{ env.GO_VERSION_FILE }}
           cache: false
       - name: govulncheck
         run: |
