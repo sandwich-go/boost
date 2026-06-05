@@ -258,12 +258,16 @@ CVE 长期 affecting boost。
 boost 仓 `.golangci.yml` v2 schema 已入仓（参考 myproxy / dataserver 风格），
 0 告警基线。CI 中 `lint` job 是硬门槛。`make lint` 应在本地与 CI 等价。
 
-**已启用 linter**（核心正确性 + 风格）：
+**已启用 linter**（核心正确性 + 风格 + 复杂度）：
 
-- `errcheck` / `govet` / `ineffassign` / `misspell` / `nolintlint` /
-  `staticcheck` / `unused` + formatters 段 `gofmt` / `goimports`
-- govet 关掉 `fieldalignment` / `shadow` / `inline`（噪声大或与 stdlib
-  现代化重写绑定，单独治理）
+- `errcheck` / `gocyclo` / `govet` / `ineffassign` / `misspell` /
+  `nolintlint` / `staticcheck` / `unused` + formatters 段 `gofmt` /
+  `goimports`
+- gocyclo 阈值 35（不是业界默认 15）：boost 是通用工具库，xconv 类型
+  分发 / xstrings.From 等天然类型 switch complexity 21-33，强行拆分
+  损害可读性；35 是务实折衷，抓新增超大函数（commit `<本批>`）
+- govet 关掉 `fieldalignment` / `shadow`（噪声大，单独治理）；`inline`
+  在 commit `1cbb312` 启用（14 处 stdlib 现代化重写完成）
 - staticcheck 收紧到 `SA*` 系列，禁 `SA1019`（deprecated API 单独 PR 治理）
 
 **已豁免路径**（§4.6 fork 代码 / 生成代码不动）：
@@ -276,9 +280,9 @@ boost 仓 `.golangci.yml` v2 schema 已入仓（参考 myproxy / dataserver 风�
 
 **待启用**（下一轮治理）：
 
-- `gocyclo`（17 个 pre-existing 大 switch 函数 complexity 16-33）
-- `govet inline analyzer`（14 处 `ioutil.X → io.X` / `reflect.Ptr →
-  reflect.Pointer` 现代化重写）
+- 暂无；下一轮可考虑收紧 gocyclo 阈值（35 → 25）需要先重构 xconv /
+  xstrings 类型分发函数，或 govet 启用 `shadow` / `fieldalignment` 等
+  噪声 analyzer
 
 ### 4.6 `interface{}` 替换为 `any`
 

@@ -14,15 +14,16 @@ run:
 linters:
   # 起步开"必须遵守"的核心 linter：
   #   - 正确性：govet / staticcheck / errcheck / unused / ineffassign
+  #   - 复杂度：gocyclo（阈值 35，比业界默认 15 宽——boost 是通用工具库，
+  #     xconv.{Int64,String,Bool,Uint64} / xstrings.From 是天然的 12-15
+  #     种类型分发 switch，complexity 21-33；强行拆分会损害可读性。阈值
+  #     35 覆盖现有最大值 33 + 余量 2，能抓到"新增超过现状"的函数）
   #   - 风格：misspell
   #   - nolint 自治：nolintlint
-  #
-  # gocyclo 暂未启用（17 个 pre-existing 大 switch 函数：xconv 类型分发 /
-  # xstrings.From / xtime/cron parser / xchan.process / xcopy.copyRecursive
-  # 等，complexity 16-33），单独 PR 治理后再加入。
   default: none
   enable:
     - errcheck
+    - gocyclo
     - govet
     - ineffassign
     - misspell
@@ -31,6 +32,12 @@ linters:
     - unused
 
   settings:
+    gocyclo:
+      # 业界默认 15，boost 提升到 35：现有 13 个生产代码函数 complexity
+      # 16-33 都是类型分发 switch（xconv 12+ 数值类型 / xstrings.From 同理），
+      # 拆分损害可读性。阈值 35 是务实折衷——抓新增超大函数，不强行重构
+      # 类型分发函数。如未来重构出复杂度 < 20 的函数，可考虑收紧到 25。
+      min-complexity: 35
     govet:
       enable-all: true
       disable:
