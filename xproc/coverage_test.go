@@ -1,6 +1,7 @@
 package xproc
 
 import (
+	"io"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -9,6 +10,21 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 )
+
+// quietOpts 是测试启动子进程的标配：把子进程 stdout/stderr 重定向到
+// io.Discard，避免继承 CI runner 的 stdout pipe（GitHub Actions logger
+// 持有 fd），子进程 fork 后 dup 到 stdout fd，子进程退出后 fd 引用还
+// 活着 → Go runtime exec.Cmd.WaitDelay 30s 超时强制 kill 测试进程
+// （"Test I/O incomplete 30s after exiting"）。
+//
+// 默认 ProcessOptions 把 Stdout/Stderr = os.Stdout/os.Stderr（见
+// gen_processoptions_optiongen.go:119-121），CI 上必须显式 Discard。
+func quietOpts(extra ...ProcessOption) []ProcessOption {
+	return append([]ProcessOption{
+		WithStdout(io.Discard),
+		WithStderr(io.Discard),
+	}, extra...)
+}
 
 // 本文件目标：补 xproc 包未覆盖的：
 //   - parseCommand 各分支（unix 直接返；windows 引号解析略 skip）
@@ -125,7 +141,7 @@ func TestProcess_StartTwice(t *testing.T) {
 	}
 	Convey("Process.Start 二次调用返已有 pid", t, func() {
 		// 跑一个超快退出的 echo
-		p := NewProcess("/bin/echo", WithArgs("hi"))
+		p := NewProcess("/bin/echo", quietOpts(WithArgs("hi"))...)
 		pid1, err := p.Start()
 		So(err, ShouldBeNil)
 		So(pid1, ShouldBeGreaterThan, 0)
@@ -172,7 +188,7 @@ func TestProcess_KillSignalRelease(t *testing.T) {
 		defer os.Remove(tmp)
 
 		m := NewManager()
-		p := m.NewProcess(tmp)
+		p := m.NewProcess(tmp, quietOpts()...)
 		_, err = p.Start()
 		So(err, ShouldBeNil)
 		So(p.Pid(), ShouldBeGreaterThan, 0)
@@ -189,7 +205,7 @@ func TestProcess_KillSignalRelease(t *testing.T) {
 		So(err, ShouldBeNil)
 		defer os.Remove(tmp)
 
-		p := NewProcess(tmp)
+		p := NewProcess(tmp, quietOpts()...)
 		_, err = p.Start()
 		So(err, ShouldBeNil)
 
@@ -201,7 +217,7 @@ func TestProcess_KillSignalRelease(t *testing.T) {
 
 	Convey("Release 释放 process resource（在 Wait 之后）", t, func() {
 		// 用 echo 让进程立即退出
-		p := NewProcess("/bin/echo", WithArgs("done"))
+		p := NewProcess("/bin/echo", quietOpts(WithArgs("done"))...)
 		_, err := p.Start()
 		So(err, ShouldBeNil)
 		_ = p.Wait()
@@ -219,7 +235,7 @@ func TestManager_WithRunningProcesses(t *testing.T) {
 	}
 	Convey("Manager 持有 1 个 echo 进程，遍历 API 全跑", t, func() {
 		m := NewManager()
-		p := m.NewProcess("/bin/echo", WithArgs("hi"))
+		p := m.NewProcess("/bin/echo", quietOpts(WithArgs("hi"))...)
 		_, err := p.Start()
 		So(err, ShouldBeNil)
 
@@ -238,8 +254,8 @@ func TestManager_WithRunningProcesses(t *testing.T) {
 		defer os.Remove(tmp)
 
 		m := NewManager()
-		p1 := m.NewProcess(tmp)
-		p2 := m.NewProcess(tmp)
+		p1 := m.NewProcess(tmp, quietOpts()...)
+		p2 := m.NewProcess(tmp, quietOpts()...)
 		_, err = p1.Start()
 		So(err, ShouldBeNil)
 		_, err = p2.Start()
@@ -253,7 +269,7 @@ func TestManager_WithRunningProcesses(t *testing.T) {
 		_ = p2.Wait()
 
 		// 用第三个 process 测 KillAll
-		p3 := m.NewProcess(tmp)
+		p3 := m.NewProcess(tmp, quietOpts()...)
 		_, err = p3.Start()
 		So(err, ShouldBeNil)
 		// KillAll 让 m 中所有 process 都被 Kill（含已 wait 的，可能返 err）
