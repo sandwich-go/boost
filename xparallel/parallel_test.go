@@ -40,8 +40,6 @@ func TestSliceV_WithLimit(t *testing.T) {
 
 		var concurrent atomic.Int32
 		var maxConcurrent atomic.Int32
-		var wg sync.WaitGroup
-		_ = wg
 
 		SliceV(2, input, func(v int) {
 			n := concurrent.Add(1)

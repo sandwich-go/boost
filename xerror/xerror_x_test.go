@@ -26,7 +26,8 @@ func TestTimeout(t *testing.T) {
 			So(os.IsTimeout(err), ShouldBeFalse)
 		}
 		{
-			c, _ := ctx.WithTimeout(ctx.Background(), time.Millisecond)
+			c, cancel := ctx.WithTimeout(ctx.Background(), time.Millisecond)
+			defer cancel()
 			time.Sleep(time.Millisecond * 2)
 			err := c.Err()
 			So(err, ShouldNotBeNil)
