@@ -5,6 +5,7 @@ import (
 	"github.com/sandwich-go/boost/internal/log"
 	"github.com/sandwich-go/boost/xpanic"
 	"math"
+	"sync/atomic"
 	"time"
 
 	"github.com/sandwich-go/boost/xsync"
@@ -17,23 +18,42 @@ var (
 	CopToleranceCheckInterval = time.Duration(10) * time.Second
 )
 
+// providerHolder 包一层让 atomic.Pointer 能装 func（func 自身不能直接做 atomic.Pointer 的 T）。
+type providerHolder struct {
+	fn func() time.Time
+}
+
 // Cop mock time like ruby's time cop
 type Cop struct {
-	ts          xsync.AtomicInt64
-	unhealthy   chan struct{}
-	closeChan   chan struct{}
-	running     xsync.AtomicBool
-	closeFlag   xsync.AtomicInt32
-	nowProvider func() time.Time
+	ts        xsync.AtomicInt64
+	unhealthy chan struct{}
+	closeChan chan struct{}
+	running   xsync.AtomicBool
+	closeFlag xsync.AtomicInt32
+	// nowProvider 用 atomic.Pointer 保护：SetNowProvider 与后台 start/check
+	// 以及业务侧 Now() 之间存在并发读写。用 atomic.Pointer 让读侧无锁、写
+	// 侧 Store 原子可见。
+	nowProvider atomic.Pointer[providerHolder]
 }
 
 // NewCop 新建Cop对象
 func NewCop(nowProvider func() time.Time) *Cop {
-	tc := &Cop{nowProvider: nowProvider}
+	tc := &Cop{}
+	tc.nowProvider.Store(&providerHolder{fn: nowProvider})
 	tc.closeChan = make(chan struct{})
 	tc.unhealthy = make(chan struct{})
 	tc.run()
 	return tc
+}
+
+// SetNowProvider 原子替换 nowProvider；与后台 goroutine / Now() 并发安全。
+func (tc *Cop) SetNowProvider(nowProvider func() time.Time) {
+	tc.nowProvider.Store(&providerHolder{fn: nowProvider})
+}
+
+// getNowProvider 原子读 nowProvider 当前 fn。
+func (tc *Cop) getNowProvider() func() time.Time {
+	return tc.nowProvider.Load().fn
 }
 
 func (tc *Cop) run() {
@@ -47,7 +67,7 @@ func (tc *Cop) check() {
 	for {
 		select {
 		case <-checkTicker.C:
-			systemTime := tc.nowProvider().Unix()
+			systemTime := tc.getNowProvider()().Unix()
 			copTime := tc.Unix()
 			if int64(math.Abs(float64(systemTime-copTime))) > CopToleranceSecond {
 				log.Warn(fmt.Sprintf("stime cop tolerance, system: %d, cop: %d, tolerance: %d", systemTime, copTime, CopToleranceSecond))
@@ -65,7 +85,7 @@ func (tc *Cop) start() {
 	defer func() {
 		tc.running.Set(false)
 	}()
-	tc.ts.Set(tc.nowProvider().Unix())
+	tc.ts.Set(tc.getNowProvider()().Unix())
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 	for {
@@ -94,7 +114,7 @@ func (tc *Cop) Now() time.Time {
 	if tc.running.Get() {
 		return time.Unix(tc.ts.Get(), 0)
 	}
-	return tc.nowProvider()
+	return tc.getNowProvider()()
 }
 
 // Unix 获取当前Unix时间戳

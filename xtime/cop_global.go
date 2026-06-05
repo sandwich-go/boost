@@ -9,8 +9,9 @@ var globalCop *Cop = NewCop(func() time.Time { return NowFunc() })
 // Stop 停止globalCop的时间，使用系统时间
 func Stop() { globalCop.Stop() }
 
-// SetNowProvider 设定now提供方法
-func SetNowProvider(nowProvider func() time.Time) { globalCop.nowProvider = nowProvider }
+// SetNowProvider 设定now提供方法。原子替换，与 globalCop 后台 goroutine /
+// Now() 调用方并发安全。
+func SetNowProvider(nowProvider func() time.Time) { globalCop.SetNowProvider(nowProvider) }
 
 // Now 获取当前时间，精度秒
 var Now = func() time.Time { return globalCop.Now() }

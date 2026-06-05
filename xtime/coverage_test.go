@@ -56,14 +56,47 @@ func TestCop_StopAndUnixMilli(t *testing.T) {
 		So(func() { c.Stop() }, ShouldNotPanic)
 	})
 
-	Convey("globalCop Stop / SetNowProvider 仅验证可调用", t, func() {
-		// 注意：SetNowProvider 与 globalCop 后台 goroutine 的 nowProvider 读
-		// 之间有 pre-existing race（cop.go:68 read vs cop_global.go:13 write
-		// 无锁保护）。这不是本测试引入的问题；race 修复要独立 PR 加锁或迁
-		// 移到 atomic.Value。本测试只验证 API 可调用而不触发该 race，避免
-		// 阻断 race CI job。
+	Convey("Cop.SetNowProvider 与并发读 Now 之间原子安全", t, func() {
+		// 历史 bug：nowProvider 是裸 func 字段，SetNowProvider 与后台
+		// start/check/Now 之间 read-write race。修复改成 atomic.Pointer。
 		//
-		// 验证：函数存在且可被取地址（防止 API 被误删）
+		// 反向验证：本测试在 -race 下若回退到裸字段写会被 race detector 抓到。
+		fixed1 := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+		fixed2 := time.Date(2027, 1, 1, 0, 0, 0, 0, time.UTC)
+		c := NewCop(func() time.Time { return fixed1 })
+		defer c.Stop()
+
+		// 并发：N 个 setter 替换 provider，N 个 reader 调 Now()
+		const n = 50
+		done := make(chan struct{})
+		var swaps atomic.Int64
+		for i := 0; i < n; i++ {
+			go func(i int) {
+				for j := 0; j < 100; j++ {
+					if (i+j)%2 == 0 {
+						c.SetNowProvider(func() time.Time { return fixed1 })
+					} else {
+						c.SetNowProvider(func() time.Time { return fixed2 })
+					}
+					swaps.Add(1)
+				}
+				done <- struct{}{}
+			}(i)
+			go func() {
+				for j := 0; j < 100; j++ {
+					_ = c.Now()
+				}
+				done <- struct{}{}
+			}()
+		}
+		for i := 0; i < 2*n; i++ {
+			<-done
+		}
+		So(swaps.Load(), ShouldEqual, int64(n*100))
+	})
+
+	Convey("包级 SetNowProvider / Stop API 存在且可调用", t, func() {
+		// API 存在性 smoke test（globalCop 不能 Stop 否则污染其他测试）
 		So(SetNowProvider, ShouldNotBeNil)
 		So(Stop, ShouldNotBeNil)
 	})
