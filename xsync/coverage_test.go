@@ -117,9 +117,9 @@ func TestAtomicDuration(t *testing.T) {
 //
 // RWTimeoutLock 基于 semaphore.Weighted：Lock = 拿全部权重；RLock = 拿 1。
 // 关键不变量：
-//   1. 多读并发可同时持有
-//   2. 写排他：写持有时读必等
-//   3. ctx 超时正确传播
+//  1. 多读并发可同时持有
+//  2. 写排他：写持有时读必等
+//  3. ctx 超时正确传播
 func TestRWTimeoutLock(t *testing.T) {
 	Convey("NewRWTimeoutLock(0) panic", t, func() {
 		So(func() { NewRWTimeoutLock(0) }, ShouldPanic)

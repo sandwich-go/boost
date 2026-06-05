@@ -3,9 +3,10 @@ package json
 import (
 	"bytes"
 	"context"
-	"github.com/sandwich-go/boost/xencoding"
 	"sync"
 	"testing"
+
+	"github.com/sandwich-go/boost/xencoding"
 
 	"github.com/sandwich-go/boost/xencoding/protobuf/test_perf"
 )

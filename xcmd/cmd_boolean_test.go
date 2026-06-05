@@ -1,8 +1,9 @@
 package xcmd
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestCmdBoolean(t *testing.T) {

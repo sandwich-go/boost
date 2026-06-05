@@ -2,11 +2,12 @@ package xtime
 
 import (
 	"fmt"
-	"github.com/sandwich-go/boost/internal/log"
-	"github.com/sandwich-go/boost/xpanic"
 	"math"
 	"sync/atomic"
 	"time"
+
+	"github.com/sandwich-go/boost/internal/log"
+	"github.com/sandwich-go/boost/xpanic"
 
 	"github.com/sandwich-go/boost/xsync"
 )

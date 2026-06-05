@@ -28,7 +28,7 @@ func TestSetKey(t *testing.T) {
 // stubEncCodec 唯一名 encrypt codec 用于 Register 测试
 type stubEncCodec struct{ n string }
 
-func (c stubEncCodec) Name() string                                            { return c.n }
+func (c stubEncCodec) Name() string                                             { return c.n }
 func (c stubEncCodec) Marshal(_ context.Context, _ interface{}) ([]byte, error) { return nil, nil }
 func (c stubEncCodec) Unmarshal(_ context.Context, _ []byte, _ interface{}) error {
 	return nil

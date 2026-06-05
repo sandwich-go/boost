@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/rs/xid"
+
 	"github.com/sandwich-go/boost/xsync"
 )
 

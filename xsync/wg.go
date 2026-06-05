@@ -3,9 +3,10 @@ package xsync
 import (
 	"context"
 	"fmt"
-	"github.com/sandwich-go/boost/internal/log"
 	"sync"
 	"time"
+
+	"github.com/sandwich-go/boost/internal/log"
 )
 
 // WaitGroupTimeout is a wrapper of sync.WaitGroup that

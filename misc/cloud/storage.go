@@ -10,9 +10,10 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/sandwich-go/boost/xpanic"
 	"github.com/sandwich-go/minio-go"
 	"github.com/sandwich-go/minio-go/pkg/credentials"
+
+	"github.com/sandwich-go/boost/xpanic"
 )
 
 var (

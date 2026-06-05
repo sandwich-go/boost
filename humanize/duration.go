@@ -5,8 +5,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sandwich-go/boost/humanize/i18n"
 	"golang.org/x/text/language"
+
+	"github.com/sandwich-go/boost/humanize/i18n"
 )
 
 // Duration 打印人类易读时间字符串

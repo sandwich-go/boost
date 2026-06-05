@@ -2,12 +2,13 @@ package xpool
 
 import (
 	"fmt"
-	"github.com/sandwich-go/boost/z"
 	"strconv"
 	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
+
+	"github.com/sandwich-go/boost/z"
 )
 
 func TestNewHashGoroutinePool(t *testing.T) {

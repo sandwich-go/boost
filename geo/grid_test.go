@@ -1,10 +1,12 @@
 package geo
 
 import (
-	"github.com/sandwich-go/boost/graph"
+	"testing"
+
 	. "github.com/smartystreets/goconvey/convey"
 	"go.uber.org/mock/gomock"
-	"testing"
+
+	"github.com/sandwich-go/boost/graph"
 )
 
 func TestGrid(t *testing.T) {

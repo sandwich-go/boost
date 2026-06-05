@@ -1,10 +1,11 @@
 package singleflight
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"sync"
 	"testing"
 	"time"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestSingleFlight(t *testing.T) {

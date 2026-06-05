@@ -2,12 +2,14 @@ package xproc
 
 import (
 	"bytes"
-	"github.com/sandwich-go/boost/xos"
-	"github.com/sandwich-go/boost/xstrings"
-	. "github.com/smartystreets/goconvey/convey"
 	"os"
 	"path/filepath"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
+
+	"github.com/sandwich-go/boost/xos"
+	"github.com/sandwich-go/boost/xstrings"
 )
 
 func TestProcess(t *testing.T) {

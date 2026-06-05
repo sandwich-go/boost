@@ -3,6 +3,7 @@ package compressor
 import (
 	"context"
 	"errors"
+
 	"github.com/sandwich-go/boost/xcompress"
 	"github.com/sandwich-go/boost/xencoding"
 	"github.com/sandwich-go/boost/xpanic"

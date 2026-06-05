@@ -2,8 +2,9 @@ package xip
 
 import (
 	"fmt"
-	"github.com/sandwich-go/boost/internal/log"
 	"net"
+
+	"github.com/sandwich-go/boost/internal/log"
 )
 
 // GetFreePort asks the kernel for a free open port that is ready to use.

@@ -1,8 +1,9 @@
 package xpool
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestBufferPool(t *testing.T) {

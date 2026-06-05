@@ -3,15 +3,16 @@ package module
 import (
 	"context"
 	"fmt"
+	"os"
+	"sync"
+	"time"
+
 	"github.com/sandwich-go/boost"
 	"github.com/sandwich-go/boost/version"
 	"github.com/sandwich-go/boost/xdebug"
 	"github.com/sandwich-go/boost/xdebug/race"
 	"github.com/sandwich-go/boost/xpanic"
 	"github.com/sandwich-go/boost/xsync"
-	"os"
-	"sync"
-	"time"
 )
 
 type agent struct {

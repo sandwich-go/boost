@@ -1,8 +1,9 @@
 package sarray
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestSyncArray(t *testing.T) {

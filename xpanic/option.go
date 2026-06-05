@@ -2,8 +2,9 @@ package xpanic
 
 import (
 	"fmt"
-	"github.com/sandwich-go/boost/internal/log"
 	"time"
+
+	"github.com/sandwich-go/boost/internal/log"
 )
 
 type OnRecover = func(tag string, reason interface{})

@@ -1,9 +1,10 @@
 package xconv
 
 import (
-	"github.com/sandwich-go/boost/xstrings"
 	"reflect"
 	"strings"
+
+	"github.com/sandwich-go/boost/xstrings"
 )
 
 // Bool [影响性能] converts `any` to bool.

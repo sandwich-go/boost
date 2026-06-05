@@ -2,9 +2,10 @@ package hash14v
 
 import (
 	"bytes"
+	"math"
+
 	"github.com/sandwich-go/boost/xcrypto/algorithm/vigenere"
 	"github.com/sandwich-go/boost/z"
-	"math"
 )
 
 const (

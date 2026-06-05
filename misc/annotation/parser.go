@@ -2,9 +2,10 @@ package annotation
 
 import (
 	"fmt"
-	"github.com/sandwich-go/boost/xstrings"
 	"strings"
 	"text/scanner"
+
+	"github.com/sandwich-go/boost/xstrings"
 )
 
 func parser(line string, lowerKey bool) (Annotation, error) {

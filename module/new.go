@@ -2,6 +2,7 @@ package module
 
 import (
 	"github.com/rs/xid"
+
 	"github.com/sandwich-go/boost/xpanic"
 )
 

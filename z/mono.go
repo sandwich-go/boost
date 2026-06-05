@@ -6,6 +6,7 @@ import (
 )
 
 // runtimeNanotime 返回从某一个节点开始(如系统启动)的单调时间
+//
 //go:noescape
 func runtimeNanotime() int64
 

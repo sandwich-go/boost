@@ -4,13 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/sandwich-go/boost/z"
-	. "github.com/smartystreets/goconvey/convey"
 	"net"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
+
+	. "github.com/smartystreets/goconvey/convey"
+
+	"github.com/sandwich-go/boost/z"
 )
 
 var (

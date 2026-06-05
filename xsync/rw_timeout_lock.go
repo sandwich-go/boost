@@ -3,6 +3,7 @@ package xsync
 import (
 	"context"
 	"errors"
+
 	"golang.org/x/sync/semaphore"
 )
 

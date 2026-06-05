@@ -19,8 +19,8 @@ func TestAutoRecover_BasicRecover(t *testing.T) {
 			runCount      atomic.Int32
 			recoverCount  atomic.Int32
 			lastReason    atomic.Value // any
-			panicTimes    int32 = 3
-			expectedTotal int32 = panicTimes + 1
+			panicTimes    int32        = 3
+			expectedTotal int32        = panicTimes + 1
 		)
 
 		done := make(chan struct{})

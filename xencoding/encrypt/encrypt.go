@@ -3,6 +3,7 @@ package encrypt
 import (
 	"context"
 	"errors"
+
 	"github.com/sandwich-go/boost/xcrypto/algorithm/aes"
 	"github.com/sandwich-go/boost/xencoding"
 	"github.com/sandwich-go/boost/xpanic"

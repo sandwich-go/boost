@@ -1,10 +1,12 @@
 package xdebug
 
 import (
-	"github.com/coreos/go-semver/semver"
-	"github.com/sandwich-go/boost"
 	"runtime/debug"
 	"strings"
+
+	"github.com/coreos/go-semver/semver"
+
+	"github.com/sandwich-go/boost"
 )
 
 type dependency interface {

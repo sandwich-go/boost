@@ -3,8 +3,9 @@ package msgpack
 import (
 	"context"
 	"fmt"
-	"github.com/sandwich-go/boost/xencoding"
 	"testing"
+
+	"github.com/sandwich-go/boost/xencoding"
 
 	"github.com/sandwich-go/boost/xencoding/protobuf/test_perf"
 

@@ -5,8 +5,9 @@
 package sset
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestSyncSet(t *testing.T) {

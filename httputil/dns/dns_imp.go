@@ -2,11 +2,12 @@ package dns
 
 import (
 	"context"
-	"github.com/sandwich-go/boost/z"
 	"net"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/sandwich-go/boost/z"
 )
 
 type dns struct {

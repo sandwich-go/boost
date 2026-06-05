@@ -2,8 +2,9 @@ package xerror
 
 import (
 	"errors"
-	. "github.com/smartystreets/goconvey/convey"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestArray(t *testing.T) {

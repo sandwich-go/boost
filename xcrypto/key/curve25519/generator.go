@@ -2,6 +2,7 @@ package curve25519
 
 import (
 	"crypto/rand"
+
 	"golang.org/x/crypto/curve25519"
 )
 

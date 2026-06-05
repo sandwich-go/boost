@@ -2,9 +2,10 @@ package aes
 
 import (
 	"crypto/rand"
+	"testing"
+
 	"github.com/sandwich-go/boost/xcrypto/key/curve25519"
 	"github.com/sandwich-go/boost/xrand"
-	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
 )

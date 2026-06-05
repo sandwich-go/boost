@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/buger/jsonparser"
+
 	"github.com/sandwich-go/boost/xpanic"
 )
 

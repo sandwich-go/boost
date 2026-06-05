@@ -3,10 +3,12 @@ package md5
 import (
 	"bytes"
 	"fmt"
-	"github.com/sandwich-go/boost/xhash/nhash/jenkins"
-	. "github.com/smartystreets/goconvey/convey"
 	"os"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
+
+	"github.com/sandwich-go/boost/xhash/nhash/jenkins"
 )
 
 func TestMd5(t *testing.T) {

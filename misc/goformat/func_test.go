@@ -1,11 +1,12 @@
 package goformat
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"go/ast"
 	"go/parser"
 	"go/token"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestFunc(t *testing.T) {

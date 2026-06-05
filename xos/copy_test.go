@@ -1,14 +1,16 @@
 package xos
 
 import (
-	"github.com/sandwich-go/boost/xhash/md5"
-	"github.com/sandwich-go/boost/xmap"
-	. "github.com/smartystreets/goconvey/convey"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"sort"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
+
+	"github.com/sandwich-go/boost/xhash/md5"
+	"github.com/sandwich-go/boost/xmap"
 )
 
 func TestCopy(t *testing.T) {

@@ -1,9 +1,10 @@
 package goformat
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"go/token"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestParseMainFragment(t *testing.T) {

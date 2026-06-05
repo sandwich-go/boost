@@ -20,16 +20,16 @@ import (
 
 // stoppableModule 一个能受控退出的测试 module，用于 RunWithCloseTimeout / RunModule
 type stoppableModule struct {
-	name           string
-	onInitCount    atomic.Int32
-	onCloseCount   atomic.Int32
-	runStartedCh   chan struct{} // 信号：Run 已开始
-	allowExitCh    chan struct{} // 控制：让 Run 主动退出（不等 closeChan）
+	name         string
+	onInitCount  atomic.Int32
+	onCloseCount atomic.Int32
+	runStartedCh chan struct{} // 信号：Run 已开始
+	allowExitCh  chan struct{} // 控制：让 Run 主动退出（不等 closeChan）
 }
 
-func (m *stoppableModule) OnInit()       { m.onInitCount.Add(1) }
-func (m *stoppableModule) OnClose()      { m.onCloseCount.Add(1) }
-func (m *stoppableModule) Name() string  { return m.name }
+func (m *stoppableModule) OnInit()      { m.onInitCount.Add(1) }
+func (m *stoppableModule) OnClose()     { m.onCloseCount.Add(1) }
+func (m *stoppableModule) Name() string { return m.name }
 func (m *stoppableModule) Run(closeChan chan struct{}) {
 	if m.runStartedCh != nil {
 		close(m.runStartedCh)

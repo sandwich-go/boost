@@ -2,7 +2,9 @@ package xcompress
 
 import (
 	"fmt"
+
 	"github.com/golang/snappy"
+
 	"github.com/sandwich-go/boost/xpanic"
 )
 

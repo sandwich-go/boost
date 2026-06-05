@@ -3,9 +3,10 @@
 package singleflight
 
 import (
+	"sync"
+
 	"github.com/sandwich-go/boost/xerror"
 	"github.com/sandwich-go/boost/xpanic"
-	"sync"
 )
 
 // call is an in-flight or completed Do call

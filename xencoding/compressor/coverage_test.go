@@ -14,7 +14,7 @@ import (
 
 type stubCompCodec struct{ n string }
 
-func (c stubCompCodec) Name() string                                            { return c.n }
+func (c stubCompCodec) Name() string                                             { return c.n }
 func (c stubCompCodec) Marshal(_ context.Context, v interface{}) ([]byte, error) { return nil, nil }
 func (c stubCompCodec) Unmarshal(_ context.Context, _ []byte, _ interface{}) error {
 	return nil

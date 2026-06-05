@@ -2,8 +2,9 @@ package xpool
 
 import (
 	"context"
-	"github.com/sandwich-go/boost/z"
 	"time"
+
+	"github.com/sandwich-go/boost/z"
 )
 
 type HashGoroutinePool struct {

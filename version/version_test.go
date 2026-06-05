@@ -1,8 +1,9 @@
 package version
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestVersion(t *testing.T) {

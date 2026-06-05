@@ -2,9 +2,10 @@ package xencoding
 
 import (
 	"context"
-	"github.com/sandwich-go/boost/xpanic"
 	"sort"
 	"sync"
+
+	"github.com/sandwich-go/boost/xpanic"
 )
 
 type codecKeyType struct{}

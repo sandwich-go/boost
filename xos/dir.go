@@ -135,9 +135,9 @@ func RemoveDirs(dir string) error {
 	return nil
 }
 
-func runExceptOneTrueChain(v string,includeFilter... func(filePath string) bool) bool{
-	for _,f := range includeFilter {
-		if f(v){
+func runExceptOneTrueChain(v string, includeFilter ...func(filePath string) bool) bool {
+	for _, f := range includeFilter {
+		if f(v) {
 			return true
 		}
 	}
@@ -146,10 +146,10 @@ func runExceptOneTrueChain(v string,includeFilter... func(filePath string) bool)
 
 // RemoveFilesUnderDir 删除目录下的文件
 // includeFilter可为多个，任意一个includeFilter返回true则会删除该文件
-func RemoveFilesUnderDir(pathStr string, includeFilter... func(filePath string) bool) {
+func RemoveFilesUnderDir(pathStr string, includeFilter ...func(filePath string) bool) {
 	fileList := make([]string, 0)
 	_ = filepath.Walk(pathStr, FileWalkFuncWithIncludeFilter(&fileList, func(f string) bool {
-		return runExceptOneTrueChain(f,includeFilter...)
+		return runExceptOneTrueChain(f, includeFilter...)
 	}))
 	for _, filePath := range fileList {
 		_ = os.Remove(filePath)

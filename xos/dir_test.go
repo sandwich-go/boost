@@ -4,11 +4,12 @@
 package xos
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestDir(t *testing.T) {

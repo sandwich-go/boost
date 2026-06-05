@@ -5,8 +5,9 @@ import (
 	"math/rand/v2"
 	"sort"
 
-	"github.com/sandwich-go/boost/misc"
 	"golang.org/x/exp/constraints"
+
+	"github.com/sandwich-go/boost/misc"
 )
 
 // RandomInt 随机某个值，该值[min, max]

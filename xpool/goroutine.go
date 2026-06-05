@@ -3,10 +3,11 @@ package xpool
 import (
 	"context"
 	"errors"
+	"time"
+
 	"github.com/sandwich-go/boost/xerror"
 	"github.com/sandwich-go/boost/xsync"
 	"github.com/sandwich-go/boost/xtime"
-	"time"
 )
 
 type worker struct {

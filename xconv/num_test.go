@@ -1,8 +1,9 @@
 package xconv
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestNum(t *testing.T) {

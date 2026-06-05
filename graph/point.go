@@ -3,9 +3,11 @@ package graph
 import (
 	"cmp"
 	"fmt"
-	"github.com/sandwich-go/boost/xconv"
-	"golang.org/x/exp/constraints"
 	"math"
+
+	"golang.org/x/exp/constraints"
+
+	"github.com/sandwich-go/boost/xconv"
 )
 
 // Number 支持的坐标类型

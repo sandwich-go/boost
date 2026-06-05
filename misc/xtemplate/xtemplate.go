@@ -2,12 +2,14 @@ package xtemplate
 
 import (
 	"bytes"
+	"html/template"
+	"path/filepath"
+
 	"github.com/Masterminds/sprig"
+
 	"github.com/sandwich-go/boost/misc/goformat"
 	"github.com/sandwich-go/boost/xos"
 	"github.com/sandwich-go/boost/xstrings"
-	"html/template"
-	"path/filepath"
 )
 
 var funcMap = template.FuncMap{

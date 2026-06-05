@@ -1,10 +1,11 @@
 package misc
 
 import (
-	"github.com/modern-go/reflect2"
 	"reflect"
 	"runtime"
 	"unsafe"
+
+	"github.com/modern-go/reflect2"
 )
 
 // UnsafeShift0 通过指针移动 offset，来获取指定类型数据

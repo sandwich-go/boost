@@ -2,9 +2,11 @@ package compressor
 
 import (
 	"context"
-	"github.com/sandwich-go/boost/xrand"
-	. "github.com/smartystreets/goconvey/convey"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
+
+	"github.com/sandwich-go/boost/xrand"
 )
 
 func getTestFrames() [][]byte {

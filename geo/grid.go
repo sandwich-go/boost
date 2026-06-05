@@ -3,10 +3,11 @@ package geo
 import (
 	"cmp"
 	"errors"
+	"math"
+
 	"github.com/sandwich-go/boost/graph"
 	"github.com/sandwich-go/boost/xerror"
 	"github.com/sandwich-go/boost/xpanic"
-	"math"
 )
 
 var (

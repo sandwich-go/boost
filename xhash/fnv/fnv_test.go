@@ -23,7 +23,7 @@ func TestHash_NumericTypes(t *testing.T) {
 		So(Hash(uint32(200)), ShouldEqual, uint64(200))
 
 		So(Hash(int64(1<<40)), ShouldEqual, uint64(1<<40))
-		So(Hash(int64(-(1<<40))), ShouldEqual, uint64(1<<40))
+		So(Hash(int64(-(1 << 40))), ShouldEqual, uint64(1<<40))
 		So(Hash(uint64(1<<50)), ShouldEqual, uint64(1<<50))
 
 		// float 截断为 uint64（行为契约：浮点小数部分丢失）

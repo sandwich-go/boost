@@ -4,9 +4,10 @@ import (
 	"context"
 	"errors"
 
-	"github.com/sandwich-go/boost/xencoding"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
+
+	"github.com/sandwich-go/boost/xencoding"
 
 	"io"
 )

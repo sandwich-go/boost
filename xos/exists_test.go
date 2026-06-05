@@ -1,10 +1,11 @@
 package xos
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"os"
 	"path/filepath"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestExists(t *testing.T) {

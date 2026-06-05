@@ -6,15 +6,16 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"fmt"
+	"reflect"
+	"strings"
+	"testing"
+	"time"
+
 	"github.com/go-playground/locales/en"
 	"github.com/go-playground/locales/fr"
 	"github.com/go-playground/locales/nl"
 	ut "github.com/go-playground/universal-translator"
 	. "github.com/smartystreets/goconvey/convey"
-	"reflect"
-	"strings"
-	"testing"
-	"time"
 )
 
 type StructLevelInvalidErr struct {

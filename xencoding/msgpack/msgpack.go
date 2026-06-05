@@ -2,8 +2,10 @@ package msgpack
 
 import (
 	"context"
-	"github.com/sandwich-go/boost/xencoding"
+
 	msgpack "github.com/vmihailenco/msgpack/v5"
+
+	"github.com/sandwich-go/boost/xencoding"
 )
 
 var Codec = &codec{}

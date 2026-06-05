@@ -1,10 +1,11 @@
 package xrand
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"strings"
 	"testing"
 	"time"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestRandString(t *testing.T) {

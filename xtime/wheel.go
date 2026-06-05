@@ -19,7 +19,8 @@ func newWheelWithDuration(t time.Duration) *Wheel {
 
 // WheelAfter 根据Duration复用时间轮
 // Note:
-//      内部会根据Duration创建时间轮， 相同Duration可以共用，这样带来的副作用就是如果时间不固定则会创建特别的多的时间轮
+//
+//	内部会根据Duration创建时间轮， 相同Duration可以共用，这样带来的副作用就是如果时间不固定则会创建特别的多的时间轮
 func WheelAfter(t time.Duration) <-chan struct{} {
 	w, _ := timerMap.GetOrSetFuncLock(t, newWheelWithDuration)
 	return w.After(t)
@@ -65,7 +66,8 @@ func (w *Wheel) Stop() {
 // timeline : ---w.pos-1<--{x}-->call After()<--{y}-->w.pos-----
 // x + y == interval, y 即是误差
 // Note:
-//      如果超过时间轮的最大值则使用最大值作为Timeout时间
+//
+//	如果超过时间轮的最大值则使用最大值作为Timeout时间
 func (w *Wheel) After(timeout time.Duration) <-chan struct{} {
 	if timeout > w.maxTimeout {
 		timeout = w.maxTimeout

@@ -2,9 +2,10 @@ package hash14v
 
 import (
 	"fmt"
-	"github.com/sandwich-go/boost/xcrypto/algorithm/vigenere"
 	"math"
 	"testing"
+
+	"github.com/sandwich-go/boost/xcrypto/algorithm/vigenere"
 )
 
 func Test_HashID(t *testing.T) {

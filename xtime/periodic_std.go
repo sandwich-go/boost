@@ -22,8 +22,8 @@ import (
 //   - 构造时主调 goroutine 写 p.timer = time.AfterFunc(...)；
 //   - 回调 goroutine 读 p.timer 调 Reset；
 //   - Stop goroutine 读 p.timer 调 Stop。
-//   构造与回调之间没有 happens-before 关系（time.AfterFunc 内部调度
-//   race detector 看不到），所以必须显式 mu 保护写/读。
+//     构造与回调之间没有 happens-before 关系（time.AfterFunc 内部调度
+//     race detector 看不到），所以必须显式 mu 保护写/读。
 type periodicStd struct {
 	d        time.Duration
 	jitterPc int

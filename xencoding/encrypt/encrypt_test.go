@@ -2,11 +2,13 @@ package encrypt
 
 import (
 	"context"
+	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
+
 	"github.com/sandwich-go/boost/xcrypto/key/curve25519"
 	"github.com/sandwich-go/boost/xencoding"
 	"github.com/sandwich-go/boost/xrand"
-	. "github.com/smartystreets/goconvey/convey"
-	"testing"
 )
 
 func getTestFrames() [][]byte {

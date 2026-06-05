@@ -5,6 +5,7 @@ package ringbuf
 import (
 	"errors"
 	"fmt"
+
 	"github.com/sandwich-go/boost/internal/log"
 )
 

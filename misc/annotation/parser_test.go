@@ -1,8 +1,9 @@
 package annotation
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestParser(t *testing.T) {

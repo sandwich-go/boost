@@ -2,9 +2,10 @@ package annotation
 
 import (
 	"fmt"
-	"github.com/sandwich-go/boost/xstrings"
 	"strconv"
 	"strings"
+
+	"github.com/sandwich-go/boost/xstrings"
 )
 
 const all = "*"

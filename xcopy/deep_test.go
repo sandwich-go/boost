@@ -1,14 +1,16 @@
 package xcopy
 
 import (
-	"github.com/sandwich-go/boost/xrand"
-	"github.com/sandwich-go/boost/z"
-	. "github.com/smartystreets/goconvey/convey"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/reflect/protoreflect"
 	"reflect"
 	"strconv"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
+
+	"github.com/sandwich-go/boost/xrand"
+	"github.com/sandwich-go/boost/z"
 )
 
 type withDeepCopy struct {

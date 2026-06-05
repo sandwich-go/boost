@@ -2,8 +2,9 @@ package plugin
 
 import (
 	"errors"
-	"github.com/sandwich-go/boost/xpanic"
 	"reflect"
+
+	"github.com/sandwich-go/boost/xpanic"
 )
 
 var ErrInvaliPlugin = errors.New("invalid plugin")

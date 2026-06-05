@@ -13,7 +13,7 @@ import (
 // stubCodec 仅用于注册测试
 type stubCodec struct{ name string }
 
-func (c *stubCodec) Name() string                                        { return c.name }
+func (c *stubCodec) Name() string                                         { return c.name }
 func (c *stubCodec) Marshal(context.Context, interface{}) ([]byte, error) { return nil, nil }
 func (c *stubCodec) Unmarshal(context.Context, []byte, interface{}) error { return nil }
 

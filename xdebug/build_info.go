@@ -2,8 +2,9 @@ package xdebug
 
 import (
 	"fmt"
-	"github.com/sandwich-go/boost/version"
 	"runtime/debug"
+
+	"github.com/sandwich-go/boost/version"
 )
 
 // PrintBuildInfo 输出 build info

@@ -1,10 +1,11 @@
 package misc
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"reflect"
 	"testing"
 	"unsafe"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 var offset uintptr

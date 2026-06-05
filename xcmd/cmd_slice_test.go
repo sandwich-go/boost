@@ -1,9 +1,10 @@
 package xcmd
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"strings"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestCmdSlice(t *testing.T) {

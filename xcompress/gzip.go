@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"compress/gzip"
 	"fmt"
-	"github.com/sandwich-go/boost"
 	"io/ioutil"
 	"sync"
+
+	"github.com/sandwich-go/boost"
 )
 
 type gzipCompressor struct {

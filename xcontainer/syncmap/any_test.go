@@ -7,9 +7,10 @@ import (
 	"sync"
 	"sync/atomic"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"math/rand"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestSyncMap(t *testing.T) {

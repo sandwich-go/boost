@@ -1,8 +1,9 @@
 package goformat
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestUtil(t *testing.T) {
