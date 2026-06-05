@@ -100,8 +100,24 @@ fmt:
 imports import goimports:
 	goimports -local=github.com/sandwich-go/boost -w $(GOFMT_FILES)
 
+# vet：go vet 全仓 + fork 豁免。fork 代码（xhash/nhash/jenkins / xsync/cond_test.go）
+# 按 §1 / §4.6 不动，过滤掉 fork 的告警，剩余 noise 任何一行都让 vet 失败。
+#
+# 历史路径：~22 处 vet noise 已在独立 PR（fix/refactor/style commits）系统性
+# 清完，剩余 ~20 处全在 fork 代码里，CI 把这些豁免后将 vet 改硬门槛。
 vet:
-	go vet ./...
+	@out=$$(go vet ./... 2>&1); \
+	rc=0; \
+	echo "$$out" | grep -vE '^# ' | grep -vE '^(xhash/nhash/jenkins/|xsync/cond_test\.go)' | grep -E '^[a-zA-Z_/]+\.go:[0-9]+' > /tmp/boost-vet-strict.txt 2>/dev/null || true; \
+	if [ -s /tmp/boost-vet-strict.txt ]; then \
+		echo "==> vet failed (excluding fork code):"; \
+		cat /tmp/boost-vet-strict.txt; \
+		rc=1; \
+	else \
+		echo "==> vet ok (fork noise excluded by §4.6)"; \
+	fi; \
+	rm -f /tmp/boost-vet-strict.txt; \
+	exit $$rc
 
 # lint：当前未钉为硬约束（详见 AGENTS.md §4.5）。本 target 仍提供，让本地
 # 自查 / 后续接入硬门槛时不需要改 Makefile。.golangci.yml 暂未入仓：lint

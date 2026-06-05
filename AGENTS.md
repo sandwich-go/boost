@@ -173,9 +173,10 @@ internal/template2/   见 §6.1（已废弃模式，xmath/xmap/xslice 已删除�
 
 ### 4.1 `make ci` 全绿
 
-`make ci = vet + build + test_race + vuln`。其中 **build 是 CI 唯一硬
-门槛**（`.github/workflows/ci.yml`）；其余都是软门槛（continue-on-error）。
-任何 PR 合入主干前本地都应该跑过一次 `make ci` 看完整信号。
+`make ci = vet + build + test_race + vuln`。其中 **vet + build 是 CI 硬
+门槛**（`.github/workflows/ci.yml`）；test/race/lint/vuln 仍是软门槛
+（continue-on-error）。任何 PR 合入主干前本地都应该跑过一次 `make ci`
+看完整信号。
 
 ### 4.1.1 当前软门槛清单与未来硬钉路径
 
@@ -184,21 +185,26 @@ boost 仓 1.4/develop HEAD 上有以下 pre-existing 噪声 / 失败，需要单
 
 | CI job | 当前状态 | pre-existing 问题 |
 |---|---|---|
-| `vet` | 软门槛 | ~20 处 noise（`misc/hrff/hrff_test.go` Example 命名 / `xsync/cond_test.go` non-test goroutine 调 `t.Fatal` / `z/conv.go` `reflect.StringHeader` misuse / `xerror/xerror_x_test.go` cancel func discarded） |
+| `vet` | **硬门槛** | ~22 处手写代码 noise 已系统性清完（commits `ea9f66c` / `69dcc68` / `3a5257b`）；剩余 ~20 处全在 fork（`xhash/nhash/jenkins/*` + `xsync/cond_test.go`），`make vet` 内置 fork 豁免（按 §4.6） |
 | `lint` | 软门槛 | 没 `.golangci.yml`，默认规则集会出 200-300 告警（仓库历史长，从未钉过 lint） |
-| `test` | 软门槛 | 当前无 pre-existing FAIL（misc/cloud `TestCloud` 仅在本地有 RELEASE_CLOUD_KEY/SECRET env 时才连真 AWS，CI 无 env 自动跳过；xpanic 一组测试在本轮已修复）。下一步钉硬门槛前需先确认 lint / vet 噪声清完 |
-| `race` | 软门槛 | 与 test 同；race 模式下没有额外的 pre-existing 问题需先解决 |
+| `test` | 软门槛 | 当前无 pre-existing FAIL（misc/cloud `TestCloud` 仅在本地有 RELEASE_CLOUD_KEY/SECRET env 时才连真 AWS，CI 无 env 自动跳过；xpanic 一组测试已修复）。下一步钉硬门槛前需先确认 lint 噪声清完 |
+| `race` | 软门槛 | 主要 race 已系统性修完：xtime SetNowProvider (commit `f57991b`) / module/master allAgents+ctx (commit `b8f2162`)；剩 xchan TestLen 抖动 + xcontainer/syncmap msgpack lib 共享状态 race，需复盘根因后再钉 |
 | `vuln` | 软门槛 | 没 0 affecting 承诺基线 |
 | `build` | **硬门槛** | 全仓 `go build ./...` 通过 |
 
 **渐进式硬钉路径**（每步独立 PR）：
 
-1. 系统性修 vet noise → CI vet 改 hard gate
-2. 修 `misc/cloud` / `xpanic` 测试 → test/race 改 hard gate
+1. ✅ ~~系统性修 vet noise → CI vet 改 hard gate~~（已完成 2026-06-05）
+2. 修 xchan TestLen / xcontainer/syncmap msgpack race → race 改 hard gate
 3. 加 `.golangci.yml` v2 schema → 修 lint 告警 → lint hard gate
 4. 升 deps 把 vuln 清零 → vuln hard gate
 
 每步都是独立 PR，不混进功能改动。
+
+**vet hard gate 实现细节**：`make vet` 内联 fork 豁免（path 前缀过滤
+`xhash/nhash/jenkins/` + `xsync/cond_test.go`）；CI yaml 用 `make vet`
+而非裸 `go vet ./...`，让"哪些 fork 路径被豁免"集中在 Makefile 一处可
+查可控。新增 fork 代码（罕见）需更新 Makefile vet target 的过滤白名单。
 
 #### §9.2 关联：xpanic %w/%v 历史教训
 

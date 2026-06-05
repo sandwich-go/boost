@@ -36,19 +36,17 @@ jobs:
 
   vet:
     runs-on: ubuntu-latest
-    # AGENTS.md §4.1.1：vet 当前作为软门槛，不阻断 PR。
-    # 仓内 pre-existing ~20 处 vet noise（misc/hrff Example 命名 / xsync test
-    # goroutine 调 t.Fatal / z/conv.go reflect.StringHeader misuse 等），需要
-    # 单独 PR 系统性清理后再硬钉。
-    continue-on-error: true
+    # AGENTS.md §4.1.1：vet 是硬门槛。仓内 ~22 处 vet noise 已系统性清理，
+    # 剩余 ~20 处全在 fork 代码（xhash/nhash/jenkins / xsync/cond_test.go），
+    # `make vet` 内置 fork 豁免（按 §4.6 fork 不动）。
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
           cache: true
-      - name: go vet
-        run: go vet ./...
+      - name: make vet
+        run: make vet
 
   lint:
     runs-on: ubuntu-latest
