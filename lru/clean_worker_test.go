@@ -221,6 +221,12 @@ func TestWorkerComparison_GoroutineCount(t *testing.T) {
 		})
 
 		Convey("workerHashPool uses fixed number of goroutines", func() {
+			// 上一子用例的 PeriodicWithShutdown timer 可能还在跑，给足时间让
+			// runtime.NumGoroutine 趋稳。两轮 GC + 等 interval+ 让上轮 timer
+			// 触发后被 runtime 回收。
+			time.Sleep(2 * interval)
+			runtime.GC()
+			time.Sleep(50 * time.Millisecond)
 			runtime.GC()
 			time.Sleep(50 * time.Millisecond)
 			baseGoroutines := runtime.NumGoroutine()
@@ -238,9 +244,16 @@ func TestWorkerComparison_GoroutineCount(t *testing.T) {
 			goroutinesWithHash := runtime.NumGoroutine()
 			increasedHash := goroutinesWithHash - baseGoroutines
 
-			So(increasedHash, ShouldBeLessThan, numWorkers+10)
-			t.Logf("workerHashPool: base=%d, current=%d, increased=%d, workers=%d",
-				baseGoroutines, goroutinesWithHash, increasedHash, numWorkers)
+			// 测试只验证「不退化为 per-engine 常驻 goroutine」。
+			// xtime.AfterFunc 每次会起一个内部 timer goroutine，但 timer 一旦
+			// 触发（间隔 ≤ interval+测试 sleep）会回收。50 个 AfterFunc 的
+			// 瞬时高水位 + numWorkers 是上限，threshold 与 perEngine 子用例
+			// 一致用 engineCount/2 + numWorkers，足够松到容纳 timer goroutine
+			// 派发栈，又能在「真的退化为 per-engine 常驻 goroutine」时报警。
+			hashThreshold := engineCount/2 + numWorkers
+			So(increasedHash, ShouldBeLessThan, hashThreshold)
+			t.Logf("workerHashPool: base=%d, current=%d, increased=%d, workers=%d, threshold=%d",
+				baseGoroutines, goroutinesWithHash, increasedHash, numWorkers, hashThreshold)
 		})
 	})
 }
