@@ -296,10 +296,6 @@ func randSubStruct() subStruct {
 	return subStruct{I: z.FastRand()}
 }
 
-func (s subStruct) equal(s1 subStruct) bool {
-	return s.I == s1.I
-}
-
 type subSlice struct {
 	B []string
 }
@@ -342,16 +338,6 @@ type sub struct {
 
 func randSub() *sub {
 	return &sub{i: z.FastRand()}
-}
-
-func (s *sub) equal(s1 *sub) bool {
-	if s == nil && s1 == nil {
-		return true
-	}
-	if (s == nil && s1 != nil) || (s1 == nil && s != nil) {
-		return false
-	}
-	return s.i == s1.i
 }
 
 func TestDeepCopy(t *testing.T) {

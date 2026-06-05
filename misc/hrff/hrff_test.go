@@ -12,15 +12,9 @@ var _i1 = Int64{V: 2}
 var i1 int64
 
 const ci1 = 1 * 1024 * 1024 * 1024
-const ci2 = -2
-
-var _i2 = Int64{V: 3}
-var i2 int64
 
 var _f1 = Float64{V: 4.5}
 var f1 float64
-var _f2 = Float64{V: 5.5}
-var f2 float64
 
 func TestHRFF(t *testing.T) {
 

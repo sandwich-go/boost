@@ -55,11 +55,10 @@ type Job func()
 
 // GoroutinePool 线程池，numWorkers 数量的 worker 竞争 Job
 type GoroutinePool struct {
-	queuedJobs xsync.AtomicInt64
-	jobQueue   chan Job
-	workers    []*worker
-	closeFlag  xsync.AtomicInt32
-	timeout    time.Duration
+	jobQueue  chan Job
+	workers   []*worker
+	closeFlag xsync.AtomicInt32
+	timeout   time.Duration
 }
 
 // NewGoroutinePool 创建新的协程竞争池

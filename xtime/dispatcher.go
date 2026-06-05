@@ -238,7 +238,6 @@ func (d *dispatcher) AfterFuncWithOwnershipTransferInDomain(td time.Duration, cb
 			d.timerMutex.RUnlock()
 		}
 	})
-	//log.Debug(fmt.Sprintf("Timer dispatcher add AfterFuncInDomain:%s after:%s", domain, td))
 	return t
 }
 
@@ -269,7 +268,6 @@ func (d *dispatcher) AfterFuncInDomain(td time.Duration, cb func(), domain strin
 		}
 	})
 	d.runningTimers.Store(t, struct{}{})
-	//log.Debug(fmt.Sprintf("Timer dispatcher add AfterFuncInDomain:%s after:%s", domain, td))
 	return t
 }
 
