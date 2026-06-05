@@ -34,9 +34,17 @@ func TestPanicWhen(t *testing.T) {
 
 		So(func() { WhenError(err) }, ShouldPanic)
 		So(func() { WhenError(nil) }, ShouldNotPanic)
+		// WhenError reason 非空分支：panic value 是 reason join
+		Try(func() {
+			WhenError(err, "step1", "step2")
+		}).Catch(func(e E) {
+			So(panicValueFrom(e), ShouldEqual, "step1\nstep2")
+		})
+
 		So(func() { WhenTrue(true, "%d", 1) }, ShouldPanic)
 		So(func() { WhenTrue(false, "%d", 1) }, ShouldNotPanic)
 		So(func() { WhenFalse(false, "%d", 1) }, ShouldPanic)
+		So(func() { WhenFalse(true, "%d", 1) }, ShouldNotPanic)
 
 		// WhenHereNotNil 走 fmt.Sprintf("err should be nil when here, got:%v", err)
 		// （历史 bug：曾用 %w，本次随包修复改为 %v）。验证 panic value 字面格式。
@@ -46,5 +54,30 @@ func TestPanicWhen(t *testing.T) {
 			So(panicValueFrom(e), ShouldEqual, "err should be nil when here, got:error")
 		})
 		So(func() { WhenHereNotNil(nil) }, ShouldNotPanic)
+	})
+
+	Convey("WhenNil / WhenNotNil", t, func() {
+		// 区分 typed-nil 与 untyped-nil（isnil.Check 处理 typed-nil）
+		var typedNilPtr *int
+		var nonNilPtr = new(int)
+
+		// nil → WhenNil 触发；WhenNotNil 不触发
+		So(func() { WhenNil(nil, "should panic: %s", "untyped nil") }, ShouldPanic)
+		So(func() { WhenNotNil(nil, "should not") }, ShouldNotPanic)
+
+		// typed nil（*int(nil)）—— isnil.Check 也视作 nil
+		So(func() { WhenNil(typedNilPtr, "should panic on typed nil") }, ShouldPanic)
+		So(func() { WhenNotNil(typedNilPtr, "should not") }, ShouldNotPanic)
+
+		// non-nil → WhenNil 不触发；WhenNotNil 触发
+		So(func() { WhenNil(nonNilPtr, "should not") }, ShouldNotPanic)
+		So(func() { WhenNotNil(nonNilPtr, "should panic on non-nil: %d", 42) }, ShouldPanic)
+
+		// panic value 是 fmt.Sprintf 后的 string（与 WhenTrue 一致）
+		Try(func() {
+			WhenNotNil(nonNilPtr, "got %d", 42)
+		}).Catch(func(e E) {
+			So(panicValueFrom(e), ShouldEqual, "got 42")
+		})
 	})
 }
