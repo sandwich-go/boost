@@ -187,8 +187,8 @@ boost 仓 1.4/develop HEAD 上有以下 pre-existing 噪声 / 失败，需要单
 | CI job | 当前状态 | pre-existing 问题 |
 |---|---|---|
 | `vet` | **硬门槛** | ~22 处手写代码 noise 已系统性清完（commits `ea9f66c` / `69dcc68` / `3a5257b`）；剩余 ~20 处全在 fork（`xhash/nhash/jenkins/*` + `xsync/cond_test.go`），`make vet` 内置 fork 豁免（按 §4.6） |
-| `lint` | 软门槛 | 没 `.golangci.yml`，默认规则集会出 200-300 告警（仓库历史长，从未钉过 lint） |
-| `test` | 软门槛 | 当前无 pre-existing FAIL（misc/cloud `TestCloud` 仅在本地有 RELEASE_CLOUD_KEY/SECRET env 时才连真 AWS，CI 无 env 自动跳过；xpanic 一组测试已修复）。下一步钉硬门槛前需先确认 lint 噪声清完 |
+| `lint` | **硬门槛** | `.golangci.yml` v2 schema 落地，0 告警基线（commit `<本批>`）。fork 代码 / generated 代码整体豁免；errcheck/govet/ineffassign/misspell/nolintlint/staticcheck/unused 启用；gocyclo / inline / fieldalignment / shadow 暂未启用（待下一轮治理） |
+| `test` | **硬门槛** | pre-existing FAIL 已修完。misc/cloud TestCloud 在无 env 时早返不阻断（CI 不设 RELEASE_CLOUD_*） |
 | `race` | **硬门槛** | 全部 pre-existing race 已系统性修完：xtime.SetNowProvider (commit `f57991b`) / module.allAgents+ctx (commit `b8f2162`) / xchan.UnboundedChan value receiver atomic 无效（commit `<本批>`） / xtime.TestTimerResetDispatcher 测试代码 race（commit `<本批>`）。上游 lib race（vmihailenco/msgpack pool reuse）在 `-race` 模式 t.Skip 跳过。lru.TestWorkerComparison_GoroutineCount 时序抖动加 GC 等待稳定 |
 | `vuln` | **硬门槛** | 升 go.mod 到 `go 1.25.0` + `toolchain go1.25.11` 让 stdlib backport patch 生效；升 `golang.org/x/net` 到 v0.55.0；本仓 affecting CVE 数 = 0（commit `<本批>`）。仍有 imported / required modules 层 vuln 但 govulncheck call-graph 分析"your code doesn't appear to call"（库性质，下游业务 LR 自查） |
 | `build` | **硬门槛** | 全仓 `go build ./...` 通过 |
@@ -197,7 +197,7 @@ boost 仓 1.4/develop HEAD 上有以下 pre-existing 噪声 / 失败，需要单
 
 1. ✅ ~~系统性修 vet noise → CI vet 改 hard gate~~（已完成 2026-06-05）
 2. ✅ ~~修 xchan / xtime / lru race + msgpack lib race t.Skip → race 改 hard gate~~（已完成 2026-06-05）
-3. 加 `.golangci.yml` v2 schema → 修 lint 告警 → lint hard gate
+3. ✅ ~~加 `.golangci.yml` v2 schema → 修 lint 告警 → lint hard gate~~（已完成 2026-06-05）
 4. ✅ ~~升 Go 1.25.0 + x/net v0.55.0 → 0 affecting CVE → vuln hard gate~~（已完成 2026-06-05）
 
 每步都是独立 PR，不混进功能改动。
@@ -253,20 +253,32 @@ CVE 长期 affecting boost。
 发"close of closed channel"，但单独跑 `go test ./xtime/` 总绿）记到 §11，
 不堵塞主干。
 
-### 4.5 lint 暂未钉为硬约束
+### 4.5 lint 是硬门槛
 
-boost 仓**没有 `.golangci.yml`**，`make lint` target 存在但 CI 不跑。原因：
-仓库历史长，全量打开 lint 会出几百个告警，集中清理需要单独 PR。
+boost 仓 `.golangci.yml` v2 schema 已入仓（参考 myproxy / dataserver 风格），
+0 告警基线。CI 中 `lint` job 是硬门槛。`make lint` 应在本地与 CI 等价。
 
-**短期态度**：
+**已启用 linter**（核心正确性 + 风格）：
 
-- 新代码本地 `make lint` 应零告警（自觉）
-- CI 不阻断 lint 失败（`continue-on-error: true`），允许"先合入再清"
-- 后续若决定钉 lint，单独 PR：加 `.golangci.yml` v2 schema → 修全部告警 → CI
-  把 lint 从 soft gate 改 hard gate
+- `errcheck` / `govet` / `ineffassign` / `misspell` / `nolintlint` /
+  `staticcheck` / `unused` + formatters 段 `gofmt` / `goimports`
+- govet 关掉 `fieldalignment` / `shadow` / `inline`（噪声大或与 stdlib
+  现代化重写绑定，单独治理）
+- staticcheck 收紧到 `SA*` 系列，禁 `SA1019`（deprecated API 单独 PR 治理）
 
-**中期路线图**（待安排）：参考 myproxy 的 `.golangci.yml` v2 schema 接入 +
-`internal/template2/` 类已删除路径不再有豁免压力。
+**已豁免路径**（§4.6 fork 代码 / 生成代码不动）：
+
+- fork: `xhash/nhash/jenkins/` / `xsync/cond_test.go` / `misc/hrff/` /
+  `xencoding/protobuf/` / `types/internal/`
+- 模板源 / 生成代码：`xdebug/internal/template2/` / `xcontainer/templates/` /
+  `xcontainer/*/gen_*.go` / `*_optiongen.go` / `*_string.go` /
+  `*_mock_test.go` / `*.pb.go`
+
+**待启用**（下一轮治理）：
+
+- `gocyclo`（17 个 pre-existing 大 switch 函数 complexity 16-33）
+- `govet inline analyzer`（14 处 `ioutil.X → io.X` / `reflect.Ptr →
+  reflect.Pointer` 现代化重写）
 
 ### 4.6 `interface{}` 替换为 `any`
 

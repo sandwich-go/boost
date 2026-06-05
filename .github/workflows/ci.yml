@@ -52,9 +52,10 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
-    # AGENTS.md §4.5：lint 暂未钉为硬约束。继续阻断 PR 会让"先合入再清"的
-    # 渐进式接入策略落不了地。等仓库整体清干净后改成 hard gate。
-    continue-on-error: true
+    # AGENTS.md §4.1.1：lint 是硬门槛。仓内 .golangci.yml v2 schema 落地，
+    # 0 告警基线。fork 代码（xhash/nhash/jenkins / xsync/cond_test.go /
+    # misc/hrff / xencoding/protobuf / types/internal/mydecimal /
+    # xdebug/internal/template2 / xcontainer/templates）整体豁免（§4.6）。
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -65,7 +66,6 @@ jobs:
         uses: golangci/golangci-lint-action@v6
         with:
           version: v2.12.2
-          # 没有 .golangci.yml 时用默认规则集；接入 .golangci.yml 后这条会被忽略
           args: --timeout=5m
 
   # ---------------------------------------------------------------------------
@@ -89,10 +89,10 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    # AGENTS.md §4.1.1：当前 1.4/develop HEAD 有 3 个 pre-existing 包测试挂
-    # （lru / misc/cloud / xpanic），需单独 PR 修复后再硬钉。-vet=off 跳过
-    # test 自带的前置 vet（vet 已是独立 job），免重复触发那一组 vet noise。
-    continue-on-error: true
+    # AGENTS.md §4.1.1：test 是硬门槛。pre-existing FAIL 已系统性修完
+    # （lru/xpanic 早前 PR；TestWorkerComparison 时序抖动 commit 309bba2）。
+    # misc/cloud TestCloud 在无 env 时早返不阻断（CI 不设 RELEASE_CLOUD_*）。
+    # -vet=off 跳过 test 自带的前置 vet（vet 已是独立 job）。
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
