@@ -186,8 +186,8 @@ boost 仓 1.4/develop HEAD 上有以下 pre-existing 噪声 / 失败，需要单
 |---|---|---|
 | `vet` | 软门槛 | ~20 处 noise（`misc/hrff/hrff_test.go` Example 命名 / `xsync/cond_test.go` non-test goroutine 调 `t.Fatal` / `z/conv.go` `reflect.StringHeader` misuse / `xerror/xerror_x_test.go` cancel func discarded） |
 | `lint` | 软门槛 | 没 `.golangci.yml`，默认规则集会出 200-300 告警（仓库历史长，从未钉过 lint） |
-| `test` | 软门槛 | 2 个包 FAIL：`misc/cloud` `TestCloud` 真挂 / `xpanic` 一组 panic 测试挂 |
-| `race` | 软门槛 | 同 test 的 pre-existing |
+| `test` | 软门槛 | 当前无 pre-existing FAIL（misc/cloud `TestCloud` 仅在本地有 RELEASE_CLOUD_KEY/SECRET env 时才连真 AWS，CI 无 env 自动跳过；xpanic 一组测试在本轮已修复）。下一步钉硬门槛前需先确认 lint / vet 噪声清完 |
+| `race` | 软门槛 | 与 test 同；race 模式下没有额外的 pre-existing 问题需先解决 |
 | `vuln` | 软门槛 | 没 0 affecting 承诺基线 |
 | `build` | **硬门槛** | 全仓 `go build ./...` 通过 |
 
@@ -199,6 +199,14 @@ boost 仓 1.4/develop HEAD 上有以下 pre-existing 噪声 / 失败，需要单
 4. 升 deps 把 vuln 清零 → vuln hard gate
 
 每步都是独立 PR，不混进功能改动。
+
+#### §9.2 关联：xpanic %w/%v 历史教训
+
+xpanic/panic_when.go 历史曾发生 `fmt.Errorf` → `fmt.Sprintf` 改写时漏改
+`%w` → `%v`（commit f7dd56a），vet 一直报 build error 让 xpanic 测试无
+法编译。修复同时补 `WhenHereNotNil` 端到端断言（panic value 字面格式
+精确比较），确保未来再回归这种"verb 不匹配"问题时测试层面也能捕获，
+不再仅依赖 vet（万一未来 lint/vet 配置改动就漏）。详见 §9.2。
 
 ### 4.2 Go 版本钉 1.24.0
 

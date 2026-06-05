@@ -46,6 +46,17 @@ func Test_NormalFlowFinally(T *testing.T) {
 	}
 }
 
+// catch handler 收到的 e 是 exception 结构体（commit d885113 设计选择），
+// 不是 panic 抛出的原值。需要 e.(exception).Error 取 panic value。同包测试
+// 直接用未导出的 exception 类型；外部包目前没有便捷断言路径（潜在 API
+// 设计问题，留给未来 PR）。
+func panicValueFrom(e E) any {
+	if exc, ok := e.(exception); ok {
+		return exc.Error
+	}
+	return e
+}
+
 func Test_CrashInTry(T *testing.T) {
 	calledFinally := false
 	calledCatch := false
@@ -58,7 +69,7 @@ func Test_CrashInTry(T *testing.T) {
 
 	}).Catch(func(e E) {
 		calledCatch = true
-		if e != "testing panic" {
+		if panicValueFrom(e) != "testing panic" {
 			T.Error("error is not 'testing panic'")
 		}
 	})
@@ -82,7 +93,7 @@ func Test_CrashInTry2(T *testing.T) {
 
 	}).Catch(func(e E) {
 		calledCatch = true
-		if e != "testing panic" {
+		if panicValueFrom(e) != "testing panic" {
 			T.Error("error is not 'testing panic'")
 		}
 	})
@@ -113,7 +124,7 @@ func Test_CrashInCatch(T *testing.T) {
 		calledFinally = true
 
 	}).Catch(func(e E) {
-		if e != "testing panic" {
+		if panicValueFrom(e) != "testing panic" {
 			T.Error("error is not 'testing panic'")
 		}
 		panic("another panic")
@@ -132,7 +143,7 @@ func Test_CrashInCatch2(T *testing.T) {
 		panic("testing panic")
 
 	}).Catch(func(e E) {
-		if e != "testing panic" {
+		if panicValueFrom(e) != "testing panic" {
 			T.Error("error is not 'testing panic'")
 		}
 		panic("another panic")
@@ -160,7 +171,7 @@ func Test_CrashInThrow(T *testing.T) {
 		calledFinally = true
 
 	}).Catch(func(e E) {
-		if e != "testing panic" {
+		if panicValueFrom(e) != "testing panic" {
 			T.Error("error is not 'testing panic'")
 		}
 		Throw()
@@ -179,7 +190,7 @@ func Test_CrashInThrow2(T *testing.T) {
 		panic("testing panic")
 
 	}).Catch(func(e E) {
-		if e != "testing panic" {
+		if panicValueFrom(e) != "testing panic" {
 			T.Error("error is not 'testing panic'")
 		}
 		Throw()
@@ -228,7 +239,7 @@ func Test_CrashInFinally2(T *testing.T) {
 		panic("finally panic")
 
 	}).Catch(func(e E) {
-		if e != "testing panic" {
+		if panicValueFrom(e) != "testing panic" {
 			T.Error("error is not 'testing panic'")
 		}
 		panic("another panic")

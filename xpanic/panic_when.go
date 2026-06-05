@@ -46,11 +46,16 @@ func WhenFalse(condition bool, fmtStr string, args ...interface{}) {
 
 // WhenHereNotNil 提供运行到此处返回的error应为nil的语义，避免在框架层吃掉error
 // 功能逻辑等同WhenError，但是语义上调用者确定这里不会返回错误
+//
+// panic value 是 fmt.Sprintf 格式化后的 string；用 %v 而非 %w —— Sprintf 不支持
+// %w，且这里不需要 errors.Is/As 透视（panic 用 string value 让 recover 处理更简单）。
+// 历史教训：commit f7dd56a 把 fmt.Errorf 改为 fmt.Sprintf 时漏改 %w → %v，
+// vet 一直报 build error 让 xpanic 包的所有测试无法编译，直到本次修复才暴露。
 func WhenHereNotNil(err error) {
 	if err == nil {
 		return
 	}
-	panic(fmt.Sprintf("err should be nil when here, got:%w", err))
+	panic(fmt.Sprintf("err should be nil when here, got:%v", err))
 }
 
 // WhenNil 如果v为nil则panic
