@@ -17,13 +17,20 @@ type UnboundedChan[T any] struct {
 	cc       *Options
 }
 
-// Len 所有待读取的数据的长度
-func (c UnboundedChan[T]) Len() int {
+// Len 所有待读取的数据的长度。
+//
+// 历史 bug：原签名是 value receiver `(c UnboundedChan[T])`，调用时 c 是
+// 整个 struct 拷贝，BufLen 内 atomic.LoadInt64(&c.bufCount) 读的是拷贝
+// 后的字段地址，与 process goroutine 在原 struct 的 bufCount 上做的
+// atomic.AddInt64 是**不同内存**——atomic 不再能保证一致性，触发 race。
+// 改成 pointer receiver 让 atomic 操作落在同一内存。
+func (c *UnboundedChan[T]) Len() int {
 	return len(c.In) + c.BufLen() + len(c.Out)
 }
 
-// BufLen 获取缓存中的数据的长度，不包含外发Out channel中数据的长度
-func (c UnboundedChan[T]) BufLen() int {
+// BufLen 获取缓存中的数据的长度，不包含外发Out channel中数据的长度。
+// 历史 bug 同 Len：value receiver 让 atomic 操作不一致，改 pointer。
+func (c *UnboundedChan[T]) BufLen() int {
 	return int(atomic.LoadInt64(&c.bufCount))
 }
 
