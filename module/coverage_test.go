@@ -1,6 +1,7 @@
 package module
 
 import (
+	"context"
 	"fmt"
 	"sync"
 	"sync/atomic"
@@ -216,6 +217,75 @@ func TestMaster_RunModule_AfterStart_Concurrent(t *testing.T) {
 	})
 }
 
+// recordingPlugin 一个会记录调用次数的 plugin，用于并发场景断言。
+type recordingPlugin struct {
+	afterRunCalls atomic.Int32
+}
+
+func (p *recordingPlugin) AfterRunModule(context.Context, Master) {
+	p.afterRunCalls.Add(1)
+}
+
+func (p *recordingPlugin) BeforeCloseModule(context.Context, Master) {}
+
+// TestMaster_AttachPlugin_Concurrent 在 master 已 Run 后并发调
+// AttachPlugin，触发 plugins append vs afterRunModule/beforeCloseModule
+// 遍历 race（已修：pluginsMu 加锁 + snapshotPlugins 读快照）。
+//
+// 反向验证（§3.1）：本测试在 -race 下若回退到无锁 append + 直接 range
+// m.plugins 会被 race detector 抓到。
+func TestMaster_AttachPlugin_Concurrent(t *testing.T) {
+	Convey("master 已 Run 后并发 AttachPlugin，与 afterRunModule goroutine 遍历 plugins 无 race", t, func() {
+		m := New()
+		// 先注册一个守护 module 让 master 真的进入 Run loop。afterRunModule
+		// goroutine 在 Run 主线 m.masterStarted.Set(true) 前后启动，会读 plugins。
+		guard := newStoppableModule("guard-attach")
+		runDone := make(chan struct{})
+		go func() {
+			m.Run(guard)
+			close(runDone)
+		}()
+
+		select {
+		case <-guard.runStartedCh:
+		case <-time.After(2 * time.Second):
+			t.Fatal("guard never started")
+		}
+
+		// 等 masterStarted=true 确保 afterRunModule goroutine 已启动
+		deadline := time.Now().Add(2 * time.Second)
+		for !m.masterStarted.Get() && time.Now().Before(deadline) {
+			time.Sleep(time.Millisecond)
+		}
+		So(m.masterStarted.Get(), ShouldBeTrue)
+
+		// 并发 AttachPlugin N 次（每次注册多个 plugin）。afterRunModule
+		// goroutine 此时已在 range plugins，append 与 range 之间形成 race。
+		const n = 20
+		var wg sync.WaitGroup
+		for i := 0; i < n; i++ {
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				m.AttachPlugin(&recordingPlugin{})
+			}()
+		}
+		wg.Wait()
+
+		// Stop 触发 beforeCloseModule goroutine 也 range plugins，再次验
+		// 证读侧无 race。
+		m.Stop()
+		select {
+		case <-runDone:
+		case <-time.After(3 * time.Second):
+			t.Fatal("Run never returned after Stop")
+		}
+
+		// AttachPlugin 全部成功
+		So(len(m.snapshotPlugins()), ShouldEqual, n)
+	})
+}
+
 // TestNewModule_Helper 覆盖 NewModule 工厂 + simpleModule 全部方法。
 func TestNewModule_Helper(t *testing.T) {
 	Convey("NewModule 默认生成 xid 名字", t, func() {
@@ -285,9 +355,7 @@ func TestPackageLevel_RunModule_RunWithCloseTimeout(t *testing.T) {
 	})
 }
 
-// 注：原本想加 TestMaster_RunModule_AfterStart 覆盖 master 已启动后的
-// RunModule 路径（masterStarted=true）。该路径会暴露 master.go pre-existing
-// race：master.allAgents slice append（master.go:89）没有同步保护，与
-// runAll/closeAll 内的 read 并发；属于源码级 race bug，需独立 PR 加锁
-// （sync.Mutex 保护 allAgents 或迁 atomic）。本任务不引入测试触发该 race
-// 阻断 race CI job。RunModule "after start" 分支覆盖率因此停留在 ~37%。
+// 历史注：master.go 早期 allAgents 与 plugins 的 append vs read race 已
+// 在 commit b8f2162 (allAgents+ctx) 与本批 commit (plugins) 系统性修完。
+// TestMaster_RunModule_AfterStart_Concurrent / TestMaster_AttachPlugin_Concurrent
+// 已覆盖两条路径并做反向验证。

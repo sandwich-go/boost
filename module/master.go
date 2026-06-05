@@ -48,12 +48,17 @@ type master struct {
 	// Modules / runAll / closeAll 读，以及 RunModule 在 master 已 Run
 	// 后注册新 module 时与 closeAll 反向遍历的并发。读侧用
 	// snapshotAgents 拷贝快照后无锁遍历。
-	agentsMu           sync.Mutex
-	allAgents          []*agent
+	agentsMu  sync.Mutex
+	allAgents []*agent
+	// pluginsMu 保护 plugins 的并发读写：AttachPlugin 写 vs
+	// afterRunModule / beforeCloseModule 读（后两者在独立 goroutine 中跑，
+	// 与主流程或后续 AttachPlugin 调用形成 race）。读侧用 snapshotPlugins
+	// 拷贝快照后无锁遍历。
+	pluginsMu          sync.Mutex
+	plugins            []Plugin
 	runningCount       xsync.AtomicInt32
 	chanHasShutdown    chan struct{}
 	chanStoppedByLogic chan string // 逻辑导致的退出,用户主动停止,逻辑异常停止
-	plugins            []Plugin
 }
 
 // snapshotAgents 锁内拷贝 allAgents 快照，让读侧遍历期间无需持锁。
@@ -62,6 +67,15 @@ func (m *master) snapshotAgents() []*agent {
 	out := make([]*agent, len(m.allAgents))
 	copy(out, m.allAgents)
 	m.agentsMu.Unlock()
+	return out
+}
+
+// snapshotPlugins 锁内拷贝 plugins 快照，让读侧遍历期间无需持锁。
+func (m *master) snapshotPlugins() []Plugin {
+	m.pluginsMu.Lock()
+	out := make([]Plugin, len(m.plugins))
+	copy(out, m.plugins)
+	m.pluginsMu.Unlock()
 	return out
 }
 
@@ -84,18 +98,20 @@ func (m *master) Modules() []Module {
 
 func (m *master) AttachPlugin(plugins ...Plugin) {
 	if len(plugins) > 0 {
+		m.pluginsMu.Lock()
 		m.plugins = append(m.plugins, plugins...)
+		m.pluginsMu.Unlock()
 	}
 }
 
 func (m *master) afterRunModule(ctx context.Context) {
-	for _, v := range m.plugins {
+	for _, v := range m.snapshotPlugins() {
 		v.AfterRunModule(ctx, m)
 	}
 }
 
 func (m *master) beforeCloseModule(ctx context.Context) {
-	for _, v := range m.plugins {
+	for _, v := range m.snapshotPlugins() {
 		v.BeforeCloseModule(ctx, m)
 	}
 }
