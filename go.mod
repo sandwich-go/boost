@@ -1,6 +1,8 @@
 module github.com/sandwich-go/boost
 
-go 1.24.0
+go 1.25.0
+
+toolchain go1.25.11
 
 require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
@@ -21,18 +23,18 @@ require (
 	github.com/vmihailenco/msgpack/v5 v5.3.5
 	go.uber.org/goleak v1.3.0
 	go.uber.org/mock v0.4.0
-	golang.org/x/crypto v0.45.0
+	golang.org/x/crypto v0.51.0
 	golang.org/x/exp v0.0.0-20240325151524-a685a6edb6d8
-	golang.org/x/sync v0.18.0
+	golang.org/x/sync v0.20.0
 	google.golang.org/protobuf v1.36.11
 )
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
-	golang.org/x/net v0.47.0 // indirect
-	golang.org/x/sys v0.38.0 // indirect
-	golang.org/x/text v0.31.0
+	golang.org/x/net v0.55.0 // indirect
+	golang.org/x/sys v0.45.0 // indirect
+	golang.org/x/text v0.37.0
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

@@ -26,8 +26,10 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # AGENTS.md §4.2：Go 版本钉 1.24.0；CI 用 1.24.x patch 最新版（不影响主版本号语义）
-  GO_VERSION: "1.24.x"
+  # AGENTS.md §4.2：Go 版本钉 1.25.0 + toolchain 1.25.11；CI 用 1.25.x patch
+  # 最新版（不影响主版本号语义）。下游 myproxy/dataserver 都已 1.25.x，与
+  # boost 同步避免 stdlib CVE 长期 affecting。
+  GO_VERSION: "1.25.x"
 
 jobs:
   # ---------------------------------------------------------------------------
@@ -141,10 +143,13 @@ jobs:
 
   vuln:
     runs-on: ubuntu-latest
-    # boost 当前没有 0 vuln 的承诺；先 soft gate 看告警面，等清理完再硬钉。
-    # （这与 myproxy 的 vuln-job 硬钉策略不同——myproxy 已经维护到 0
-    # affecting，boost 还没做这个清理。）
-    continue-on-error: true
+    # AGENTS.md §4.1.1：vuln 是硬门槛。本仓 affecting CVE 数 = 0（go.mod
+    # 已升 1.25.0 + toolchain 1.25.11，x/net v0.55.0）。imported / required
+    # modules 层仍有 vuln 但 govulncheck call-graph 分析 "your code doesn't
+    # appear to call"（库性质，下游业务 LR 自查）—— 不是 affecting，不阻断。
+    #
+    # govulncheck 在有 affecting CVE 时 exit code 非 0；其它非阻断告警走
+    # stdout 不影响 exit code。
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5

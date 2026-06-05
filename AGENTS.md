@@ -22,7 +22,7 @@
   仍在调老 API"
 - **每个子包独立可用**，互相依赖尽量少；`xmath`/`xslice`/`xmap` 这种 leaf 工具
   包不能反向 import `httputil` 之类的 heavy 包
-- **泛型已可用**（go.mod `go 1.24.0`）；新代码优先泛型实现，老的多类型生成
+- **泛型已可用**（go.mod `go 1.25.0` + `toolchain go1.25.11`）；新代码优先泛型实现，老的多类型生成
   代码（`internal/template2/`）逐步退役（已在 1.4/develop 完成 xmath /
   xslice / xmap 三个包的迁移，删除 ~16,300 行生成代码）
 
@@ -50,9 +50,10 @@ make tools
 make ci
 ```
 
-**Go 版本**：`go.mod` 写 `go 1.24.0`。本地 toolchain 比这版本新没事，但**不要在
-go.mod 里手动把 `go 1.24.0` 往下回退**，会让 1.21+ 才有的 `cmp.Ordered` /
-`maps` / `slices` 标准库不可用。
+**Go 版本**：`go.mod` 写 `go 1.25.0` + `toolchain go1.25.11`。本地 toolchain
+比这版本新没事，但**不要在 go.mod 里手动把 `go 1.25.0` 往下回退**——下游
+myproxy / dataserver 都已 `go 1.25.0`，回退到 1.24 会让 stdlib CVE
+（GO-2025-* / GO-2026-*）长期 affecting boost，govulncheck 报警。
 
 **CI 镜像**：`.github/workflows/ci.yml` 跑 `vet → build → test → race`，全绿才
 能合入主干。详细命令见 §2.1。
@@ -189,7 +190,7 @@ boost 仓 1.4/develop HEAD 上有以下 pre-existing 噪声 / 失败，需要单
 | `lint` | 软门槛 | 没 `.golangci.yml`，默认规则集会出 200-300 告警（仓库历史长，从未钉过 lint） |
 | `test` | 软门槛 | 当前无 pre-existing FAIL（misc/cloud `TestCloud` 仅在本地有 RELEASE_CLOUD_KEY/SECRET env 时才连真 AWS，CI 无 env 自动跳过；xpanic 一组测试已修复）。下一步钉硬门槛前需先确认 lint 噪声清完 |
 | `race` | 软门槛 | 主要 race 已系统性修完：xtime SetNowProvider (commit `f57991b`) / module/master allAgents+ctx (commit `b8f2162`)；剩 xchan TestLen 抖动 + xcontainer/syncmap msgpack lib 共享状态 race，需复盘根因后再钉 |
-| `vuln` | 软门槛 | 没 0 affecting 承诺基线 |
+| `vuln` | **硬门槛** | 升 go.mod 到 `go 1.25.0` + `toolchain go1.25.11` 让 stdlib backport patch 生效；升 `golang.org/x/net` 到 v0.55.0；本仓 affecting CVE 数 = 0（commit `<本批>`）。仍有 imported / required modules 层 vuln 但 govulncheck call-graph 分析"your code doesn't appear to call"（库性质，下游业务 LR 自查） |
 | `build` | **硬门槛** | 全仓 `go build ./...` 通过 |
 
 **渐进式硬钉路径**（每步独立 PR）：
@@ -197,7 +198,7 @@ boost 仓 1.4/develop HEAD 上有以下 pre-existing 噪声 / 失败，需要单
 1. ✅ ~~系统性修 vet noise → CI vet 改 hard gate~~（已完成 2026-06-05）
 2. 修 xchan TestLen / xcontainer/syncmap msgpack race → race 改 hard gate
 3. 加 `.golangci.yml` v2 schema → 修 lint 告警 → lint hard gate
-4. 升 deps 把 vuln 清零 → vuln hard gate
+4. ✅ ~~升 Go 1.25.0 + x/net v0.55.0 → 0 affecting CVE → vuln hard gate~~（已完成 2026-06-05）
 
 每步都是独立 PR，不混进功能改动。
 
@@ -214,14 +215,16 @@ xpanic/panic_when.go 历史曾发生 `fmt.Errorf` → `fmt.Sprintf` 改写时漏
 精确比较），确保未来再回归这种"verb 不匹配"问题时测试层面也能捕获，
 不再仅依赖 vet（万一未来 lint/vet 配置改动就漏）。详见 §9.2。
 
-### 4.2 Go 版本钉 1.24.0
+### 4.2 Go 版本钉 1.25.0 + toolchain 1.25.11
 
-`go.mod` 第 3 行 `go 1.24.0`。**不要降到 1.20 / 1.21**——1.21 引入的
-`cmp.Ordered` / 标准库 `slices` / `maps` 已被本仓泛型代码 import（看
-`xmath/xmath.go` / `xmap/xwalk.go` 头部 import）。
+`go.mod` 第 3 行 `go 1.25.0` + 第 5 行 `toolchain go1.25.11`。**不要回退到
+1.24 或更低**——1.21+ 标准库 `cmp.Ordered` / `slices` / `maps` 已被本仓
+泛型代码 import；下游 myproxy / dataserver 都已 1.25.x，1.24 会让 stdlib
+CVE 长期 affecting boost。
 
-升 Go 版本时单独走 PR：升 `go.mod` → 跑 `make ci` → 跑 `make bench_diff`
-确认主要 hot path 性能不退化 → 提交。
+升 Go 版本时单独走 PR：升 `go.mod`（含 toolchain）→ 升 ci.yml 的
+`GO_VERSION` → 跑 `make ci` → 跑 `make bench_diff` 确认主要 hot path 性能
+不退化 → 跑 `make vuln` 验证 affecting CVE 数为 0 → 提交。
 
 ### 4.3 公开 API 只增不减（minor 内）
 
