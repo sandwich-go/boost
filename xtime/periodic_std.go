@@ -1,5 +1,3 @@
-//go:build !timewheel
-
 package xtime
 
 import (

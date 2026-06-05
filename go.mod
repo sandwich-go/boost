@@ -4,7 +4,6 @@ go 1.24.0
 
 require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
-	github.com/RussellLuo/timingwheel v0.0.0-20220218152713-54845bda3108
 	github.com/bufbuild/protovalidate-go v0.6.2
 	github.com/buger/jsonparser v1.1.1
 	github.com/coreos/go-semver v0.3.1
@@ -27,8 +26,6 @@ require (
 	golang.org/x/sync v0.18.0
 	google.golang.org/protobuf v1.36.11
 )
-
-replace github.com/RussellLuo/timingwheel => github.com/sandwich-go/timingwheel v0.0.0-20251228060126-9b349bf51c04
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect

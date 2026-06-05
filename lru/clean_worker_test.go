@@ -7,16 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/RussellLuo/timingwheel"
-	"github.com/sandwich-go/boost/xtime"
 	. "github.com/smartystreets/goconvey/convey"
 )
-
-func TestMain(m *testing.M) {
-	xtime.DefaultTiming = timingwheel.NewTimingWheel(time.Millisecond*10, 128)
-	xtime.DefaultTiming.Start()
-	m.Run()
-}
 
 // TestWorkerPerEngine_BasicFunctionality 测试 workerPerEngine 基本功能
 func TestWorkerPerEngine_BasicFunctionality(t *testing.T) {
@@ -201,9 +193,9 @@ func TestWorkerComparison_GoroutineCount(t *testing.T) {
 	Convey("Neither worker should spawn per-engine goroutines", t, func() {
 		engineCount := 50
 		interval := 100 * time.Millisecond
-		// 阈值 = engineCount/2：足够松到容纳 timer 派发栈临时 goroutine
-		// 与 timingwheel 自身辅助 goroutine，又能在「真的退化为 per-engine
-		// goroutine」时立刻报警。
+		// 阈值 = engineCount/2：足够松到容纳 std timer 派发栈临时 goroutine
+		// + GC sweep 路径上偶发的 helper goroutine，又能在「真的退化为
+		// per-engine goroutine」时立刻报警。
 		threshold := engineCount / 2
 
 		Convey("workerPerEngine should not grow goroutine count linearly", func() {

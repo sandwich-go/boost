@@ -15,7 +15,7 @@ import (
 // 不用 b.N（b.N 控制注册数量，但稳态压力来自时间累积），用固定 wallTime
 // 配合 b.ReportMetric 输出每秒 alloc/GC，用 -benchtime 控制采样时长。
 //
-// 跑法：go test -tags timewheel -run='^$' -bench=Steady -benchmem ./lru/
+// 跑法：go test -run='^$' -bench=Steady -benchmem ./lru/
 
 const (
 	steadyEngineCount = 200

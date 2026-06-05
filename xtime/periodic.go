@@ -44,6 +44,4 @@ func PeriodicWithShutdown(d time.Duration, jitterPercent int, shutdown <-chan st
 	return newPeriodic(d, jitterPercent, shutdown, f)
 }
 
-// newPeriodic 由 build tag 划分的实现文件提供：
-//   - periodic_std.go (default)         使用 time.AfterFunc + *Timer.Reset
-//   - periodic_timewheel.go (timewheel) 使用 timingwheel.ScheduleFunc
+// newPeriodic 由 periodic_std.go 提供，使用 time.AfterFunc + *Timer.Reset。

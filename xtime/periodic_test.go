@@ -8,13 +8,9 @@ import (
 	"time"
 )
 
-// 注意：以下测试用例的 interval 必须显著大于 timewheel build tag 下
-// DefaultTiming 的 tick（默认 100ms），否则 timingwheel.add() 会判定
-// 为已过期，回调被立即在新 goroutine 里执行，导致紧循环。
-// 这是 timewheel 模式的全局约束，不是 Periodic 实现问题——业务侧用
-// xtime 周期 API 同样必须遵守 interval >> tick 的前提。
-// 此处用 200ms 作为统一基准。
-
+// periodicTestInterval 是测试中周期任务的统一间隔。
+// 取 200ms 是 std time.AfterFunc 调度抖动 + goroutine 启动开销的合理上界，
+// 让测试断言"f 大约触发 N 次"有足够容差。
 const periodicTestInterval = 200 * time.Millisecond
 
 // TestPeriodic_Basic 验证 Periodic 周期性触发 f。
@@ -120,7 +116,8 @@ func TestPeriodic_Shutdown(t *testing.T) {
 }
 
 // TestPeriodic_NoOverlap 验证同一 Periodic 的 f 不会并发执行——
-// 这是 Periodic 与 timingwheel.ScheduleFunc 的关键差异：我们承诺 f 串行。
+// 实现保证：reschedule 在 f 返回后才发生（periodic_std.go.onFire），所以
+// 同一 Periodic 的 f 必然串行。
 func TestPeriodic_NoOverlap(t *testing.T) {
 	var concurrent atomic.Int32
 	var maxConcurrent atomic.Int32
@@ -212,17 +209,15 @@ func TestPeriodic_PanicOnNilFunc(t *testing.T) {
 //
 // 用 -benchtime=1x 跑：测试逻辑里固定 sample 时长，b.N 仅作为外层 loop。
 //
-// 期望：std 模式下接近 0 B/exec（每轮 *time.Timer.Reset 不分配），
-// timewheel 模式下大约 30-50 B/exec（每轮仍 new *timingwheel.Timer）。
+// 期望：稳态接近 0 B/exec —— 每轮 *time.Timer.Reset 不分配，
+// 整个 Periodic 生命周期只 alloc 一个底层 timer（构造时一次性）。
 func BenchmarkPeriodicSteady(b *testing.B) {
 	const (
 		taskCount = 200
 		warmup    = 300 * time.Millisecond
 		sample    = 2 * time.Second
+		interval  = 200 * time.Millisecond
 	)
-	// 必须 >> timewheel tick (默认 100ms)，否则 timewheel 模式下回调被
-	// 立即派发产生紧循环（参考 periodic_test.go 注释）。
-	const interval = 200 * time.Millisecond
 
 	for i := 0; i < b.N; i++ {
 		var counter atomic.Int64

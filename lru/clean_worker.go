@@ -30,12 +30,10 @@ type workerPerEngine struct {
 
 func (w *workerPerEngine) Clean(d time.Duration, _ string, f func()) {
 	// 走 xtime.PeriodicWithShutdown：单 task 整个生命周期只 alloc 一个底层
-	// timer，每轮 reschedule 由 Periodic 内部复用同一个 *time.Timer
-	// （或在 timewheel build 下复用同一个 tick 闭包）。相比手写
-	// AfterFunc + 自 reschedule 的旧实现，避免稳态产生 per-tick 的 timer
-	// / closure 分配。
+	// *time.Timer，每轮 reschedule 由 Periodic 内部 *time.Timer.Reset 复用，
+	// 避免稳态产生 per-tick 的 timer / closure 分配。
 	//
-	// shutdown 信号关闭后下一轮自动跳过，等价于原实现 select 退出语义。
+	// shutdown 信号关闭后下一轮自动跳过，等价于 select 退出语义。
 	xtime.PeriodicWithShutdown(d, jitterPercent, module.ShutdownNotify(), f)
 }
 
