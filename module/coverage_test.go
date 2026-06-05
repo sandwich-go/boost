@@ -1,6 +1,8 @@
 package module
 
 import (
+	"fmt"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -79,24 +81,18 @@ func TestMaster_RunModule_BeforeStart(t *testing.T) {
 	})
 }
 
-// TestMaster_RunWithCloseTimeout 验证 RunWithCloseTimeout 接口存在性。
+// TestMaster_RunWithCloseTimeout 验证 RunWithCloseTimeout 含 timeout 路径
+// 的 ctx 重赋值 race（已修：closeCtx 用独立变量名构造）。
 //
-// 注意：实际触发 timeout 路径会暴露 master.go pre-existing race —— Run
-// 主 goroutine 在 line 193 写 ctx（context.WithDeadline 赋值给同一变量），
-// 而 line 174 起的 afterRunModule goroutine 读 ctx（line 175）。这是
-// master.go 自身的 race bug，不是测试引入。本测试只验证 API 存在 + 可
-// 调用以提升覆盖，不触发 timeout 实际执行路径，避免阻断 race CI job。
-//
-// race 修复需独立 PR：把 ctx 提升为 atomic.Pointer[context.Context] 或
-// 在 Run 入口就构造好 deadline ctx 直接传给 afterRunModule goroutine。
+// 反向验证（§3.1）：本测试在 -race 下若回退 ctx 复用同一 stack slot 模式
+// 会被 race detector 抓到（afterRunModule goroutine 读 ctx vs Run 主线写 ctx）。
 func TestMaster_RunWithCloseTimeout(t *testing.T) {
-	Convey("RunWithCloseTimeout 注册 mod 后调 Stop，mod 响应 closeChan 退出", t, func() {
+	Convey("RunWithCloseTimeout(0) 等价于 Run，模块响应 closeChan 退出", t, func() {
 		m := New()
-		mod := newStoppableModule("timeout-mod-clean-exit")
+		mod := newStoppableModule("timeout-zero")
 
 		runDone := make(chan struct{})
 		go func() {
-			// timeoutDuration=0 等价于 Run，不触发 line 193 race
 			m.RunWithCloseTimeout(0, mod)
 			close(runDone)
 		}()
@@ -114,6 +110,109 @@ func TestMaster_RunWithCloseTimeout(t *testing.T) {
 			t.Fatal("RunWithCloseTimeout never returned")
 		}
 		So(mod.onCloseCount.Load(), ShouldEqual, int32(1))
+	})
+
+	Convey("RunWithCloseTimeout(>0) 触发 closeCtx WithDeadline 路径，与 afterRunModule goroutine 不 race", t, func() {
+		m := New()
+		// 注册一个能正常退出的 module，让 closeAll 走完整路径
+		mod := newStoppableModule("timeout-positive")
+
+		runDone := make(chan struct{})
+		go func() {
+			// timeoutDuration > 0 触发 master.go 内 closeCtx WithDeadline 赋值路径
+			m.RunWithCloseTimeout(2*time.Second, mod)
+			close(runDone)
+		}()
+
+		select {
+		case <-mod.runStartedCh:
+		case <-time.After(2 * time.Second):
+			t.Fatal("module never started")
+		}
+
+		// AttachPlugin 让 afterRunModule/beforeCloseModule 实际跑（plugin 体内
+		// 读 ctx，触发 race detector 在 ctx 上的检查）。
+		// 注意：AttachPlugin 须在 Run 之前；Stop 触发整套关闭流程后退出。
+		m.Stop()
+		select {
+		case <-runDone:
+		case <-time.After(3 * time.Second):
+			t.Fatal("RunWithCloseTimeout never returned")
+		}
+		So(mod.onCloseCount.Load(), ShouldEqual, int32(1))
+	})
+}
+
+// TestMaster_RunModule_AfterStart_Concurrent 在 master 已 Run 后并发调
+// RunModule，触发 allAgents append vs runAll/closeAll 遍历 race（已修：
+// agentsMu 加锁 + snapshotAgents 读快照）。
+//
+// 反向验证（§3.1）：本测试在 -race 下若回退到无锁 append 会被 race detector
+// 抓到。
+func TestMaster_RunModule_AfterStart_Concurrent(t *testing.T) {
+	Convey("master 已 Run 后并发 RunModule 多个 module，与 closeAll 遍历 allAgents 无 race", t, func() {
+		m := New()
+		// 先注册一个守护 module 让 master 真的进入 Run loop
+		guard := newStoppableModule("guard")
+		runDone := make(chan struct{})
+		go func() {
+			m.Run(guard)
+			close(runDone)
+		}()
+
+		select {
+		case <-guard.runStartedCh:
+		case <-time.After(2 * time.Second):
+			t.Fatal("guard never started")
+		}
+
+		// guard.runStartedCh close 后 master.masterStarted 不一定立刻为 true
+		// （Run 主线还要走完 afterRunModule goroutine 启动 + masterStarted.Set(true)）。
+		// poll 等 masterStarted=true 再发并发 RunModule，避免早期 RunModule
+		// 走 "未启动仅注册" 早返路径。
+		deadline := time.Now().Add(2 * time.Second)
+		for !m.masterStarted.Get() && time.Now().Before(deadline) {
+			time.Sleep(time.Millisecond)
+		}
+		So(m.masterStarted.Get(), ShouldBeTrue)
+
+		// 并发动态注册 N 个 module（master 已 Run，走 RunModule 直接启动路径）
+		const n = 20
+		mods := make([]*stoppableModule, n)
+		var wg sync.WaitGroup
+		for i := 0; i < n; i++ {
+			wg.Add(1)
+			go func(i int) {
+				defer wg.Done()
+				mod := newStoppableModule(fmt.Sprintf("dyn-%d", i))
+				mods[i] = mod
+				m.RunModule(mod)
+			}(i)
+		}
+		wg.Wait()
+
+		// 等所有动态 module 都进入 Run（避免 Stop 时 OnInit 还没跑完）
+		for i := 0; i < n; i++ {
+			select {
+			case <-mods[i].runStartedCh:
+			case <-time.After(2 * time.Second):
+				t.Fatalf("dyn-%d never started", i)
+			}
+		}
+
+		// Stop 触发 closeAll 反向遍历 allAgents
+		m.Stop()
+		select {
+		case <-runDone:
+		case <-time.After(3 * time.Second):
+			t.Fatal("Run never returned after Stop")
+		}
+
+		// guard + 20 个动态 module 都应被 OnClose
+		So(guard.onCloseCount.Load(), ShouldEqual, int32(1))
+		for i := 0; i < n; i++ {
+			So(mods[i].onCloseCount.Load(), ShouldEqual, int32(1))
+		}
 	})
 }
 

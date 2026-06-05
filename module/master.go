@@ -41,13 +41,27 @@ func (a *agent) close() {
 
 // master Module管理器
 type master struct {
-	masterStarted      xsync.AtomicBool
-	timeoutDuration    time.Duration
+	masterStarted   xsync.AtomicBool
+	timeoutDuration time.Duration
+	// agentsMu 保护 allAgents 的并发读写：registerOneModule 写 vs
+	// Modules / runAll / closeAll 读，以及 RunModule 在 master 已 Run
+	// 后注册新 module 时与 closeAll 反向遍历的并发。读侧用
+	// snapshotAgents 拷贝快照后无锁遍历。
+	agentsMu           sync.Mutex
 	allAgents          []*agent
 	runningCount       xsync.AtomicInt32
 	chanHasShutdown    chan struct{}
 	chanStoppedByLogic chan string // 逻辑导致的退出,用户主动停止,逻辑异常停止
 	plugins            []Plugin
+}
+
+// snapshotAgents 锁内拷贝 allAgents 快照，让读侧遍历期间无需持锁。
+func (m *master) snapshotAgents() []*agent {
+	m.agentsMu.Lock()
+	out := make([]*agent, len(m.allAgents))
+	copy(out, m.allAgents)
+	m.agentsMu.Unlock()
+	return out
 }
 
 // New 新建一个 Module 管理器,一般情况下使用默认 default 即可
@@ -59,9 +73,10 @@ func New() *master {
 }
 
 func (m *master) Modules() []Module {
-	var out = make([]Module, 0, len(m.allAgents))
-	for i := 0; i < len(m.allAgents); i++ {
-		out = append(out, m.allAgents[i].Module)
+	agents := m.snapshotAgents()
+	out := make([]Module, 0, len(agents))
+	for i := 0; i < len(agents); i++ {
+		out = append(out, agents[i].Module)
 	}
 	return out
 }
@@ -86,7 +101,9 @@ func (m *master) beforeCloseModule(ctx context.Context) {
 
 func (m *master) registerOneModule(md Module) *agent {
 	a := &agent{Module: md, master: m, closeChan: make(chan struct{}, 1)}
+	m.agentsMu.Lock()
 	m.allAgents = append(m.allAgents, a)
+	m.agentsMu.Unlock()
 	return a
 }
 
@@ -111,15 +128,16 @@ func (m *master) Stop(reason ...string) {
 }
 
 func (m *master) runAll() {
-	for i := 0; i < len(m.allAgents); i++ {
-		m.allAgents[i].OnInit()
+	agents := m.snapshotAgents()
+	for i := 0; i < len(agents); i++ {
+		agents[i].OnInit()
 	}
 
-	for i := 0; i < len(m.allAgents); i++ {
-		boost.LogInfof("ModuleName %s starting ...", m.allAgents[i].Name())
-		m.allAgents[i].wg.Add(1)
-		go m.allAgents[i].run()
-		boost.LogInfof("ModuleName %s started ...", m.allAgents[i].Name())
+	for i := 0; i < len(agents); i++ {
+		boost.LogInfof("ModuleName %s starting ...", agents[i].Name())
+		agents[i].wg.Add(1)
+		go agents[i].run()
+		boost.LogInfof("ModuleName %s started ...", agents[i].Name())
 	}
 }
 
@@ -137,8 +155,9 @@ func (m *master) RunModule(md Module) {
 }
 
 func (m *master) closeAll(ctx context.Context) {
-	for i := len(m.allAgents) - 1; i >= 0; i-- {
-		a := m.allAgents[i]
+	agents := m.snapshotAgents()
+	for i := len(agents) - 1; i >= 0; i-- {
+		a := agents[i]
 		boost.LogInfof("ModuleName %s closing ...", a.Name())
 		close(a.closeChan)
 		if m.timeoutDuration == 0 {
@@ -170,10 +189,12 @@ func (m *master) Run(ms ...Module) {
 	boost.LogInfof("progress started, pid: %d, version: %s, race: %t, debug_enabled: %t",
 		os.Getpid(), version.String(), race.Enabled, xdebug.Enabled())
 
-	ctx := context.Background()
-	go func() {
+	// runCtx 给 afterRunModule 用；按值传给 goroutine 闭包，避免主 goroutine
+	// 后续 closeCtx 赋值时引发 stack 变量 race。
+	runCtx := context.Background()
+	go func(ctx context.Context) {
 		m.afterRunModule(ctx)
-	}()
+	}(runCtx)
 	m.masterStarted.Set(true)
 
 	reason := "unknown"
@@ -188,22 +209,25 @@ func (m *master) Run(ms ...Module) {
 
 	m.masterStarted.Set(false)
 
+	// closeCtx 用独立变量名构造，不复用 runCtx 的 stack slot，避免与
+	// afterRunModule goroutine 之间 race。
+	closeCtx := context.Background()
 	if m.timeoutDuration != 0 {
 		var cancelFunc context.CancelFunc
-		ctx, cancelFunc = context.WithDeadline(ctx, time.Now().Add(m.timeoutDuration))
+		closeCtx, cancelFunc = context.WithDeadline(closeCtx, time.Now().Add(m.timeoutDuration))
 		defer cancelFunc()
 	}
 	beforeCloseModuleDone := make(chan struct{})
-	go func() {
+	go func(ctx context.Context) {
 		m.beforeCloseModule(ctx)
 		close(beforeCloseModuleDone)
-	}()
+	}(closeCtx)
 
 	select {
 	case <-beforeCloseModuleDone:
-	case <-ctx.Done():
+	case <-closeCtx.Done():
 	}
 
-	m.closeAll(ctx)
+	m.closeAll(closeCtx)
 	close(m.chanHasShutdown)
 }
