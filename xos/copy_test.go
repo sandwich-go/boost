@@ -56,7 +56,7 @@ func TestCopy(t *testing.T) {
 		sort.Strings(destFiles)
 		So(files, ShouldResemble, destFiles)
 		So(len(md5s), ShouldEqual, len(destMd5s))
-		So(xmap.EqualStringStringMap(md5s, destMd5s), ShouldBeTrue)
+		So(xmap.Equal(md5s, destMd5s), ShouldBeTrue)
 		So(os.RemoveAll(dest), ShouldBeNil)
 	})
 }

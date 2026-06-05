@@ -21,7 +21,7 @@ func RemoveCppStyleComments(content []byte) []byte {
 
 func RmoveCAndCppCommentAndBlanklines(src []byte) []byte {
 	out := RemoveCppStyleComments(RemoveCStyleComments(src))
-	return []byte(strings.Join(xslice.StringsWalk(strings.Split(string(out), "\n"), func(s string) (string, bool) {
+	return []byte(strings.Join(xslice.Walk(strings.Split(string(out), "\n"), func(s string) (string, bool) {
 		return s, xstrings.Trim(s) != ""
 	}), "\n"))
 }

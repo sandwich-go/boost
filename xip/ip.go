@@ -75,7 +75,7 @@ func LocalIpv4Addrs() (ips []string, err error) {
 			}
 		}
 	}
-	return xslice.StringsRemoveRepeated(ips), nil
+	return xslice.RemoveRepeated(ips), nil
 }
 
 // isVPNInterface 判断是否是 VPN 接口
