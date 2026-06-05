@@ -92,13 +92,18 @@ func (e *Array) Is(target error) bool {
 	return false
 }
 
-// String
+// String 返回 Array 的调试表示。
+//
+// 历史 bug：原实现 `fmt.Sprintf("*%#v", *e)` 解引用 *Array 触发 vet
+// "copies lock value" 报错（Array 嵌入 sync.RWMutex 不能值拷贝）。
+// 改成手动拼字段，不解引用 receiver。
 func (e *Array) String() string {
 	if e.goroutineSafe {
 		e.RLock()
 		defer e.RUnlock()
 	}
-	return fmt.Sprintf("*%#v", *e)
+	return fmt.Sprintf("&xerror.Array{errors: %#v, formatFunc: %p, goroutineSafe: %v}",
+		e.errors, e.formatFunc, e.goroutineSafe)
 }
 
 // WrappedErrors 返回内部所有的 error
