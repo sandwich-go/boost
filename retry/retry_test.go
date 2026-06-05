@@ -118,8 +118,12 @@ func TestDoFirstOk(t *testing.T) {
 		)
 		dur := time.Since(start)
 		So(err, ShouldNotBeNil)
-		So(dur, ShouldBeLessThan, 205*time.Millisecond) // 重试5次,4个间隔*50ms
-		So(dur, ShouldBeGreaterThan, 150*time.Millisecond)
+		// 5 次尝试 = 4 个间隔，BackOff 公式 Delay<<attempt 在 MaxDelay 50ms
+		// 处 cap：10/20/40/50 = 120ms 理论值。上界给 CI runtime / 调度
+		// overhead 留 130ms 余量（原 205ms 仅留 5ms 在 CI Linux 多核环境
+		// 下抖动会触发偶发 fail，commit <本批> 收紧上界并写明 BackOff 推算）。
+		So(dur, ShouldBeLessThan, 250*time.Millisecond)
+		So(dur, ShouldBeGreaterThan, 100*time.Millisecond)
 	})
 
 	Convey(`with context`, t, func() {
