@@ -121,10 +121,13 @@ jobs:
 
   race:
     runs-on: ubuntu-latest
-    # AGENTS.md §4.4：race 是仓库硬约束。但当前同 test job 一样有 pre-existing
-    # FAIL（lru build / misc/cloud / xpanic），先软门槛接信号。
-    # 修完那些 pre-existing 问题后单独 PR 把 continue-on-error 撤掉。
-    continue-on-error: true
+    # AGENTS.md §4.4：race 是仓库硬门槛。pre-existing race 已系统性修完：
+    # - xtime.SetNowProvider (commit f57991b)
+    # - module.allAgents+ctx (commit b8f2162)
+    # - xchan.UnboundedChan{Len,BufLen} value receiver (commit <本批>)
+    # - xtime.TestTimerResetDispatcher 测试代码 race (commit <本批>)
+    # 上游 lib race（vmihailenco/msgpack pool reuse）在 -race 模式 t.Skip。
+    # misc/cloud TestCloud 在无 env 时早返，不阻断（CI 不设 RELEASE_CLOUD_*）。
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5

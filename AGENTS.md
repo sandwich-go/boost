@@ -189,14 +189,14 @@ boost 仓 1.4/develop HEAD 上有以下 pre-existing 噪声 / 失败，需要单
 | `vet` | **硬门槛** | ~22 处手写代码 noise 已系统性清完（commits `ea9f66c` / `69dcc68` / `3a5257b`）；剩余 ~20 处全在 fork（`xhash/nhash/jenkins/*` + `xsync/cond_test.go`），`make vet` 内置 fork 豁免（按 §4.6） |
 | `lint` | 软门槛 | 没 `.golangci.yml`，默认规则集会出 200-300 告警（仓库历史长，从未钉过 lint） |
 | `test` | 软门槛 | 当前无 pre-existing FAIL（misc/cloud `TestCloud` 仅在本地有 RELEASE_CLOUD_KEY/SECRET env 时才连真 AWS，CI 无 env 自动跳过；xpanic 一组测试已修复）。下一步钉硬门槛前需先确认 lint 噪声清完 |
-| `race` | 软门槛 | 主要 race 已系统性修完：xtime SetNowProvider (commit `f57991b`) / module/master allAgents+ctx (commit `b8f2162`)；剩 xchan TestLen 抖动 + xcontainer/syncmap msgpack lib 共享状态 race，需复盘根因后再钉 |
+| `race` | **硬门槛** | 全部 pre-existing race 已系统性修完：xtime.SetNowProvider (commit `f57991b`) / module.allAgents+ctx (commit `b8f2162`) / xchan.UnboundedChan value receiver atomic 无效（commit `<本批>`） / xtime.TestTimerResetDispatcher 测试代码 race（commit `<本批>`）。上游 lib race（vmihailenco/msgpack pool reuse）在 `-race` 模式 t.Skip 跳过。lru.TestWorkerComparison_GoroutineCount 时序抖动加 GC 等待稳定 |
 | `vuln` | **硬门槛** | 升 go.mod 到 `go 1.25.0` + `toolchain go1.25.11` 让 stdlib backport patch 生效；升 `golang.org/x/net` 到 v0.55.0；本仓 affecting CVE 数 = 0（commit `<本批>`）。仍有 imported / required modules 层 vuln 但 govulncheck call-graph 分析"your code doesn't appear to call"（库性质，下游业务 LR 自查） |
 | `build` | **硬门槛** | 全仓 `go build ./...` 通过 |
 
 **渐进式硬钉路径**（每步独立 PR）：
 
 1. ✅ ~~系统性修 vet noise → CI vet 改 hard gate~~（已完成 2026-06-05）
-2. 修 xchan TestLen / xcontainer/syncmap msgpack race → race 改 hard gate
+2. ✅ ~~修 xchan / xtime / lru race + msgpack lib race t.Skip → race 改 hard gate~~（已完成 2026-06-05）
 3. 加 `.golangci.yml` v2 schema → 修 lint 告警 → lint hard gate
 4. ✅ ~~升 Go 1.25.0 + x/net v0.55.0 → 0 affecting CVE → vuln hard gate~~（已完成 2026-06-05）
 
