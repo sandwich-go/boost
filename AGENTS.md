@@ -249,9 +249,8 @@ CVE 长期 affecting boost。
 并发包（`xtime` / `xsync` / `xchan` / `xcontainer/syncmap` / `xpool` / `lru` /
 `ratelimiter` / `singleflight`）任何改动必须 `make test_race` 通过。
 
-某些已知抖动（Apple M2 Pro 上 `xtime.TestTick` 在 `go test ./...` 高并发时偶
-发"close of closed channel"，但单独跑 `go test ./xtime/` 总绿）记到 §11，
-不堵塞主干。
+历史"已知抖动"——`xtime.TestTick` 在 `go test ./...` 高并发时偶发
+"close of closed channel"——已在本轮修复（详见 §9.1）。
 
 ### 4.5 lint 是硬门槛
 
@@ -579,13 +578,22 @@ origin。tag 是对外语义承诺（CI artifact / 部署系统 pin / changelog 
 > boost 没有 myproxy 的 `docs/bug-history.md` 体系；下面是已知踩坑的索引式
 > 短条目，未来如有大量积累再单独建文档。
 
-### 9.1 `xtime.TestTick` 在 `go test ./...` 偶发挂
+### 9.1 `xtime.TestTick` 在 `go test ./...` 偶发挂（已修）
 
-症状：`go test ./...` 高并发跨包时挂 `panic: close of closed channel` 在
-`xtime/dispatcher.go:100`，但单独跑 `go test ./xtime/` 总绿。
+历史症状：`go test ./...` 高并发跨包时挂 `panic: close of closed channel`
+在 `xtime/dispatcher.go:100`，但单独跑 `go test ./xtime/` 总绿。
 
-判断：测试代码自身的 panic（test fixture 双重 close），非生产代码 bug。改其
-他包后跑 `./...` 命中这个抖动**不是你引入的**——单包重跑确认。
+根因：测试代码 `if count >= 2 { close(stop) }` 没防重复 close。
+dispatcher tick 间隔 5ms / 主线超时 12ms 之间，dispatcher tick goroutine
+可能在主线退出前再触发第 3 次 tick，count 已 ≥ 2 重复 close(stop) 触发
+panic。go test ./... 高并发跨包调度延后让概率显著上升。
+
+修复（commit `<本批>`）：双保险——`count` 改 `atomic.Int32` 防 race；
+`close(stop)` 走 `sync.Once.Do` 让重复 close 安全；测试 defer `d.Close()`
+让 tick 停。`TestTickExternalHost` 同改。
+
+历史教训留作"测试侧 panic 不是源码 bug"案例：测试代码自身的 race / 重复
+close 在低并发下隐藏，高并发跨包暴露。
 
 ### 9.2 `xpanic.WhenErrorAsFmtFirst` 用 `Sprintf` 而非 `Errorf`
 
