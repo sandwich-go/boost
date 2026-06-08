@@ -702,6 +702,25 @@ template2/dependency_template.go` 因为不是泛型可表达场景。
 注解（`//go:generate ...` 标注的 `option.go` / `type.go` / `gen.go` 等）后
 跑 `make gen` 重新生成。
 
+### 9.9 CI lint job 偶发 GitHub releases CDN 504
+
+`golangci/golangci-lint-action@v9` 默认 `install-mode: binary`，从
+`github.com/golangci/golangci-lint/releases/download/...` 拉预编译 binary。
+GitHub releases CDN 偶发返 504，action 内部重试 2 次后仍 fail：
+
+```
+Downloading binary https://github.com/golangci/golangci-lint/releases/download/v2.12.2/...
+Unexpected HTTP response: 504
+Waiting 11 seconds before trying again
+Unexpected HTTP response: 504
+```
+
+判断：**不是 boost 代码 / ci.yml 配置 bug**，是上游服务临时不可用。
+应对：**直接 re-run job**。500 系错误一般几分钟后恢复。
+
+不切 `install-mode: goinstall`（从 source 编译）—— 官方 README 明确
+"goinstall is not recommended"，且会让 lint job 慢 2-5 倍。
+
 ---
 
 _最后更新：本文件随仓库演进；提交影响到约束 / 工作流时同步更新此文件。_
