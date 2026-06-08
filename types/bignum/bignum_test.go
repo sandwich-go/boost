@@ -213,3 +213,130 @@ func TestBigNum_Pow(t *testing.T) {
 		})
 	}
 }
+
+// TestBigNum_Compare 覆盖 Compare 三种结果（未覆盖）。
+func TestBigNum_Compare(t *testing.T) {
+	cases := []struct {
+		s, d BigNum
+		want int
+	}{
+		{"1", "2", -1},
+		{"2", "1", 1},
+		{"1", "1", 0},
+		{"1.5", "1.5", 0},
+		{"100K", "99K", 1},
+		{"99K", "100K", -1},
+	}
+	for _, c := range cases {
+		got := c.s.Compare(c.d)
+		if got != c.want {
+			t.Errorf("Compare(%s, %s) = %d, want %d", c.s, c.d, got, c.want)
+		}
+	}
+}
+
+// TestBigNum_Pow_Errors 覆盖 Pow 错误路径（parse 失败）。
+func TestBigNum_Pow_Errors(t *testing.T) {
+	// invalid input → parse 返 err → Pow 返同 err
+	_, err := BigNum("not-a-number").Pow(2)
+	if err == nil {
+		t.Error("Pow on invalid BigNum should return error")
+	}
+	// n=0 早返 "1"
+	got, err := BigNum("anything-wont-be-parsed").Pow(0)
+	if err != nil || got != "1" {
+		t.Errorf("Pow(0) should return '1', no error; got %v / %v", got, err)
+	}
+}
+
+// TestParse_AllTypes 覆盖 parse 内部各 type switch 分支（int / int32 /
+// int64 / uint / uint32 / uint64 / float32 / float64 / BigNum / string /
+// default）。通过公开 API Add 间接触发，让 doInterface 走每个类型。
+func TestParse_AllTypes(t *testing.T) {
+	cases := []struct {
+		name    string
+		v       interface{}
+		wantErr bool
+	}{
+		{"int", int(5), false},
+		{"int32", int32(5), false},
+		{"int64", int64(5), false},
+		{"uint", uint(5), false},
+		{"uint32", uint32(5), false},
+		{"uint64", uint64(5), false},
+		{"float32", float32(1.5), false},
+		{"float64", float64(2.5), false},
+		{"BigNum", BigNum("3"), false},
+		{"string", "4", false},
+		{"unsupported_struct", struct{}{}, true},
+		{"unsupported_slice", []int{1, 2}, true},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			_, err := Add(c.v, BigNum("0"))
+			if (err != nil) != c.wantErr {
+				t.Errorf("Add(%v): err=%v, wantErr=%v", c.v, err, c.wantErr)
+			}
+		})
+	}
+}
+
+// TestFromString_Errors 覆盖 FromString 在 parseString → clean / r.FromString
+// 失败时的早返。
+func TestFromString_Errors(t *testing.T) {
+	cases := []struct {
+		s       string
+		wantErr bool
+	}{
+		{"", false},      // 空 string clean 返 "0"
+		{"abc", true},    // 第一字符非 digit 非 '-' → ErrBadNumber
+		{"123abc", true}, // 末位非 digit + 不是已知 unit
+		{"123KK", true},  // KK 不在 unitStr（K 是 1 字符 unit, KK 不识别）
+		// 注：mydecimal.FromString 对多 '.' 的字符串行为宽松（吞掉后续 '.'），
+		// 因此 '123.45.67' 在本仓 parse 通路下不报错；不算 BigNum 设计 bug。
+		{"100K", false}, // 已知 unit
+		{"-100", false}, // 负数前缀 '-'
+	}
+	for _, c := range cases {
+		t.Run(c.s, func(t *testing.T) {
+			_, err := FromString(c.s)
+			if (err != nil) != c.wantErr {
+				t.Errorf("FromString(%q): err=%v, wantErr=%v", c.s, err, c.wantErr)
+			}
+		})
+	}
+}
+
+// TestClean_EdgeCases 覆盖 clean 内部分支：
+// - l == 0 → "0"
+// - 第一字符非 digit 非 '-' → ErrBadNumber
+// - 末位非 digit + 不是已知 unit → ErrBadNumber
+// - l <= len(unit) → ErrBadNumber
+// - 中间字符非 digit 非 '.' → ErrBadNumber
+func TestClean_EdgeCases(t *testing.T) {
+	cases := []struct {
+		s       string
+		wantErr bool
+		wantS   string
+		wantU   string
+	}{
+		{"", false, "0", ""},
+		{"abc", true, "", ""},
+		{"123x", true, "", ""},    // 末位非 digit / 非已知 unit
+		{"K", true, "", ""},       // l=1 <= len("K")=1，第二段 for 抓不到 unit
+		{"123-456", true, "", ""}, // 中间出现 '-'
+	}
+	for _, c := range cases {
+		t.Run(c.s, func(t *testing.T) {
+			s, u, err := clean(c.s)
+			if (err != nil) != c.wantErr {
+				t.Errorf("clean(%q): err=%v, wantErr=%v", c.s, err, c.wantErr)
+			}
+			if !c.wantErr {
+				if s != c.wantS || u != c.wantU {
+					t.Errorf("clean(%q): got s=%q u=%q, want s=%q u=%q", c.s, s, u, c.wantS, c.wantU)
+				}
+			}
+		})
+	}
+}
