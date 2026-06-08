@@ -276,6 +276,17 @@ func TestRectangle_Union_Empty(t *testing.T) {
 		var zr2 Rectangle[int]
 		So(zr.Union(zr2).Empty(), ShouldBeTrue)
 	})
+
+	Convey("Union 真扩展（s 在 r 外）4 个 if 都触发", t, func() {
+		// r=[5,5 ~ 10,10]; s=[0,0 ~ 15,15]
+		// s.min < r.min 让 line 194-196 / 197-199 触发；
+		// s.max > r.max 让 line 200-202 / 203-205 触发。
+		r := Rect[int](5, 5, 10, 10)
+		s := Rect[int](0, 0, 15, 15)
+		got := r.Union(s)
+		So(got.Min().Equals(P(0, 0)), ShouldBeTrue)
+		So(got.Max().Equals(P(15, 15)), ShouldBeTrue)
+	})
 }
 
 // TestRect_Swap 覆盖 Rect 的 x0>x1 / y0>y1 自动 swap 路径。

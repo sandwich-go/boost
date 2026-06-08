@@ -52,4 +52,40 @@ func TestLine(t *testing.T) {
 		})
 		So(len(l4Points), ShouldEqual, 4)
 	})
+
+	// 覆盖 RangePoints 各分支：xx>xy 横线 / 反向 / with 早退
+	Convey("RangePoints 横线 / 反向 / with 早退", t, func() {
+		// 横线 (1,1)→(5,1)：xx=4 >> xy=0，走 'xx >= xy' 的 else 分支
+		// （line 70-86）+ positive=true 子分支
+		var ptsHor []Point[int8]
+		L[int8](P[int8](1, 1), P[int8](5, 1)).RangePoints(func(p Point[int8]) bool {
+			ptsHor = append(ptsHor, p)
+			return true
+		})
+		So(len(ptsHor), ShouldEqual, 5)
+
+		// 反向横线 (5,1)→(1,1)：走 line 70-86 的 positive=false 子分支
+		var ptsHorRev []Point[int8]
+		L[int8](P[int8](5, 1), P[int8](1, 1)).RangePoints(func(p Point[int8]) bool {
+			ptsHorRev = append(ptsHorRev, p)
+			return true
+		})
+		So(len(ptsHorRev), ShouldEqual, 5)
+
+		// 反向竖线 (1,5)→(1,1)：走 line 51-68 的 positive=false 子分支
+		var ptsVerRev []Point[int8]
+		L[int8](P[int8](1, 5), P[int8](1, 1)).RangePoints(func(p Point[int8]) bool {
+			ptsVerRev = append(ptsVerRev, p)
+			return true
+		})
+		So(len(ptsVerRev), ShouldEqual, 5)
+
+		// with 返 false 早退（line 43-44 + line 65 / 83）
+		var earlyCount int
+		L[int8](P[int8](1, 1), P[int8](10, 1)).RangePoints(func(p Point[int8]) bool {
+			earlyCount++
+			return earlyCount < 3 // 第 3 次返 false
+		})
+		So(earlyCount, ShouldEqual, 3)
+	})
 }
