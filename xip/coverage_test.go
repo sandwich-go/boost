@@ -125,3 +125,61 @@ func TestGetLocalIP_AndLocalIpv4Addrs(t *testing.T) {
 		_ = s
 	})
 }
+
+// TestLocalIpv4Addrs_PreferVPN 覆盖 LocalIpv4Addrs 的 'boost_ip_prefer_vpn'
+// env 分支（line 27-43）。
+func TestLocalIpv4Addrs_PreferVPN(t *testing.T) {
+	Convey("设置 boost_ip_prefer_vpn 走 VPN 优先扫描分支", t, func() {
+		t.Setenv("boost_ip_prefer_vpn", "1")
+		// CI runner 不一定有 VPN 接口，但代码路径会 enter VPN 扫描循环
+		ips, err := LocalIpv4Addrs()
+		So(err, ShouldBeNil)
+		_ = ips
+	})
+}
+
+// TestLocalIpv4Addrs_K8sServiceHost 覆盖 k8s service host env 注入分支
+// （line 45-49）。
+func TestLocalIpv4Addrs_K8sServiceHost(t *testing.T) {
+	Convey("k8s 注入 valid IP 加入结果", t, func() {
+		t.Setenv("x_sandwich_service_host", "10.20.30.40")
+		ips, err := LocalIpv4Addrs()
+		So(err, ShouldBeNil)
+		// 10.20.30.40 是 valid ip4，应在返回列表
+		found := false
+		for _, ip := range ips {
+			if ip == "10.20.30.40" {
+				found = true
+				break
+			}
+		}
+		So(found, ShouldBeTrue)
+	})
+
+	Convey("k8s 注入 invalid IP 不加入", t, func() {
+		t.Setenv("x_sandwich_service_host", "not-an-ip")
+		ips, err := LocalIpv4Addrs()
+		So(err, ShouldBeNil)
+		for _, ip := range ips {
+			So(ip, ShouldNotEqual, "not-an-ip")
+		}
+	})
+}
+
+// TestGetLocalIP_EmptyOnNoAddrs 覆盖 GetLocalIP 在 LocalIpv4Addrs 返
+// 0 个 IP 时的"返空字符串"分支（line 136-138）。
+//
+// 注意：CI 上 LocalIpv4Addrs 通常返 docker bridge / k8s pod IP 至少一个，
+// 难以稳定构造"0 IP"场景。这里只验证 GetLocalIP 与 LocalIpv4Addrs[0]
+// 行为一致（即"返第一个 / 空时返空"契约）。
+func TestGetLocalIP_Contract(t *testing.T) {
+	Convey("GetLocalIP 返第一个 LocalIpv4Addrs 或空", t, func() {
+		ips, _ := LocalIpv4Addrs()
+		got := GetLocalIP()
+		if len(ips) == 0 {
+			So(got, ShouldEqual, "")
+		} else {
+			So(got, ShouldEqual, ips[0])
+		}
+	})
+}
