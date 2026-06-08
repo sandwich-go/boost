@@ -174,5 +174,16 @@ func TestCacheDNS(t *testing.T) {
 				So(lookupSuccess, ShouldBeFalse) // 说明没有真正的去 lookup，而是走的缓存
 			}
 		}
+
+		// Remove host 后 Get 应返 false（覆盖 dns_imp.go:111 Remove，
+		// 0% → 100%）
+		Convey("Remove host 清除缓存", func() {
+			// "0" 在前面已被缓存
+			_, ok := d.Get("0")
+			So(ok, ShouldBeTrue)
+			d.Remove("0")
+			_, ok = d.Get("0")
+			So(ok, ShouldBeFalse)
+		})
 	})
 }

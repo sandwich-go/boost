@@ -68,6 +68,19 @@ func TestOffset(t *testing.T) {
 		oo2 := New(WithHashOffset([]byte("A")))
 		So(oo2.Offset(), ShouldEqual, Id(1))
 	})
+
+	Convey("WithHashOffset 显式传空 → 走默认 minHashOffset 分支", t, func() {
+		// 覆盖 converter.go:33-35 'len(oo.hashOffset) == 0 → 用默认 "A"' 路径。
+		// option.go 默认 hashOffset='FAAAAAA' 非空，走不到这分支；
+		// 显式 WithHashOffset(nil) 才能触发。
+		oo := New(WithHashOffset(nil))
+		// minHashOffset='A'，decode("A") = 1
+		So(oo.Offset(), ShouldEqual, Id(1))
+
+		// 等价 WithHashOffset([]byte("A"))
+		oo2 := New(WithHashOffset([]byte("A")))
+		So(oo.Offset(), ShouldEqual, oo2.Offset())
+	})
 }
 
 func TestPackageLevel_ToVToIdOffset(t *testing.T) {
