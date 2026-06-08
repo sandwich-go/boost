@@ -111,3 +111,34 @@ func TestRingBuffer_Read_OneAtATime(t *testing.T) {
 		So(err, ShouldNotBeNil)
 	})
 }
+
+// TestNewRingBuffer_EdgeCases NewRingBuffer 边界：size <= 0 panic / size=1 自动升 2。
+func TestNewRingBuffer_EdgeCases(t *testing.T) {
+	Convey("initialSize <= 0 应 panic", t, func() {
+		So(func() { NewRingBuffer[int](0) }, ShouldPanic)
+		So(func() { NewRingBuffer[int](-1) }, ShouldPanic)
+	})
+
+	Convey("initialSize=1 自动升级到 2（避免 grow 不可触发的边界）", t, func() {
+		rb := NewRingBuffer[int](1)
+		So(rb.Capacity(), ShouldEqual, 2)
+	})
+}
+
+// TestRingBuffer_GrowLarge 触发 grow 的"size >= 1024"分支（+1/4 增长策略）。
+func TestRingBuffer_GrowLarge(t *testing.T) {
+	Convey("size >= 1024 时 grow 走 +1/4 而非 ×2", t, func() {
+		// 起 1024 size buffer，写 1024 次填满触发 grow
+		rb := NewRingBuffer[int](1024)
+		for i := 0; i < 1024; i++ {
+			rb.Write(i)
+		}
+		// grow 后 size = 1024 + 1024/4 = 1280
+		So(rb.Capacity(), ShouldEqual, 1280)
+
+		// 数据完整性
+		for i := 0; i < 1024; i++ {
+			So(rb.Pop(), ShouldEqual, i)
+		}
+	})
+}

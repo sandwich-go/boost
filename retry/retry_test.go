@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math"
 	"testing"
 	"time"
 
@@ -224,6 +225,59 @@ func TestRetryDelay(t *testing.T) {
 		lastMilli = tt
 		return errors.New("some error")
 	}, WithDelay(time.Millisecond*100), WithLimit(3))
+}
+
+// TestCombineDelay 验证 CombineDelay 把多个 DelayTypeFunc 求和返回。
+func TestCombineDelay(t *testing.T) {
+	Convey("CombineDelay 多 delay 求和", t, func() {
+		// 三个 fixed delay：100ms / 50ms / 30ms
+		opt := &Options{Delay: 100 * time.Millisecond}
+		fixed100 := FixedDelay
+		fixed50 := func(_ uint, _ error, _ *Options) time.Duration {
+			return 50 * time.Millisecond
+		}
+		fixed30 := func(_ uint, _ error, _ *Options) time.Duration {
+			return 30 * time.Millisecond
+		}
+		combined := CombineDelay(fixed100, fixed50, fixed30)
+		So(combined(0, nil, opt), ShouldEqual, 180*time.Millisecond)
+	})
+
+	Convey("CombineDelay 总和溢出 cap 到 MaxInt64", t, func() {
+		// 两个超大 delay 加起来溢出
+		huge := func(_ uint, _ error, _ *Options) time.Duration {
+			return time.Duration(math.MaxInt64) - 1
+		}
+		combined := CombineDelay(huge, huge)
+		// MaxInt64-1 + MaxInt64-1 溢出 → cap 到 MaxInt64
+		So(combined(0, nil, &Options{}), ShouldEqual, time.Duration(math.MaxInt64))
+	})
+
+	Convey("CombineDelay 空入参返 0", t, func() {
+		combined := CombineDelay()
+		So(combined(0, nil, &Options{}), ShouldEqual, time.Duration(0))
+	})
+}
+
+// TestUnpackUnrecoverable 验证 unpackUnrecoverable 解包逻辑：
+// - unrecoverableError → 取出内部 err
+// - 普通 error → 原样返回
+func TestUnpackUnrecoverable(t *testing.T) {
+	Convey("unpackUnrecoverable", t, func() {
+		inner := errors.New("inner")
+
+		// 包装路径：unpackUnrecoverable 解出 inner
+		wrapped := Unrecoverable(inner)
+		So(unpackUnrecoverable(wrapped), ShouldEqual, inner)
+
+		// 普通 error 路径：unpackUnrecoverable 原样返
+		plain := errors.New("plain")
+		So(unpackUnrecoverable(plain), ShouldEqual, plain)
+
+		// 配合 IsRecoverable 验证语义
+		So(IsRecoverable(plain), ShouldBeTrue)
+		So(IsRecoverable(wrapped), ShouldBeFalse)
+	})
 }
 func TestBackoffDelay(t *testing.T) {
 	log.Println("TestBackoffDelay ==> ")
