@@ -244,6 +244,46 @@ CVE 长期 affecting boost。
 
 升 1.5 之前**不要再加新的 break change**——一次升一个台阶，下游迁移成本可控。
 
+#### 下游迁移现状（2026-06-08 跳查）
+
+| 仓 | boost 版本 | 1.4 删除 API 直接用 | 间接经 sandwich | 迁移阻塞点 |
+|---|---|---|---|---|
+| myproxy | v1.3.99 | ❌ 无 | ✓ | sandwich 未迁 |
+| dataserver | v1.3.99 | ❌ 无 | ✓ | sandwich 未迁 |
+| `bitbucket.org/funplus/sandwich` v1.3.184 | v1.3.99 | ✓ 6 处 | — | **关键路径** |
+
+myproxy / dataserver 自身代码 0 处用 1.4 删除函数，**不直接卡**；卡点在
+间接依赖 `sandwich v1.3.184` 使用 `xslice.{IntsShuffle, StringsContain,
+StringsSetAdd}`。下游迁移顺序：先升 sandwich → 再升 myproxy/dataserver。
+
+sandwich 待修（boost 1.4 兼容）：
+- `client/clienthttp/context.go` 3 处 `xslice.StringsContain(s, v)`
+  → `xslice.Contain(s, v)` 或 `slices.Contains(s, v)`
+- `registry/path.go:51` 同上
+- `pkg/kvs/store/etcdv3/lease.go:100` `xslice.StringsSetAdd(s, v...)`
+  → `xslice.SetAdd(s, v...)`
+- `pkg/scache/scache_x_unit_test.go:73,74` `xslice.IntsShuffle(s)`
+  → `xslice.Shuffle(s)`
+
+跳查方法（在 boost workspace sibling 目录）：
+
+```bash
+# 看下游 boost 子包消费清单
+grep -roh 'github\.com/sandwich-go/boost[a-zA-Z0-9/_-]*' \
+  ../{myproxy,dataserver,sandwich} --include='*.go' | sort -u
+
+# 看是否用 1.4 删除的具名函数（xmath/xmap/xslice 502 个）
+grep -roE 'x(slice|math|map)\.[A-Z][a-zA-Z0-9_]+' \
+  ../{myproxy,dataserver,sandwich} --include='*.go' \
+  | grep -oE 'x(slice|math|map)\.[A-Z][a-zA-Z0-9_]+' | sort -u
+
+# 用 local replace 看 build 是否过
+cd ../myproxy
+echo 'replace github.com/sandwich-go/boost => ../boost' >> go.mod
+go mod tidy && go build ./... 2>&1 | head -30
+git checkout go.mod go.sum  # 恢复
+```
+
 ### 4.4 `go test -race` 全绿
 
 并发包（`xtime` / `xsync` / `xchan` / `xcontainer/syncmap` / `xpool` / `lru` /
