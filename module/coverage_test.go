@@ -49,6 +49,53 @@ func newStoppableModule(name string) *stoppableModule {
 	}
 }
 
+// stickyModule 一个**不响应 closeChan** 的 module，用于触发 closeAll
+// 在 RunWithCloseTimeout(>0) 下的 timeout 分支（line 183-184，
+// xsync.WaitContext 返 true → "close with timeout" log）。
+//
+// 测试结束时通过 letExitCh 主动让 module 退出，避免泄露 goroutine。
+type stickyModule struct {
+	name         string
+	onCloseCount atomic.Int32
+	runStartedCh chan struct{}
+	letExitCh    chan struct{} // 测试控制：let module exit even closeChan ignored
+}
+
+func (m *stickyModule) OnInit()      {}
+func (m *stickyModule) OnClose()     { m.onCloseCount.Add(1) }
+func (m *stickyModule) Name() string { return m.name }
+func (m *stickyModule) Run(closeChan chan struct{}) {
+	if m.runStartedCh != nil {
+		close(m.runStartedCh)
+	}
+	// 故意不监听 closeChan，让 closeAll 的 wg.Wait() 触发 timeout
+	<-m.letExitCh
+}
+
+func newStickyModule(name string) *stickyModule {
+	return &stickyModule{
+		name:         name,
+		runStartedCh: make(chan struct{}),
+		letExitCh:    make(chan struct{}),
+	}
+}
+
+// panicCloseModule OnClose 时主动 panic，用于覆盖 agent.close 的
+// xpanic.Do catch 分支（master.go:38-40）。
+type panicCloseModule struct {
+	runStartedCh chan struct{}
+}
+
+func (m *panicCloseModule) OnInit()      {}
+func (m *panicCloseModule) OnClose()     { panic("intentional panic in OnClose") }
+func (m *panicCloseModule) Name() string { return "panic-close" }
+func (m *panicCloseModule) Run(closeChan chan struct{}) {
+	if m.runStartedCh != nil {
+		close(m.runStartedCh)
+	}
+	<-closeChan
+}
+
 // TestMaster_Modules master.Modules 返回当前已注册的 Module 列表。
 func TestMaster_Modules(t *testing.T) {
 	Convey("master.Modules 返回所有已注册 Module", t, func() {
@@ -141,6 +188,70 @@ func TestMaster_RunWithCloseTimeout(t *testing.T) {
 			t.Fatal("RunWithCloseTimeout never returned")
 		}
 		So(mod.onCloseCount.Load(), ShouldEqual, int32(1))
+	})
+
+	Convey("RunWithCloseTimeout(>0) 真触发 timeout 分支：module 不响应 closeChan", t, func() {
+		// 覆盖 master.go closeAll line 183-184 'xsync.WaitContext 返 true →
+		// LogInfof close with timeout' 路径（之前测试 module 都正常退出，
+		// closeAll 走 line 181 wg.Wait()，timeout 分支 0% 覆盖）。
+		m := New()
+		sticky := newStickyModule("sticky-timeout")
+		runDone := make(chan struct{})
+		go func() {
+			// 100ms 超时 + module 不响应 closeChan → closeAll 等 100ms timeout
+			m.RunWithCloseTimeout(100*time.Millisecond, sticky)
+			close(runDone)
+		}()
+
+		select {
+		case <-sticky.runStartedCh:
+		case <-time.After(2 * time.Second):
+			t.Fatal("sticky module never started")
+		}
+
+		// Stop 触发 closeAll，但 sticky 不退；100ms 后 WaitContext 返 true
+		// 走 timeout log，closeAll 继续 a.close()
+		m.Stop()
+		select {
+		case <-runDone:
+			// closeAll 经 timeout 提前返回，Run 退出
+		case <-time.After(3 * time.Second):
+			t.Fatal("RunWithCloseTimeout never returned (timeout 分支应让 Run 早返)")
+		}
+
+		// OnClose 应被调（a.close() 仍在 timeout 分支后执行）
+		So(sticky.onCloseCount.Load(), ShouldEqual, int32(1))
+
+		// 收尾：让 sticky goroutine 退出避免泄露
+		close(sticky.letExitCh)
+	})
+
+	Convey("OnClose panic 走 agent.close 的 xpanic.Do catch 分支", t, func() {
+		// 覆盖 master.go:38-40 catch 分支（之前测试 module.OnClose 都正常返
+		// 不 panic，catch 分支 0% 覆盖）。panic 不应让 master.Run 挂掉。
+		m := New()
+		mod := &panicCloseModule{runStartedCh: make(chan struct{})}
+		runDone := make(chan struct{})
+		go func() {
+			m.Run(mod)
+			close(runDone)
+		}()
+
+		select {
+		case <-mod.runStartedCh:
+		case <-time.After(2 * time.Second):
+			t.Fatal("panicCloseModule never started")
+		}
+
+		// Stop 触发 closeAll → a.close() → OnClose panic → 走 catch 分支记
+		// "closed with reason"
+		m.Stop()
+		select {
+		case <-runDone:
+			// catch 分支吃掉 panic，Run 正常返回
+		case <-time.After(3 * time.Second):
+			t.Fatal("Run never returned (panic in OnClose 应被 xpanic.Do 吃掉)")
+		}
 	})
 }
 
