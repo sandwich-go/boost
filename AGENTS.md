@@ -46,8 +46,12 @@
 # 工具一次性安装（optiongen / stringer / mockgen / gotemplate / golangci-lint / govulncheck / benchstat）
 make tools
 
-# CI 等价的本地准入：vet + build + test + race（lint 当前未钉，见 §4.5）
+# CI 等价的本地准入：vet + build + test + race + vuln（lint 当 ci 跑慢
+# 因此独立成 job，本地另跑 §4.5）
 make ci
+
+# CI 上 lint 是独立硬门槛 job（§4.5），本地建议另跑 make lint 验证
+make lint
 ```
 
 **Go 版本**：`go.mod` 写 `go 1.25.0` + `toolchain go1.25.11`。本地 toolchain
@@ -65,7 +69,7 @@ myproxy / dataserver 都已 `go 1.25.0`，回退到 1.24 会让 stdlib CVE
 | `make ci` | 提交前 / PR 准入。等价于 CI 上 `vet + build + test + race + vuln` |
 | `make test` | 局部改动后，比 `make ci` 快（无 race） |
 | `make test_race` | 改了并发原语 / 容器 / 池子时，必跑 |
-| `make lint` | **当前未钉为硬约束**（见 §4.5），但本地建议跑过；新增告警零容忍 |
+| `make lint` | CI 是硬门槛（§4.5），0 告警基线；本地与 CI 等价，新增告警零容忍 |
 | `make cover` | 测试覆盖率变动时，产物 `coverage.out` |
 | `make bench_diff` | 动了 hot path（`xrand` / `xpool` / `xcontainer/*` / `xencoding/*`）时本地跑；等价 `bench` + `benchstat`，对比入仓基线 `benchdata/main.txt` |
 | `make bench_refresh` | 主干 perf 改动 land 后刷新入仓基线，**独立 chore commit**，不混到其他改动 |
@@ -179,28 +183,29 @@ internal/template2/   见 §6.1（已废弃模式，xmath/xmap/xslice 已删除�
 （continue-on-error）。任何 PR 合入主干前本地都应该跑过一次 `make ci`
 看完整信号。
 
-### 4.1.1 当前软门槛清单与未来硬钉路径
+### 4.1.1 CI 硬门槛清单（全部已硬钉）
 
-boost 仓 1.4/develop HEAD 上有以下 pre-existing 噪声 / 失败，需要单独 PR
-系统性清理后再硬钉：
+boost 仓 CI 6 个 job 全部硬门槛，0 软门槛 / 0 continue-on-error。维护
+约束记录：
 
-| CI job | 当前状态 | pre-existing 问题 |
+| CI job | 状态 | 维护要点 |
 |---|---|---|
-| `vet` | **硬门槛** | ~22 处手写代码 noise 已系统性清完（commits `ea9f66c` / `69dcc68` / `3a5257b`）；剩余 ~20 处全在 fork（`xhash/nhash/jenkins/*` + `xsync/cond_test.go`），`make vet` 内置 fork 豁免（按 §4.6） |
-| `lint` | **硬门槛** | `.golangci.yml` v2 schema 落地，0 告警基线（commit `<本批>`）。fork 代码 / generated 代码整体豁免；errcheck/govet/ineffassign/misspell/nolintlint/staticcheck/unused 启用；gocyclo / inline / fieldalignment / shadow 暂未启用（待下一轮治理） |
-| `test` | **硬门槛** | pre-existing FAIL 已修完。misc/cloud TestCloud 在无 env 时早返不阻断（CI 不设 RELEASE_CLOUD_*） |
-| `race` | **硬门槛** | 全部 pre-existing race 已系统性修完：xtime.SetNowProvider (commit `f57991b`) / module.allAgents+ctx (commit `b8f2162`) / xchan.UnboundedChan value receiver atomic 无效（commit `<本批>`） / xtime.TestTimerResetDispatcher 测试代码 race（commit `<本批>`）。上游 lib race（vmihailenco/msgpack pool reuse）在 `-race` 模式 t.Skip 跳过。lru.TestWorkerComparison_GoroutineCount 时序抖动加 GC 等待稳定 |
-| `vuln` | **硬门槛** | 升 go.mod 到 `go 1.25.0` + `toolchain go1.25.11` 让 stdlib backport patch 生效；升 `golang.org/x/net` 到 v0.55.0；本仓 affecting CVE 数 = 0（commit `<本批>`）。仍有 imported / required modules 层 vuln 但 govulncheck call-graph 分析"your code doesn't appear to call"（库性质，下游业务 LR 自查） |
+| `vet` | **硬门槛** | `make vet` 内置 fork 豁免（path 前缀过滤 `xhash/nhash/jenkins/` + `xsync/cond_test.go`）；新增手写代码 0 vet noise |
+| `lint` | **硬门槛** | `.golangci.yml` v2 schema 0 告警基线；fork 代码 / generated 代码整体豁免；启用 errcheck / gocyclo (阈值 35) / govet (含 inline) / ineffassign / misspell / nolintlint / staticcheck / unused；govet shadow / fieldalignment 仍未启用（噪声大需先重构） |
+| `test` | **硬门槛** | misc/cloud TestCloud 在无 env 时 t.Skipf 不阻断（CI 不设 RELEASE_CLOUD_*） |
+| `race` | **硬门槛** | 全部 pre-existing race 已修完（xtime / module / xchan / xpool worker.Start 等）；上游 lib race（vmihailenco/msgpack pool reuse）在 `-race` 模式 t.Skip；lru.TestWorkerComparison_GoroutineCount 时序抖动通过等 callback 回收 + 阈值放宽 (engineCount + numWorkers) 稳定 |
+| `vuln` | **硬门槛** | go.mod `go 1.25.0` + `toolchain go1.25.11` + `x/net v0.55.0`；本仓 affecting CVE = 0；imported / required modules 层 vuln 但 govulncheck call-graph "your code doesn't appear to call" 不阻断（库性质） |
 | `build` | **硬门槛** | 全仓 `go build ./...` 通过 |
 
-**渐进式硬钉路径**（每步独立 PR）：
+**历史渐进硬钉路径**（每步独立 PR，全部已完成 2026-06-05~2026-06-08）：
 
-1. ✅ ~~系统性修 vet noise → CI vet 改 hard gate~~（已完成 2026-06-05）
-2. ✅ ~~修 xchan / xtime / lru race + msgpack lib race t.Skip → race 改 hard gate~~（已完成 2026-06-05）
-3. ✅ ~~加 `.golangci.yml` v2 schema → 修 lint 告警 → lint hard gate~~（已完成 2026-06-05）
-4. ✅ ~~升 Go 1.25.0 + x/net v0.55.0 → 0 affecting CVE → vuln hard gate~~（已完成 2026-06-05）
+1. ✅ vet noise 系统性清理 → vet hard gate
+2. ✅ 修 xchan / xtime / lru / xpool race + msgpack lib race t.Skip → race hard gate
+3. ✅ 加 `.golangci.yml` v2 schema → 修 lint 告警 → lint + test hard gate
+4. ✅ 升 Go 1.25.0 + x/net v0.55.0 + go-version-file 跟 toolchain → 0 affecting CVE → vuln hard gate
 
-每步都是独立 PR，不混进功能改动。
+新增功能 / 重构提交前必跑 `make ci`（vet + build + test_race + vuln），
+本地 `make lint` 与 CI 等价 0 告警；触发 hard gate fail 不能合入主干。
 
 **vet hard gate 实现细节**：`make vet` 内联 fork 豁免（path 前缀过滤
 `xhash/nhash/jenkins/` + `xsync/cond_test.go`）；CI yaml 用 `make vet`
@@ -304,7 +309,7 @@ boost 仓 `.golangci.yml` v2 schema 已入仓（参考 myproxy / dataserver 风�
   `goimports`
 - gocyclo 阈值 35（不是业界默认 15）：boost 是通用工具库，xconv 类型
   分发 / xstrings.From 等天然类型 switch complexity 21-33，强行拆分
-  损害可读性；35 是务实折衷，抓新增超大函数（commit `<本批>`）
+  损害可读性；35 是务实折衷，抓新增超大函数（commit `fa30ffb`）
 - govet 关掉 `fieldalignment` / `shadow`（噪声大，单独治理）；`inline`
   在 commit `1cbb312` 启用（14 处 stdlib 现代化重写完成）
 - staticcheck 收紧到 `SA*` 系列，禁 `SA1019`（deprecated API 单独 PR 治理）
@@ -592,6 +597,11 @@ origin。tag 是对外语义承诺（CI artifact / 部署系统 pin / changelog 
    匹配算法。线性扫已 PoC 不优（见 `xpool/buffer_bench_test.go` 头部决策
    记录），但若动 chunk size 计算或 sync.Pool 改 sync.Map 等本质改动，要
    `make test_race` + bench
+4.1 **`xpool/goroutine.go` worker.Start** — `defer close(closedChan)` 必须
+    在 worker goroutine 内部（commit `cbe1997` 修过）。原本写在 Start 函数
+    顶部会让 closedChan 立即被 close，worker.join() 不再等 worker 真退，
+    导致 GoroutinePool.Close 后 worker goroutine leak。改这函数前看 commit
+    cbe1997 + `TestGoroutinePool_Close_WaitsForWorkers` 反向验证测试。
 5. **`xcontainer/syncmap/*.go`** — 桶分片并发 map。键空间 hash 分布改了会
    让 race 测试假阴。改前看 `xcontainer/syncmap/bucketmap.go` 的 keySlicePool
    实现
@@ -628,7 +638,7 @@ dispatcher tick 间隔 5ms / 主线超时 12ms 之间，dispatcher tick goroutin
 可能在主线退出前再触发第 3 次 tick，count 已 ≥ 2 重复 close(stop) 触发
 panic。go test ./... 高并发跨包调度延后让概率显著上升。
 
-修复（commit `<本批>`）：双保险——`count` 改 `atomic.Int32` 防 race；
+修复（commit `54697e6`）：双保险——`count` 改 `atomic.Int32` 防 race；
 `close(stop)` 走 `sync.Once.Do` 让重复 close 安全；测试 defer `d.Close()`
 让 tick 停。`TestTickExternalHost` 同改。
 
@@ -640,6 +650,10 @@ close 在低并发下隐藏，高并发跨包暴露。
 `fmt.Sprintf` 不支持 `%w`（error wrapping），用了等于把错误转成纯字符串。
 1.3 修过（commit `4bf8c4e` / `f7dd56a`）。新增 `panic(...)` 路径用
 `fmt.Sprintf` 时确认没用 `%w`。
+
+防回归：commit `065f058` 给所有 7 个 panic_when_* 函数加了 panic value
+字面格式断言（24 个 assertion，覆盖每个函数 fmt.Sprintf 输出格式），
+未来再误改 fmt.Errorf / verb 在测试层即可抓到，不再仅依赖 vet。
 
 ### 9.3 `boost.LogXxxf` eager fmt.Sprintf
 
