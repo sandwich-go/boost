@@ -87,4 +87,23 @@ func TestPlugin(t *testing.T) {
 		So(mockBeforeObj.Context().Value(mockBeforeObj.Name()), ShouldNotBeNil)
 		So(mockFilterObj.Context().Value(mockFilterObj.Name()), ShouldNotBeNil)
 	})
+
+	// 覆盖 Size（0% → 100%）+ Range 返 false 早退（66.7% → 100%）
+	Convey("Size + Range 返 false 早退", t, func() {
+		cc := New(new(before), new(filter))
+		ctx := context.Background()
+		So(cc.Add(newMockBefore(ctx)), ShouldBeNil)
+		So(cc.Add(newMockFilter(ctx, 1)), ShouldBeNil)
+
+		// Size 反映已 Add 数量
+		So(cc.Size(), ShouldEqual, 2)
+
+		// Range 第 1 次 cb 返 false 直接退，count 应为 1
+		count := 0
+		cc.Range(func(p Plugin) bool {
+			count++
+			return false
+		})
+		So(count, ShouldEqual, 1)
+	})
 }
