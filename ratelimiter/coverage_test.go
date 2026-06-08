@@ -79,6 +79,26 @@ func TestNew_WithSlack(t *testing.T) {
 		elapsed := time.Since(start)
 		So(elapsed, ShouldBeLessThan, 50*time.Millisecond)
 	})
+
+	Convey("WithSlack(>0) + 长 idle → 走 maxSlack cap 分支", t, func() {
+		// 覆盖 limiter_atomic.go:52-55 'maxSlack > 0 &&
+		// now-state > maxSlack+perRequest' 分支：自上次 Take 累积时间
+		// 超过 maxSlack 上限，cap 到 maxSlack 防止突发用尽。
+		//
+		// 10 RPS, slack=2 → maxSlack=2*100ms=200ms, perRequest=100ms。
+		// idle 1 秒 >> 200+100=300ms 阈值，触发 cap 分支。
+		l := New(10, WithSlack(2))
+		l.Take() // 初始化 state
+
+		// idle 远超 maxSlack+perRequest
+		time.Sleep(1 * time.Second)
+
+		start := time.Now()
+		l.Take() // 走 line 52-55: newTime=now-maxSlack
+		elapsed := time.Since(start)
+		// cap 后下次 Take 应几乎不阻塞（state 被设到 now-maxSlack ≤ now）
+		So(elapsed, ShouldBeLessThan, 50*time.Millisecond)
+	})
 }
 
 func TestTake_Concurrent(t *testing.T) {
