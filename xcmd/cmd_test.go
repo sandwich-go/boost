@@ -73,4 +73,40 @@ func TestCommand(t *testing.T) {
 		So(GetOptWithEnv(name), ShouldEqual, "v1")
 		So(GetOptWithEnv(name), ShouldEqual, "v1")
 	})
+
+	cleanParsedOptions()
+	Convey("GetOptWithEnv 走 env fallback", t, func() {
+		// 走 line 118-120：parsedOptions 没 + os.LookupEnv 有
+		key := "BOOST_TEST_ENV_ONLY_KEY"
+		t.Setenv(key, "from-env")
+		So(GetOptWithEnv(key), ShouldEqual, "from-env")
+	})
+
+	cleanParsedOptions()
+	Convey("GetOptWithEnv 走 default 值 fallback", t, func() {
+		// 走 line 121-123：parsedOptions 没 + env 没 + def 提供
+		key := "BOOST_TEST_NO_OPT_NO_ENV_KEY"
+		So(GetOptWithEnv(key, "default-val"), ShouldEqual, "default-val")
+	})
+
+	cleanParsedOptions()
+	Convey("GetOptWithEnv 走 formal map fallback", t, func() {
+		// 走 line 124-126：parsedOptions 没 + env 没 + def 没 + formal 有
+		// formal 是 MustAddFlag 加入的注册值。
+		// 注意：MustAddFlag 要求 key 有 FlagPrefix 前缀（"test_"），
+		// 否则 panic（cmd_test.go:29 测试已验证此约束）。
+		key := fmt.Sprintf("%sformal_only", GetFlagPrefix())
+		MustAddFlag(key, "from-formal")
+		// 不传 def，让函数尝试 formal map
+		So(GetOptWithEnv(key), ShouldEqual, "from-formal")
+	})
+
+	cleanParsedOptions()
+	Convey("GetOptWithEnv 全 fallback miss 返空", t, func() {
+		// 走 line 127：parsedOptions / env / def / formal 全无 → 返 ""
+		key := "BOOST_TEST_TOTALLY_MISSING_KEY_xyz"
+		// 确保 env 和 formal 都没（cleanParsedOptions + 不 setenv + 不 MustAddFlag）
+		os.Unsetenv(key)
+		So(GetOptWithEnv(key), ShouldEqual, "")
+	})
 }

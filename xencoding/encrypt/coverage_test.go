@@ -103,3 +103,45 @@ func TestNoneCodec_Unmarshal_NonByteParam(t *testing.T) {
 		So(err, ShouldNotBeNil)
 	})
 }
+
+// TestCodec_Marshal_NonByteParam 覆盖 noneCodec/aesCodec Marshal 的
+// 'if !ok → errCodecMarshalParam' 错误路径（line 65 / 86）。
+func TestCodec_Marshal_NonByteParam(t *testing.T) {
+	Convey("NoneCodec.Marshal 入参非 []byte 返错误", t, func() {
+		_, err := NoneCodec.Marshal(context.Background(), "string-not-bytes")
+		So(err, ShouldNotBeNil)
+		_, err = NoneCodec.Marshal(context.Background(), nil)
+		So(err, ShouldNotBeNil)
+	})
+
+	Convey("aesCodec.Marshal 入参非 []byte 返错误", t, func() {
+		c := NewCodec(AESType, []byte("0123456789abcdef"))
+		_, err := c.Marshal(context.Background(), "string-not-bytes")
+		So(err, ShouldNotBeNil)
+	})
+}
+
+// keySetterCodec 实现了 KeySetter 接口的 custom codec，用于覆盖
+// NewCodec 的 'KeySetter 分支'（line 124-126）。
+type keySetterCodec struct {
+	stubEncCodec
+	gotKey []byte
+}
+
+func (c *keySetterCodec) SetKey(key []byte) { c.gotKey = key }
+
+// TestNewCodec_KeySetter 覆盖 NewCodec 的 'cc.SetKey(key)' 分支
+// （line 124-126）。Register 一个实现 KeySetter 的 codec，NewCodec
+// 时应调 SetKey 注入 key。
+func TestNewCodec_KeySetter(t *testing.T) {
+	Convey("NewCodec 对实现 KeySetter 的 codec 注入 key", t, func() {
+		const customType Type = 100
+		c := &keySetterCodec{stubEncCodec: stubEncCodec{n: "key-setter"}}
+		Register(customType, c)
+
+		key := []byte("test-key-123")
+		_ = NewCodec(customType, key)
+		// SetKey 应被调到，gotKey 设上
+		So(c.gotKey, ShouldResemble, key)
+	})
+}
