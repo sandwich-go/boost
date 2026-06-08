@@ -1,0 +1,926 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/sandwich-go/boost/xrand
+cpu: Apple M2 Pro
+BenchmarkRandomSelectOneKeyFromMap_Map10-12       	 2192565	       614.9 ns/op	     104 B/op	       3 allocs/op
+BenchmarkRandomSelectOneKeyFromMap_Map10-12       	 2109822	       693.1 ns/op	     104 B/op	       3 allocs/op
+BenchmarkRandomSelectOneKeyFromMap_Map10-12       	 2065069	       549.2 ns/op	     104 B/op	       3 allocs/op
+BenchmarkRandomSelectOneKeyFromMap_Map10-12       	 2231692	       541.1 ns/op	     104 B/op	       3 allocs/op
+BenchmarkRandomSelectOneKeyFromMap_Map10-12       	 2234701	       537.6 ns/op	     104 B/op	       3 allocs/op
+BenchmarkRandomSelectOneKeyFromMap_Map100-12      	  158300	      7110 ns/op	     472 B/op	       3 allocs/op
+BenchmarkRandomSelectOneKeyFromMap_Map100-12      	  167134	      7097 ns/op	     472 B/op	       3 allocs/op
+BenchmarkRandomSelectOneKeyFromMap_Map100-12      	  169195	      7090 ns/op	     472 B/op	       3 allocs/op
+BenchmarkRandomSelectOneKeyFromMap_Map100-12      	  168866	      7080 ns/op	     472 B/op	       3 allocs/op
+BenchmarkRandomSelectOneKeyFromMap_Map100-12      	  170072	      7148 ns/op	     472 B/op	       3 allocs/op
+BenchmarkRandomSelectOneFromArray_Len100-12       	16284958	        73.79 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRandomSelectOneFromArray_Len100-12       	16354083	        73.18 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRandomSelectOneFromArray_Len100-12       	16366704	        73.09 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRandomSelectOneFromArray_Len100-12       	16365170	        73.68 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRandomSelectOneFromArray_Len100-12       	16372082	        73.12 ns/op	       0 B/op	       0 allocs/op
+BenchmarkIsSelected100n-12                        	130885376	         9.118 ns/op	       0 B/op	       0 allocs/op
+BenchmarkIsSelected100n-12                        	131600326	         9.134 ns/op	       0 B/op	       0 allocs/op
+BenchmarkIsSelected100n-12                        	131306034	         9.149 ns/op	       0 B/op	       0 allocs/op
+BenchmarkIsSelected100n-12                        	131003126	         9.177 ns/op	       0 B/op	       0 allocs/op
+BenchmarkIsSelected100n-12                        	100000000	        10.03 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRandomInt_Single-12                      	130854072	         9.177 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRandomInt_Single-12                      	130370778	         9.139 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRandomInt_Single-12                      	125956950	         9.209 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRandomInt_Single-12                      	130599717	         9.838 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRandomInt_Single-12                      	129928848	         9.530 ns/op	       0 B/op	       0 allocs/op
+BenchmarkFastRandInt_Concurrent-12                	1000000000	         1.115 ns/op	       0 B/op	       0 allocs/op
+BenchmarkFastRandInt_Concurrent-12                	1000000000	         0.9850 ns/op	       0 B/op	       0 allocs/op
+BenchmarkFastRandInt_Concurrent-12                	1000000000	         0.9256 ns/op	       0 B/op	       0 allocs/op
+BenchmarkFastRandInt_Concurrent-12                	1000000000	         0.9552 ns/op	       0 B/op	       0 allocs/op
+BenchmarkFastRandInt_Concurrent-12                	1000000000	         0.8775 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRandomInt_Concurrent-12                  	1000000000	         1.240 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRandomInt_Concurrent-12                  	1000000000	         1.189 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRandomInt_Concurrent-12                  	992158500	         1.257 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRandomInt_Concurrent-12                  	975163471	         1.206 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRandomInt_Concurrent-12                  	963823804	         1.180 ns/op	       0 B/op	       0 allocs/op
+BenchmarkString_NoLetterList-12                   	13010150	        91.79 ns/op	      16 B/op	       1 allocs/op
+BenchmarkString_NoLetterList-12                   	13136953	        96.96 ns/op	      16 B/op	       1 allocs/op
+BenchmarkString_NoLetterList-12                   	13022139	        92.00 ns/op	      16 B/op	       1 allocs/op
+BenchmarkString_NoLetterList-12                   	13110400	        92.35 ns/op	      16 B/op	       1 allocs/op
+BenchmarkString_NoLetterList-12                   	12998149	        92.03 ns/op	      16 B/op	       1 allocs/op
+BenchmarkString_WithLetterList-12                 	 9893044	       120.4 ns/op	      24 B/op	       2 allocs/op
+BenchmarkString_WithLetterList-12                 	 9976108	       123.9 ns/op	      24 B/op	       2 allocs/op
+BenchmarkString_WithLetterList-12                 	 9898730	       126.7 ns/op	      24 B/op	       2 allocs/op
+BenchmarkString_WithLetterList-12                 	 9959814	       120.8 ns/op	      24 B/op	       2 allocs/op
+BenchmarkString_WithLetterList-12                 	 9978386	       120.7 ns/op	      24 B/op	       2 allocs/op
+BenchmarkStringWithTimestamp_NoLetterList-12      	 8725051	       145.7 ns/op	      48 B/op	       1 allocs/op
+BenchmarkStringWithTimestamp_NoLetterList-12      	 7993123	       139.4 ns/op	      48 B/op	       1 allocs/op
+BenchmarkStringWithTimestamp_NoLetterList-12      	 8697352	       138.4 ns/op	      48 B/op	       1 allocs/op
+BenchmarkStringWithTimestamp_NoLetterList-12      	 8693982	       138.0 ns/op	      48 B/op	       1 allocs/op
+BenchmarkStringWithTimestamp_NoLetterList-12      	 8773885	       138.2 ns/op	      48 B/op	       1 allocs/op
+BenchmarkStringWithTimestamp_WithLetterList-12    	 7023327	       189.5 ns/op	      56 B/op	       2 allocs/op
+BenchmarkStringWithTimestamp_WithLetterList-12    	 7051864	       171.2 ns/op	      56 B/op	       2 allocs/op
+BenchmarkStringWithTimestamp_WithLetterList-12    	 6193911	       171.3 ns/op	      56 B/op	       2 allocs/op
+BenchmarkStringWithTimestamp_WithLetterList-12    	 6999595	       175.8 ns/op	      56 B/op	       2 allocs/op
+BenchmarkStringWithTimestamp_WithLetterList-12    	 7056693	       171.3 ns/op	      56 B/op	       2 allocs/op
+PASS
+ok  	github.com/sandwich-go/boost/xrand	82.707s
+goos: darwin
+goarch: arm64
+pkg: github.com/sandwich-go/boost/xpool
+cpu: Apple M2 Pro
+BenchmarkSyncBytesPool_Alloc_Small_FirstChunk-12    	24452534	        45.20 ns/op	      24 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Small_FirstChunk-12    	26623034	        45.74 ns/op	      24 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Small_FirstChunk-12    	26640494	        45.54 ns/op	      24 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Small_FirstChunk-12    	26553078	        45.68 ns/op	      24 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Small_FirstChunk-12    	26240548	        45.64 ns/op	      24 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Small_LastChunk-12     	23974965	        49.63 ns/op	      24 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Small_LastChunk-12     	24125149	        49.81 ns/op	      24 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Small_LastChunk-12     	24046790	        52.32 ns/op	      24 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Small_LastChunk-12     	22908121	        51.39 ns/op	      24 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Small_LastChunk-12     	21807789	        55.04 ns/op	      24 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Large_FirstChunk-12    	26156042	        45.58 ns/op	      24 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Large_FirstChunk-12    	26399130	        46.62 ns/op	      24 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Large_FirstChunk-12    	23094817	        46.28 ns/op	      24 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Large_FirstChunk-12    	26075784	        45.73 ns/op	      24 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Large_FirstChunk-12    	26200467	        45.75 ns/op	      24 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Large_MidChunk-12      	23623209	        50.48 ns/op	      24 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Large_MidChunk-12      	23922430	        53.92 ns/op	      24 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Large_MidChunk-12      	23982512	        53.39 ns/op	      24 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Large_MidChunk-12      	23953768	        50.32 ns/op	      24 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Large_MidChunk-12      	23766906	        50.31 ns/op	      24 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Large_LastChunk-12     	21965751	        58.11 ns/op	      29 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Large_LastChunk-12     	22053164	        54.70 ns/op	      29 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Large_LastChunk-12     	22163768	        54.37 ns/op	      29 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Large_LastChunk-12     	21751131	        55.06 ns/op	      29 B/op	       1 allocs/op
+BenchmarkSyncBytesPool_Alloc_Large_LastChunk-12     	21165513	        54.94 ns/op	      29 B/op	       1 allocs/op
+BenchmarkGoroutine-12                               	       3	 511440639 ns/op	113003888 B/op	 2008752 allocs/op
+BenchmarkGoroutine-12                               	       3	 458163917 ns/op	112633413 B/op	 2006115 allocs/op
+BenchmarkGoroutine-12                               	       3	 530534194 ns/op	112892346 B/op	 2008329 allocs/op
+BenchmarkGoroutine-12                               	       3	 472218486 ns/op	112514090 B/op	 2005355 allocs/op
+BenchmarkGoroutine-12                               	       3	 467315125 ns/op	113668277 B/op	 2013141 allocs/op
+BenchmarkGoroutinePool-12                           	       1	2280228084 ns/op	53936304 B/op	 1407338 allocs/op
+BenchmarkGoroutinePool-12                           	       1	2171082875 ns/op	49958464 B/op	 1398806 allocs/op
+BenchmarkGoroutinePool-12                           	       1	2194743167 ns/op	49996048 B/op	 1398952 allocs/op
+BenchmarkGoroutinePool-12                           	       1	2221096416 ns/op	49897808 B/op	 1398497 allocs/op
+BenchmarkGoroutinePool-12                           	       1	2312990041 ns/op	49988336 B/op	 1399165 allocs/op
+PASS
+ok  	github.com/sandwich-go/boost/xpool	57.790s
+goos: darwin
+goarch: arm64
+pkg: github.com/sandwich-go/boost/xtime
+cpu: Apple M2 Pro
+BenchmarkTimeUnixWithSystem-12     	35069389	        34.08 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTimeUnixWithSystem-12     	35146725	        34.21 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTimeUnixWithSystem-12     	35221430	        34.11 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTimeUnixWithSystem-12     	35497750	        34.39 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTimeUnixWithSystem-12     	35444146	        34.21 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTimeUnixWithCop-12        	147440931	         8.128 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTimeUnixWithCop-12        	131582421	         8.171 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTimeUnixWithCop-12        	147388029	         8.208 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTimeUnixWithCop-12        	147535518	         8.126 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTimeUnixWithCop-12        	147894322	         8.116 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCompareSystemAndCop-12    	    1054	   1166165 ns/op	     283 B/op	       2 allocs/op
+BenchmarkCompareSystemAndCop-12    	    1054	   1134482 ns/op	     168 B/op	       1 allocs/op
+BenchmarkCompareSystemAndCop-12    	    1066	   1144842 ns/op	     144 B/op	       1 allocs/op
+BenchmarkCompareSystemAndCop-12    	    1051	   1133561 ns/op	     140 B/op	       1 allocs/op
+BenchmarkCompareSystemAndCop-12    	    1065	   1181436 ns/op	     112 B/op	       1 allocs/op
+BenchmarkPeriodicSteady-12         	       1	2302306750 ns/op	         0 B/exec	         0 KB/s	         0 allocs/exec	       999.5 exec/s	         0 gc-cycles	   41712 B/op	     802 allocs/op
+BenchmarkPeriodicSteady-12         	       1	2302296417 ns/op	         0 B/exec	         0 KB/s	         0 allocs/exec	       999.5 exec/s	         0 gc-cycles	   41712 B/op	     802 allocs/op
+BenchmarkPeriodicSteady-12         	       1	2302514958 ns/op	         0 B/exec	         0 KB/s	         0 allocs/exec	       999.5 exec/s	         0 gc-cycles	   41712 B/op	     802 allocs/op
+BenchmarkPeriodicSteady-12         	       1	2302330625 ns/op	         0 B/exec	         0 KB/s	         0 allocs/exec	       999.4 exec/s	         0 gc-cycles	   41712 B/op	     802 allocs/op
+BenchmarkPeriodicSteady-12         	       1	2302303125 ns/op	         0 B/exec	         0 KB/s	         0 allocs/exec	       999.4 exec/s	         0 gc-cycles	   41712 B/op	     802 allocs/op
+PASS
+ok  	github.com/sandwich-go/boost/xtime	35.881s
+PASS
+ok  	github.com/sandwich-go/boost/xtime/cron	0.899s
+PASS
+ok  	github.com/sandwich-go/boost/xencoding	0.553s
+PASS
+ok  	github.com/sandwich-go/boost/xencoding/compressor	0.965s
+PASS
+ok  	github.com/sandwich-go/boost/xencoding/encrypt	0.562s
+goos: darwin
+goarch: arm64
+pkg: github.com/sandwich-go/boost/xencoding/json
+cpu: Apple M2 Pro
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(1)-12         	 5807244	       203.2 ns/op	     312 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(1)-12         	 5924214	       204.3 ns/op	     312 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(1)-12         	 5813691	       208.0 ns/op	     312 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(1)-12         	 5798412	       212.8 ns/op	     312 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(1)-12         	 5910824	       208.5 ns/op	     312 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(16)-12        	 5487416	       214.0 ns/op	     312 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(16)-12        	 5778244	       222.8 ns/op	     312 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(16)-12        	 5697166	       211.2 ns/op	     312 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(16)-12        	 5728468	       206.4 ns/op	     312 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(16)-12        	 6041306	       211.1 ns/op	     312 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(256)-12       	 5761594	       190.3 ns/op	     312 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(256)-12       	 6088342	       191.3 ns/op	     312 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(256)-12       	 5594140	       196.4 ns/op	     312 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(256)-12       	 6296781	       186.9 ns/op	     312 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(256)-12       	 5359838	       202.1 ns/op	     312 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(4096)-12      	 6093681	       195.3 ns/op	     312 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(4096)-12      	 6413812	       201.0 ns/op	     313 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(4096)-12      	 6644401	       185.5 ns/op	     312 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(4096)-12      	 5294131	       197.4 ns/op	     313 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(4096)-12      	 6506916	       180.6 ns/op	     312 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(65536)-12     	 4075390	       256.1 ns/op	     327 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(65536)-12     	 4072834	       270.9 ns/op	     327 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(65536)-12     	 3976641	       255.8 ns/op	     328 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(65536)-12     	 4575423	       235.6 ns/op	     325 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(65536)-12     	 4462842	       241.3 ns/op	     326 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(1)-12        	 6067924	       185.5 ns/op	     352 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(1)-12        	 6314695	       185.6 ns/op	     352 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(1)-12        	 6493714	       181.5 ns/op	     352 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(1)-12        	 6611798	       185.0 ns/op	     352 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(1)-12        	 6427436	       186.4 ns/op	     352 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(16)-12       	 5877786	       191.7 ns/op	     352 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(16)-12       	 5919846	       188.8 ns/op	     352 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(16)-12       	 4792292	       212.5 ns/op	     352 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(16)-12       	 6086419	       189.5 ns/op	     352 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(16)-12       	 6215998	       195.7 ns/op	     352 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(256)-12      	 5191605	       210.4 ns/op	     352 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(256)-12      	 5698713	       206.2 ns/op	     352 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(256)-12      	 5994855	       249.6 ns/op	     352 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(256)-12      	 5184928	       230.9 ns/op	     352 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(256)-12      	 5338719	       206.0 ns/op	     352 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(4096)-12     	 5796931	       213.0 ns/op	     352 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(4096)-12     	 5205968	       203.3 ns/op	     352 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(4096)-12     	 6043405	       214.5 ns/op	     352 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(4096)-12     	 3585054	       314.7 ns/op	     353 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(4096)-12     	 5653596	       219.4 ns/op	     352 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(65536)-12    	 3431341	       329.9 ns/op	     370 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(65536)-12    	 2832591	       376.4 ns/op	     374 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(65536)-12    	 3937525	       322.5 ns/op	     368 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(65536)-12    	 4092566	       284.5 ns/op	     367 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(65536)-12    	 3685387	       276.6 ns/op	     369 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(1)-12       	 2341530	       506.2 ns/op	     952 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(1)-12       	 2267872	       582.0 ns/op	     952 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(1)-12       	 2434666	       481.7 ns/op	     952 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(1)-12       	 2506438	       491.7 ns/op	     952 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(1)-12       	 2299543	       493.5 ns/op	     952 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(16)-12      	 2480220	       481.8 ns/op	     952 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(16)-12      	 2584668	       535.0 ns/op	     952 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(16)-12      	 2522037	       457.0 ns/op	     952 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(16)-12      	 2521022	       465.1 ns/op	     952 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(16)-12      	 2606343	       523.4 ns/op	     952 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(256)-12     	 1733715	       798.9 ns/op	     953 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(256)-12     	 2213100	       535.4 ns/op	     953 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(256)-12     	 2164208	       527.8 ns/op	     953 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(256)-12     	 2149578	       529.8 ns/op	     953 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(256)-12     	 2205249	       523.4 ns/op	     953 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(4096)-12    	 2029330	       609.0 ns/op	     955 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(4096)-12    	 1910271	       574.4 ns/op	     955 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(4096)-12    	 2161947	       585.2 ns/op	     955 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(4096)-12    	 1965602	       542.8 ns/op	     955 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(4096)-12    	 1919414	       541.1 ns/op	     955 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(65536)-12   	 1389576	       739.2 ns/op	     999 B/op	       8 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(65536)-12   	 1339347	       825.6 ns/op	    1000 B/op	       8 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(65536)-12   	 1652678	       688.0 ns/op	     991 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(65536)-12   	 1401103	       748.3 ns/op	     999 B/op	       8 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(65536)-12   	 1626384	       685.7 ns/op	     992 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(1)-12      	  247524	      4486 ns/op	   11324 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(1)-12      	  245914	      4788 ns/op	   11322 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(1)-12      	  255943	      4603 ns/op	   11326 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(1)-12      	  256618	      4636 ns/op	   11326 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(1)-12      	  270414	      4874 ns/op	   11322 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(16)-12     	  234486	      4684 ns/op	   11339 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(16)-12     	  218401	      4692 ns/op	   11331 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(16)-12     	  236655	      4709 ns/op	   11341 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(16)-12     	  224188	      4867 ns/op	   11337 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(16)-12     	  229621	      4635 ns/op	   11330 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(256)-12    	  253099	      4610 ns/op	   11410 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(256)-12    	  255344	      5283 ns/op	   11428 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(256)-12    	  248474	      4416 ns/op	   11402 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(256)-12    	  259574	      5114 ns/op	   11378 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(256)-12    	  161720	      6582 ns/op	   11405 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(4096)-12   	  250210	      4767 ns/op	   11407 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(4096)-12   	  237918	      5284 ns/op	   11395 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(4096)-12   	  218373	      5654 ns/op	   11436 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(4096)-12   	  221199	      5107 ns/op	   11418 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(4096)-12   	  239836	      4876 ns/op	   11480 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(65536)-12  	  166224	      7032 ns/op	   11885 B/op	      16 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(65536)-12  	  157012	      6491 ns/op	   11951 B/op	      17 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(65536)-12  	  123925	      8163 ns/op	   12069 B/op	      19 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(65536)-12  	  184171	      6436 ns/op	   11764 B/op	      15 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(65536)-12  	  155640	      6883 ns/op	   11905 B/op	      17 allocs/op
+PASS
+ok  	github.com/sandwich-go/boost/xencoding/json	234.847s
+goos: darwin
+goarch: arm64
+pkg: github.com/sandwich-go/boost/xencoding/msgpack
+cpu: Apple M2 Pro
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(1)-12         	 6650844	       189.3 ns/op	     290 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(1)-12         	 6305590	       231.8 ns/op	     290 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(1)-12         	 5498056	       221.7 ns/op	     290 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(1)-12         	 5712274	       214.7 ns/op	     290 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(1)-12         	 3968607	       264.4 ns/op	     290 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(16)-12        	 4766961	       235.3 ns/op	     289 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(16)-12        	 4584733	       250.8 ns/op	     289 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(16)-12        	 4589667	       249.0 ns/op	     290 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(16)-12        	 4485063	       248.9 ns/op	     289 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(16)-12        	 6342217	       200.6 ns/op	     290 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(256)-12       	 6495082	       170.0 ns/op	     289 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(256)-12       	 6514731	       195.8 ns/op	     289 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(256)-12       	 5680899	       216.7 ns/op	     290 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(256)-12       	 6782646	       167.4 ns/op	     289 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(256)-12       	 6698757	       169.0 ns/op	     289 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(4096)-12      	 7080117	       175.9 ns/op	     290 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(4096)-12      	 7100868	       171.9 ns/op	     290 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(4096)-12      	 6377406	       172.3 ns/op	     290 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(4096)-12      	 7466283	       165.7 ns/op	     289 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(4096)-12      	 5141337	       209.9 ns/op	     291 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(65536)-12     	 4283250	       249.4 ns/op	     304 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(65536)-12     	 3477686	       334.3 ns/op	     308 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(65536)-12     	 4771705	       224.3 ns/op	     303 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(65536)-12     	 4998910	       215.4 ns/op	     302 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:1/SetParallelism(65536)-12     	 4985268	       212.1 ns/op	     302 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(1)-12        	 7331805	       166.1 ns/op	     288 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(1)-12        	 7631457	       153.9 ns/op	     288 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(1)-12        	 7434334	       154.5 ns/op	     288 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(1)-12        	 7600460	       158.2 ns/op	     288 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(1)-12        	 7528795	       157.5 ns/op	     288 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(16)-12       	 6861429	       161.3 ns/op	     288 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(16)-12       	 7826498	       154.2 ns/op	     288 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(16)-12       	 7650124	       156.5 ns/op	     288 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(16)-12       	 7888776	       151.9 ns/op	     288 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(16)-12       	 7858592	       153.2 ns/op	     288 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(256)-12      	 7500876	       157.1 ns/op	     289 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(256)-12      	 7057347	       180.2 ns/op	     289 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(256)-12      	 6119308	       164.5 ns/op	     289 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(256)-12      	 7302441	       161.1 ns/op	     289 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(256)-12      	 7283038	       158.3 ns/op	     289 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(4096)-12     	 7487416	       152.2 ns/op	     290 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(4096)-12     	 7587505	       158.5 ns/op	     289 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(4096)-12     	 7228303	       163.3 ns/op	     289 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(4096)-12     	 7179507	       159.6 ns/op	     289 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(4096)-12     	 7500319	       181.1 ns/op	     290 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(65536)-12    	 4612264	       220.8 ns/op	     303 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(65536)-12    	 5542560	       201.8 ns/op	     300 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(65536)-12    	 5542806	       204.8 ns/op	     300 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(65536)-12    	 4671765	       228.5 ns/op	     304 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:16/SetParallelism(65536)-12    	 4814414	       211.0 ns/op	     303 B/op	       5 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(1)-12       	 3992736	       292.6 ns/op	     802 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(1)-12       	 4030964	       294.6 ns/op	     802 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(1)-12       	 4108665	       294.2 ns/op	     802 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(1)-12       	 4030329	       298.3 ns/op	     802 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(1)-12       	 4085361	       296.6 ns/op	     802 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(16)-12      	 4125258	       300.5 ns/op	     801 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(16)-12      	 3759157	       303.9 ns/op	     802 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(16)-12      	 3947226	       289.8 ns/op	     801 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(16)-12      	 3771278	       290.6 ns/op	     801 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(16)-12      	 4027292	       321.3 ns/op	     802 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(256)-12     	 3517525	       327.7 ns/op	     803 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(256)-12     	 3441399	       352.2 ns/op	     803 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(256)-12     	 3328686	       318.9 ns/op	     802 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(256)-12     	 3621081	       323.9 ns/op	     803 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(256)-12     	 3627206	       323.2 ns/op	     802 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(4096)-12    	 3697335	       327.0 ns/op	     804 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(4096)-12    	 3675607	       328.0 ns/op	     804 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(4096)-12    	 3664213	       465.0 ns/op	     804 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(4096)-12    	 2164231	       465.0 ns/op	     806 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(4096)-12    	 2063238	       531.2 ns/op	     806 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(65536)-12   	 2665759	       429.2 ns/op	     827 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(65536)-12   	 2649986	       430.6 ns/op	     827 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(65536)-12   	 2806974	       429.7 ns/op	     825 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(65536)-12   	 2480413	       439.7 ns/op	     829 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:256/SetParallelism(65536)-12   	 2404375	       439.7 ns/op	     830 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(1)-12      	  417825	      2664 ns/op	    9985 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(1)-12      	  454902	      2616 ns/op	    9986 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(1)-12      	  434103	      2625 ns/op	    9986 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(1)-12      	  461600	      2642 ns/op	    9986 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(1)-12      	  416718	      2624 ns/op	    9985 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(16)-12     	  357032	      3344 ns/op	   10002 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(16)-12     	  343717	      3257 ns/op	   10003 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(16)-12     	  348105	      3374 ns/op	   10006 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(16)-12     	  360361	      3262 ns/op	   10004 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(16)-12     	  346321	      3281 ns/op	   10003 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(256)-12    	  537362	      1966 ns/op	    9972 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(256)-12    	  677210	      1730 ns/op	    9968 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(256)-12    	  657142	      1749 ns/op	    9967 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(256)-12    	  653710	      1806 ns/op	    9968 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(256)-12    	  647575	      1759 ns/op	    9969 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(4096)-12   	  563012	      1776 ns/op	    9977 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(4096)-12   	  704653	      1813 ns/op	    9974 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(4096)-12   	  593646	      1907 ns/op	    9981 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(4096)-12   	  593984	      1797 ns/op	    9977 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(4096)-12   	  629442	      1672 ns/op	    9974 B/op	       6 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(65536)-12  	  331281	      3454 ns/op	   10175 B/op	      10 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(65536)-12  	  335919	      3052 ns/op	   10173 B/op	      10 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(65536)-12  	  327753	      3103 ns/op	   10176 B/op	      10 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(65536)-12  	  376459	      2943 ns/op	   10149 B/op	      10 allocs/op
+BenchmarkMsgpackCodec/MinPayloadSize:4096/SetParallelism(65536)-12  	  328680	      3091 ns/op	   10175 B/op	      10 allocs/op
+PASS
+ok  	github.com/sandwich-go/boost/xencoding/msgpack	239.189s
+PASS
+ok  	github.com/sandwich-go/boost/xencoding/pbjson	1.255s
+goos: darwin
+goarch: arm64
+pkg: github.com/sandwich-go/boost/xencoding/protobuf
+cpu: Apple M2 Pro
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(1)-12         	31501436	        43.32 ns/op	      80 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(1)-12         	29487168	        41.95 ns/op	      80 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(1)-12         	27032353	        44.02 ns/op	      80 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(1)-12         	26055543	        44.04 ns/op	      80 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(1)-12         	27525487	        42.08 ns/op	      80 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(16)-12        	24310567	        51.59 ns/op	      80 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(16)-12        	24234998	        53.34 ns/op	      80 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(16)-12        	20978623	        48.32 ns/op	      80 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(16)-12        	24525061	        49.08 ns/op	      80 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(16)-12        	23552578	        49.19 ns/op	      80 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(256)-12       	25636963	        60.54 ns/op	      80 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(256)-12       	18957619	        59.56 ns/op	      80 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(256)-12       	23765964	        43.99 ns/op	      80 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(256)-12       	26026651	        47.25 ns/op	      80 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(256)-12       	26684924	        47.62 ns/op	      80 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(4096)-12      	26653689	        44.27 ns/op	      80 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(4096)-12      	26463445	        44.36 ns/op	      80 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(4096)-12      	25665481	        43.17 ns/op	      80 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(4096)-12      	27572035	        43.69 ns/op	      80 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(4096)-12      	25879503	        43.42 ns/op	      80 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(65536)-12     	17854341	        57.49 ns/op	      83 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(65536)-12     	18516837	        56.00 ns/op	      83 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(65536)-12     	19529308	        57.11 ns/op	      83 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(65536)-12     	19220319	        56.18 ns/op	      83 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:1/SetParallelism(65536)-12     	18311463	        57.88 ns/op	      83 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(1)-12        	24093118	        49.52 ns/op	     112 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(1)-12        	24404565	        48.62 ns/op	     112 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(1)-12        	25996698	        48.20 ns/op	     112 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(1)-12        	23836066	        48.91 ns/op	     112 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(1)-12        	23213356	        48.29 ns/op	     112 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(16)-12       	22663976	        48.05 ns/op	     112 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(16)-12       	22452165	        49.86 ns/op	     112 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(16)-12       	24417685	        59.92 ns/op	     112 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(16)-12       	22789803	        53.31 ns/op	     112 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(16)-12       	21569516	        51.43 ns/op	     112 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(256)-12      	21808978	        58.89 ns/op	     112 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(256)-12      	17427368	        75.46 ns/op	     112 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(256)-12      	19035092	        55.25 ns/op	     112 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(256)-12      	19948466	        54.36 ns/op	     112 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(256)-12      	21362575	        53.67 ns/op	     112 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(4096)-12     	19895913	        58.47 ns/op	     112 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(4096)-12     	14977944	       110.6 ns/op	     112 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(4096)-12     	14654581	        72.31 ns/op	     112 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(4096)-12     	18165163	        65.14 ns/op	     112 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(4096)-12     	21119216	        53.03 ns/op	     112 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(65536)-12    	14317053	        75.23 ns/op	     116 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(65536)-12    	14964961	        67.23 ns/op	     116 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(65536)-12    	14749772	        71.69 ns/op	     116 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(65536)-12    	17492517	        65.58 ns/op	     115 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:16/SetParallelism(65536)-12    	16759696	        66.62 ns/op	     115 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(1)-12       	 6537225	       189.5 ns/op	     640 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(1)-12       	 6179544	       192.2 ns/op	     640 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(1)-12       	 6205512	       191.3 ns/op	     640 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(1)-12       	 6287887	       189.8 ns/op	     640 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(1)-12       	 6452258	       189.6 ns/op	     640 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(16)-12      	 5082044	       237.6 ns/op	     640 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(16)-12      	 5775651	       235.9 ns/op	     640 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(16)-12      	 5317341	       232.9 ns/op	     640 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(16)-12      	 5245408	       236.9 ns/op	     640 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(16)-12      	 5010466	       240.4 ns/op	     640 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(256)-12     	 5161050	       229.0 ns/op	     640 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(256)-12     	 5263496	       232.2 ns/op	     640 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(256)-12     	 4999516	       233.6 ns/op	     640 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(256)-12     	 5174346	       239.5 ns/op	     640 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(256)-12     	 5006619	       217.2 ns/op	     640 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(4096)-12    	 5546984	       225.8 ns/op	     640 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(4096)-12    	 5114788	       218.4 ns/op	     640 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(4096)-12    	 5473971	       223.5 ns/op	     640 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(4096)-12    	 5504416	       205.8 ns/op	     640 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(4096)-12    	 5484274	       216.2 ns/op	     640 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(65536)-12   	 3635301	       288.6 ns/op	     657 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(65536)-12   	 3182028	       322.0 ns/op	     659 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(65536)-12   	 3440162	       315.6 ns/op	     658 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(65536)-12   	 3454123	       327.4 ns/op	     658 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:256/SetParallelism(65536)-12   	 3644712	       314.7 ns/op	     657 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(1)-12      	  525020	      2168 ns/op	    9792 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(1)-12      	  576118	      2178 ns/op	    9792 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(1)-12      	  566038	      2174 ns/op	    9792 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(1)-12      	  524055	      2131 ns/op	    9792 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(1)-12      	  606816	      2172 ns/op	    9792 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(16)-12     	  405046	      2702 ns/op	    9792 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(16)-12     	  450358	      2706 ns/op	    9792 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(16)-12     	  459470	      2716 ns/op	    9792 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(16)-12     	  459043	      2665 ns/op	    9792 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(16)-12     	  462084	      2676 ns/op	    9792 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(256)-12    	  611344	      1727 ns/op	    9792 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(256)-12    	  727228	      1743 ns/op	    9792 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(256)-12    	  584733	      1748 ns/op	    9792 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(256)-12    	  478158	      2092 ns/op	    9793 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(256)-12    	  656936	      1673 ns/op	    9792 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(4096)-12   	  635491	      1629 ns/op	    9798 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(4096)-12   	  617826	      1780 ns/op	    9799 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(4096)-12   	  590072	      1772 ns/op	    9799 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(4096)-12   	  650752	      1693 ns/op	    9798 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(4096)-12   	  746052	      1606 ns/op	    9797 B/op	       3 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(65536)-12  	  376353	      2879 ns/op	    9960 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(65536)-12  	  372009	      2725 ns/op	    9962 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(65536)-12  	  384052	      2791 ns/op	    9956 B/op	       7 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(65536)-12  	  452547	      2584 ns/op	    9931 B/op	       6 allocs/op
+BenchmarkProtoCodec/MinPayloadSize:4096/SetParallelism(65536)-12  	  442106	      2639 ns/op	    9935 B/op	       6 allocs/op
+BenchmarkVTProtoCodec/Standard/Size:1-12                          	 9777948	       121.6 ns/op	      80 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/Standard/Size:1-12                          	 9884840	       121.5 ns/op	      80 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/Standard/Size:1-12                          	 9834678	       121.1 ns/op	      80 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/Standard/Size:1-12                          	 9862176	       122.2 ns/op	      80 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/Standard/Size:1-12                          	 9779246	       121.6 ns/op	      80 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/WithPool/Size:1-12                          	 8815779	       151.7 ns/op	      80 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/WithPool/Size:1-12                          	 8824500	       138.4 ns/op	      80 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/WithPool/Size:1-12                          	 8801979	       136.0 ns/op	      80 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/WithPool/Size:1-12                          	 8836672	       136.0 ns/op	      80 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/WithPool/Size:1-12                          	 8837979	       135.9 ns/op	      80 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/Standard/Size:16-12                         	 8995630	       135.2 ns/op	     112 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/Standard/Size:16-12                         	 8847061	       135.1 ns/op	     112 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/Standard/Size:16-12                         	 9105074	       135.6 ns/op	     112 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/Standard/Size:16-12                         	 8940003	       135.1 ns/op	     112 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/Standard/Size:16-12                         	 8841727	       134.4 ns/op	     112 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/WithPool/Size:16-12                         	 8087052	       150.2 ns/op	     112 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/WithPool/Size:16-12                         	 8118038	       149.0 ns/op	     112 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/WithPool/Size:16-12                         	 8057898	       150.7 ns/op	     112 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/WithPool/Size:16-12                         	 7974234	       149.6 ns/op	     112 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/WithPool/Size:16-12                         	 8056831	       150.0 ns/op	     112 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/Standard/Size:256-12                        	 4251152	       291.3 ns/op	     640 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/Standard/Size:256-12                        	 4193692	       284.9 ns/op	     640 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/Standard/Size:256-12                        	 3723633	       311.9 ns/op	     640 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/Standard/Size:256-12                        	 3847360	       309.6 ns/op	     640 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/Standard/Size:256-12                        	 3828925	       309.2 ns/op	     640 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/WithPool/Size:256-12                        	 3549312	       338.7 ns/op	     640 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/WithPool/Size:256-12                        	 3609417	       340.6 ns/op	     640 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/WithPool/Size:256-12                        	 3480662	       339.9 ns/op	     640 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/WithPool/Size:256-12                        	 3491361	       338.7 ns/op	     640 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/WithPool/Size:256-12                        	 3514674	       339.9 ns/op	     640 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/Standard/Size:4096-12                       	  404854	      2721 ns/op	    9792 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/Standard/Size:4096-12                       	  480186	      2173 ns/op	    9792 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/Standard/Size:4096-12                       	  593413	      1988 ns/op	    9792 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/Standard/Size:4096-12                       	  521493	      1966 ns/op	    9792 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/Standard/Size:4096-12                       	  736996	      1985 ns/op	    9792 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/WithPool/Size:4096-12                       	  586798	      2108 ns/op	    9805 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/WithPool/Size:4096-12                       	  511716	      2142 ns/op	    9804 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/WithPool/Size:4096-12                       	  665091	      2112 ns/op	    9804 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/WithPool/Size:4096-12                       	  658260	      1714 ns/op	    9802 B/op	       3 allocs/op
+BenchmarkVTProtoCodec/WithPool/Size:4096-12                       	  622112	      1726 ns/op	    9801 B/op	       3 allocs/op
+BenchmarkVTProtoMarshal/VT_Standard-12                            	 4255828	       307.2 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/VT_Standard-12                            	 5186766	       235.5 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/VT_Standard-12                            	 5190450	       230.8 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/VT_Standard-12                            	 5222708	       238.0 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/VT_Standard-12                            	 5488336	       232.1 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/VT_WithPool-12                            	 4020212	       290.0 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/VT_WithPool-12                            	 3323524	       362.0 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/VT_WithPool-12                            	 3329563	       360.6 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/VT_WithPool-12                            	 3364438	       354.7 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/VT_WithPool-12                            	 3546236	       356.3 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/DirectVT-12                               	 4595107	       270.3 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/DirectVT-12                               	 4417750	       274.1 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/DirectVT-12                               	 4321704	       274.7 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/DirectVT-12                               	 4405192	       282.2 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/DirectVT-12                               	 4427506	       277.0 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/StandardProto-12                          	 3354297	       354.0 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/StandardProto-12                          	 3246108	       356.1 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/StandardProto-12                          	 3348537	       364.6 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/StandardProto-12                          	 3450783	       354.4 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/StandardProto-12                          	 3308470	       360.0 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/StandardProtoWithPool-12                  	 2833801	       413.0 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/StandardProtoWithPool-12                  	 3009146	       410.8 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/StandardProtoWithPool-12                  	 2872364	       422.2 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/StandardProtoWithPool-12                  	 2911626	       416.7 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoMarshal/StandardProtoWithPool-12                  	 2661286	       412.9 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkVTProtoUnmarshal/Standard-12                             	 4045456	       289.4 ns/op	    1024 B/op	       1 allocs/op
+BenchmarkVTProtoUnmarshal/Standard-12                             	 4123460	       294.2 ns/op	    1024 B/op	       1 allocs/op
+BenchmarkVTProtoUnmarshal/Standard-12                             	 4257166	       297.6 ns/op	    1024 B/op	       1 allocs/op
+BenchmarkVTProtoUnmarshal/Standard-12                             	 4086294	       288.2 ns/op	    1024 B/op	       1 allocs/op
+BenchmarkVTProtoUnmarshal/Standard-12                             	 4133995	       294.4 ns/op	    1024 B/op	       1 allocs/op
+BenchmarkVTProtoUnmarshal/DirectVT-12                             	72983635	        16.21 ns/op	       0 B/op	       0 allocs/op
+BenchmarkVTProtoUnmarshal/DirectVT-12                             	73883286	        16.18 ns/op	       0 B/op	       0 allocs/op
+BenchmarkVTProtoUnmarshal/DirectVT-12                             	74266230	        16.21 ns/op	       0 B/op	       0 allocs/op
+BenchmarkVTProtoUnmarshal/DirectVT-12                             	73708566	        16.33 ns/op	       0 B/op	       0 allocs/op
+BenchmarkVTProtoUnmarshal/DirectVT-12                             	73003801	        16.27 ns/op	       0 B/op	       0 allocs/op
+BenchmarkVTProtoUnmarshal/StandardProto-12                        	 3547759	       340.9 ns/op	    1024 B/op	       1 allocs/op
+BenchmarkVTProtoUnmarshal/StandardProto-12                        	 3248360	       358.8 ns/op	    1024 B/op	       1 allocs/op
+BenchmarkVTProtoUnmarshal/StandardProto-12                        	 3265106	       368.1 ns/op	    1024 B/op	       1 allocs/op
+BenchmarkVTProtoUnmarshal/StandardProto-12                        	 2956419	       344.7 ns/op	    1024 B/op	       1 allocs/op
+BenchmarkVTProtoUnmarshal/StandardProto-12                        	 3443097	       328.3 ns/op	    1024 B/op	       1 allocs/op
+BenchmarkMarshalParallel/StandardProto-12                         	 3977667	       323.3 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkMarshalParallel/StandardProto-12                         	 3830616	       321.9 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkMarshalParallel/StandardProto-12                         	 4047855	       298.5 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkMarshalParallel/StandardProto-12                         	 3978456	       298.2 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkMarshalParallel/StandardProto-12                         	 4079007	       296.7 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkMarshalParallel/StandardProtoWithPool-12                 	 3899719	       307.5 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkMarshalParallel/StandardProtoWithPool-12                 	 3959185	       305.5 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkMarshalParallel/StandardProtoWithPool-12                 	 3985130	       306.0 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkMarshalParallel/StandardProtoWithPool-12                 	 3925623	       306.8 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkMarshalParallel/StandardProtoWithPool-12                 	 3864266	       309.6 ns/op	    1152 B/op	       1 allocs/op
+PASS
+ok  	github.com/sandwich-go/boost/xencoding/protobuf	364.767s
+?   	github.com/sandwich-go/boost/xencoding/protobuf/test_perf	[no test files]
+goos: darwin
+goarch: arm64
+pkg: github.com/sandwich-go/boost/xcrypto/algorithm/aes
+cpu: Apple M2 Pro
+BenchmarkCBCEncrypt-12    	   14420	     83630 ns/op	  164869 B/op	       4 allocs/op
+BenchmarkCBCEncrypt-12    	   14224	     84028 ns/op	  164869 B/op	       4 allocs/op
+BenchmarkCBCEncrypt-12    	   14010	     83934 ns/op	  164869 B/op	       4 allocs/op
+BenchmarkCBCEncrypt-12    	   14182	     83850 ns/op	  164869 B/op	       4 allocs/op
+BenchmarkCBCEncrypt-12    	   14396	     83824 ns/op	  164869 B/op	       4 allocs/op
+BenchmarkCBCDecrypt-12    	   26014	     46251 ns/op	    1032 B/op	       2 allocs/op
+BenchmarkCBCDecrypt-12    	   26022	     46185 ns/op	    1032 B/op	       2 allocs/op
+BenchmarkCBCDecrypt-12    	   25508	     48255 ns/op	    1033 B/op	       2 allocs/op
+BenchmarkCBCDecrypt-12    	   24111	     47081 ns/op	    1033 B/op	       2 allocs/op
+BenchmarkCBCDecrypt-12    	   25678	     46745 ns/op	    1032 B/op	       2 allocs/op
+PASS
+ok  	github.com/sandwich-go/boost/xcrypto/algorithm/aes	19.694s
+goos: darwin
+goarch: arm64
+pkg: github.com/sandwich-go/boost/xhash/fnv
+cpu: Apple M2 Pro
+BenchmarkHash_String-12    	30336225	        40.06 ns/op	      64 B/op	       1 allocs/op
+BenchmarkHash_String-12    	30162690	        39.91 ns/op	      64 B/op	       1 allocs/op
+BenchmarkHash_String-12    	29579932	        39.97 ns/op	      64 B/op	       1 allocs/op
+BenchmarkHash_String-12    	29967471	        39.85 ns/op	      64 B/op	       1 allocs/op
+BenchmarkHash_String-12    	30332360	        39.84 ns/op	      64 B/op	       1 allocs/op
+BenchmarkHash_Int-12       	602973790	         1.998 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash_Int-12       	603449088	         1.990 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash_Int-12       	605423840	         2.118 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash_Int-12       	602577226	         2.002 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash_Int-12       	601454264	         2.022 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	github.com/sandwich-go/boost/xhash/fnv	14.780s
+goos: darwin
+goarch: arm64
+pkg: github.com/sandwich-go/boost/xhash/hash14v
+cpu: Apple M2 Pro
+BenchmarkFromUInt64-12    	34914846	        34.35 ns/op	      16 B/op	       1 allocs/op
+BenchmarkFromUInt64-12    	34968091	        34.13 ns/op	      16 B/op	       1 allocs/op
+BenchmarkFromUInt64-12    	34979856	        34.09 ns/op	      16 B/op	       1 allocs/op
+BenchmarkFromUInt64-12    	35351737	        34.23 ns/op	      16 B/op	       1 allocs/op
+BenchmarkFromUInt64-12    	35027972	        34.14 ns/op	      16 B/op	       1 allocs/op
+BenchmarkToUInt64-12      	 5830448	       205.2 ns/op	      24 B/op	       3 allocs/op
+BenchmarkToUInt64-12      	 5795544	       206.7 ns/op	      24 B/op	       3 allocs/op
+BenchmarkToUInt64-12      	 5806840	       215.9 ns/op	      24 B/op	       3 allocs/op
+BenchmarkToUInt64-12      	 5845116	       205.4 ns/op	      24 B/op	       3 allocs/op
+BenchmarkToUInt64-12      	 5867643	       206.5 ns/op	      24 B/op	       3 allocs/op
+PASS
+ok  	github.com/sandwich-go/boost/xhash/hash14v	13.846s
+PASS
+ok  	github.com/sandwich-go/boost/xhash/md5	0.624s
+goarch: arm64
+pkg: github.com/sandwich-go/boost/xerror
+cpu: Apple M2 Pro
+Benchmark_NewText-12                	33050263	        41.88 ns/op	      80 B/op	       1 allocs/op
+Benchmark_NewText-12                	26498474	        39.12 ns/op	      80 B/op	       1 allocs/op
+Benchmark_NewText-12                	29112640	        37.19 ns/op	      80 B/op	       1 allocs/op
+Benchmark_NewText-12                	31799240	        39.12 ns/op	      80 B/op	       1 allocs/op
+Benchmark_NewText-12                	31796992	        46.27 ns/op	      80 B/op	       1 allocs/op
+Benchmark_NewText_Format-12         	12856407	        86.79 ns/op	      84 B/op	       2 allocs/op
+Benchmark_NewText_Format-12         	13985504	        85.19 ns/op	      84 B/op	       2 allocs/op
+Benchmark_NewText_Format-12         	14268819	        85.81 ns/op	      84 B/op	       2 allocs/op
+Benchmark_NewText_Format-12         	14189743	        84.91 ns/op	      84 B/op	       2 allocs/op
+Benchmark_NewText_Format-12         	13781400	        86.50 ns/op	      84 B/op	       2 allocs/op
+Benchmark_Wrap-12                   	27070976	        44.34 ns/op	      80 B/op	       1 allocs/op
+Benchmark_Wrap-12                   	28087887	        43.10 ns/op	      80 B/op	       1 allocs/op
+Benchmark_Wrap-12                   	27836091	        42.92 ns/op	      80 B/op	       1 allocs/op
+Benchmark_Wrap-12                   	28407465	        42.64 ns/op	      80 B/op	       1 allocs/op
+Benchmark_Wrap-12                   	27779947	        45.34 ns/op	      80 B/op	       1 allocs/op
+Benchmark_Wrap_Format-12            	13407046	        89.84 ns/op	      84 B/op	       2 allocs/op
+Benchmark_Wrap_Format-12            	13354136	        89.71 ns/op	      84 B/op	       2 allocs/op
+Benchmark_Wrap_Format-12            	13360610	        89.89 ns/op	      84 B/op	       2 allocs/op
+Benchmark_Wrap_Format-12            	13395174	        89.64 ns/op	      84 B/op	       2 allocs/op
+Benchmark_Wrap_Format-12            	13315911	        89.89 ns/op	      84 B/op	       2 allocs/op
+Benchmark_NewCode-12                	31250847	        43.17 ns/op	      80 B/op	       1 allocs/op
+Benchmark_NewCode-12                	31932302	        37.12 ns/op	      80 B/op	       1 allocs/op
+Benchmark_NewCode-12                	32072412	        37.03 ns/op	      80 B/op	       1 allocs/op
+Benchmark_NewCode-12                	32195857	        37.13 ns/op	      80 B/op	       1 allocs/op
+Benchmark_NewCode-12                	32119089	        37.07 ns/op	      80 B/op	       1 allocs/op
+Benchmark_NewCode_Format-12         	14388280	        83.53 ns/op	      84 B/op	       2 allocs/op
+Benchmark_NewCode_Format-12         	14477556	        83.84 ns/op	      84 B/op	       2 allocs/op
+Benchmark_NewCode_Format-12         	14283949	        84.49 ns/op	      84 B/op	       2 allocs/op
+Benchmark_NewCode_Format-12         	14321617	        83.57 ns/op	      84 B/op	       2 allocs/op
+Benchmark_NewCode_Format-12         	14421616	        83.06 ns/op	      84 B/op	       2 allocs/op
+Benchmark_WrapCode-12               	29855727	        40.65 ns/op	      80 B/op	       1 allocs/op
+Benchmark_WrapCode-12               	29330006	        40.77 ns/op	      80 B/op	       1 allocs/op
+Benchmark_WrapCode-12               	29609280	        40.95 ns/op	      80 B/op	       1 allocs/op
+Benchmark_WrapCode-12               	29773904	        40.64 ns/op	      80 B/op	       1 allocs/op
+Benchmark_WrapCode-12               	30034602	        40.44 ns/op	      80 B/op	       1 allocs/op
+Benchmark_WrapCode_Format-12        	13775270	        87.10 ns/op	      84 B/op	       2 allocs/op
+Benchmark_WrapCode_Format-12        	13689806	        87.50 ns/op	      84 B/op	       2 allocs/op
+Benchmark_WrapCode_Format-12        	13792660	        86.99 ns/op	      84 B/op	       2 allocs/op
+Benchmark_WrapCode_Format-12        	13794668	        86.92 ns/op	      84 B/op	       2 allocs/op
+Benchmark_WrapCode_Format-12        	13805499	        87.65 ns/op	      84 B/op	       2 allocs/op
+Benchmark_Stack_NoStackFlag-12      	 6172746	       196.5 ns/op	     144 B/op	       4 allocs/op
+Benchmark_Stack_NoStackFlag-12      	 6229734	       197.8 ns/op	     144 B/op	       4 allocs/op
+Benchmark_Stack_NoStackFlag-12      	 6108135	       195.4 ns/op	     144 B/op	       4 allocs/op
+Benchmark_Stack_NoStackFlag-12      	 6165423	       192.8 ns/op	     144 B/op	       4 allocs/op
+Benchmark_Stack_NoStackFlag-12      	 6237439	       193.5 ns/op	     144 B/op	       4 allocs/op
+Benchmark_Stack_WithStackFlag-12    	 1622590	       742.6 ns/op	     688 B/op	       9 allocs/op
+Benchmark_Stack_WithStackFlag-12    	 1617202	       745.1 ns/op	     688 B/op	       9 allocs/op
+Benchmark_Stack_WithStackFlag-12    	 1605843	       747.2 ns/op	     688 B/op	       9 allocs/op
+Benchmark_Stack_WithStackFlag-12    	 1607533	       743.1 ns/op	     688 B/op	       9 allocs/op
+Benchmark_Stack_WithStackFlag-12    	 1611694	       744.0 ns/op	     688 B/op	       9 allocs/op
+PASS
+ok  	github.com/sandwich-go/boost/xerror	69.784s
+goos: darwin
+goarch: arm64
+pkg: github.com/sandwich-go/boost/xpanic
+cpu: Apple M2 Pro
+BenchmarkTry_NoPanic-12                	152680569	         7.826 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTry_NoPanic-12                	153816204	         7.793 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTry_NoPanic-12                	153610969	         7.831 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTry_NoPanic-12                	153224130	         7.832 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTry_NoPanic-12                	135200197	         7.902 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTry_NoPanic_WithFinally-12    	44967890	        25.99 ns/op	      16 B/op	       1 allocs/op
+BenchmarkTry_NoPanic_WithFinally-12    	45628026	        26.08 ns/op	      16 B/op	       1 allocs/op
+BenchmarkTry_NoPanic_WithFinally-12    	45123171	        26.13 ns/op	      16 B/op	       1 allocs/op
+BenchmarkTry_NoPanic_WithFinally-12    	44449452	        25.97 ns/op	      16 B/op	       1 allocs/op
+BenchmarkTry_NoPanic_WithFinally-12    	46153845	        26.42 ns/op	      16 B/op	       1 allocs/op
+BenchmarkTry_PanicString-12            	  114442	      9224 ns/op	    3120 B/op	       3 allocs/op
+BenchmarkTry_PanicString-12            	  129933	      9226 ns/op	    3120 B/op	       3 allocs/op
+BenchmarkTry_PanicString-12            	  129049	      9264 ns/op	    3120 B/op	       3 allocs/op
+BenchmarkTry_PanicString-12            	  129814	      9224 ns/op	    3120 B/op	       3 allocs/op
+BenchmarkTry_PanicString-12            	  130899	      9224 ns/op	    3120 B/op	       3 allocs/op
+BenchmarkTry_PanicError-12             	  128148	      9295 ns/op	    3120 B/op	       3 allocs/op
+BenchmarkTry_PanicError-12             	  129439	      9347 ns/op	    3120 B/op	       3 allocs/op
+BenchmarkTry_PanicError-12             	  129794	      9247 ns/op	    3120 B/op	       3 allocs/op
+BenchmarkTry_PanicError-12             	  128671	      9248 ns/op	    3120 B/op	       3 allocs/op
+BenchmarkTry_PanicError-12             	  130153	      9313 ns/op	    3120 B/op	       3 allocs/op
+PASS
+ok  	github.com/sandwich-go/boost/xpanic	30.049s
+goos: darwin
+goarch: arm64
+pkg: github.com/sandwich-go/boost/xsync
+cpu: Apple M2 Pro
+BenchmarkAtomicInt32_Add-12                 	301075969	         3.986 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAtomicInt32_Add-12                 	302249016	         3.963 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAtomicInt32_Add-12                 	301699068	         3.962 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAtomicInt32_Add-12                 	301642569	         3.983 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAtomicInt32_Add-12                 	302802754	         3.954 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAtomicInt32_Add_Stdlib-12          	292133217	         4.543 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAtomicInt32_Add_Stdlib-12          	293437544	         4.083 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAtomicInt32_Add_Stdlib-12          	293369154	         4.105 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAtomicInt32_Add_Stdlib-12          	294743706	         4.115 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAtomicInt32_Add_Stdlib-12          	291114781	         4.084 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRWTimeoutLock_RLock_RUnlock-12     	43794888	        26.74 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRWTimeoutLock_RLock_RUnlock-12     	44904087	        26.83 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRWTimeoutLock_RLock_RUnlock-12     	44884981	        26.94 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRWTimeoutLock_RLock_RUnlock-12     	44888760	        26.77 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRWTimeoutLock_RLock_RUnlock-12     	45339979	        26.76 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRWMutex_RLock_RUnlock_Stdlib-12    	153108418	         7.928 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRWMutex_RLock_RUnlock_Stdlib-12    	151486077	         7.964 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRWMutex_RLock_RUnlock_Stdlib-12    	147196970	         7.863 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRWMutex_RLock_RUnlock_Stdlib-12    	152203220	         7.922 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRWMutex_RLock_RUnlock_Stdlib-12    	152385709	         7.961 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	github.com/sandwich-go/boost/xsync	33.490s
+goos: darwin
+goarch: arm64
+pkg: github.com/sandwich-go/boost/xmap
+cpu: Apple M2 Pro
+BenchmarkWalkMapDeterministic_N10-12      	 2263798	       563.7 ns/op	     136 B/op	       3 allocs/op
+BenchmarkWalkMapDeterministic_N10-12      	 2256198	       558.5 ns/op	     136 B/op	       3 allocs/op
+BenchmarkWalkMapDeterministic_N10-12      	 2137638	       560.1 ns/op	     136 B/op	       3 allocs/op
+BenchmarkWalkMapDeterministic_N10-12      	 2183816	       565.8 ns/op	     136 B/op	       3 allocs/op
+BenchmarkWalkMapDeterministic_N10-12      	 2137974	       553.3 ns/op	     136 B/op	       3 allocs/op
+BenchmarkWalkMapDeterministic_N100-12     	  159998	      7406 ns/op	     952 B/op	       3 allocs/op
+BenchmarkWalkMapDeterministic_N100-12     	  161343	      7424 ns/op	     952 B/op	       3 allocs/op
+BenchmarkWalkMapDeterministic_N100-12     	  162056	      7279 ns/op	     952 B/op	       3 allocs/op
+BenchmarkWalkMapDeterministic_N100-12     	  163296	      7408 ns/op	     952 B/op	       3 allocs/op
+BenchmarkWalkMapDeterministic_N100-12     	  162109	      7448 ns/op	     952 B/op	       3 allocs/op
+BenchmarkWalkMapDeterministic_N1000-12    	   10000	    103169 ns/op	    8248 B/op	       3 allocs/op
+BenchmarkWalkMapDeterministic_N1000-12    	   10000	    102942 ns/op	    8248 B/op	       3 allocs/op
+BenchmarkWalkMapDeterministic_N1000-12    	   10000	    102503 ns/op	    8248 B/op	       3 allocs/op
+BenchmarkWalkMapDeterministic_N1000-12    	   10000	    102671 ns/op	    8248 B/op	       3 allocs/op
+BenchmarkWalkMapDeterministic_N1000-12    	   10000	    103049 ns/op	    8248 B/op	       3 allocs/op
+BenchmarkEqual_FastPath_LenMismatch-12    	440454590	         2.719 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqual_FastPath_LenMismatch-12    	440966322	         2.719 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqual_FastPath_LenMismatch-12    	440950456	         2.713 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqual_FastPath_LenMismatch-12    	441485401	         2.719 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqual_FastPath_LenMismatch-12    	440086634	         2.721 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqual_FullScan_AllEqual-12       	  502912	      2697 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqual_FullScan_AllEqual-12       	  497589	      2369 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqual_FullScan_AllEqual-12       	  487350	      2422 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqual_FullScan_AllEqual-12       	  532227	      2361 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqual_FullScan_AllEqual-12       	  495708	      2446 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqual_FullScan_OneDiff-12        	  997029	      1232 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqual_FullScan_OneDiff-12        	 1000000	      1185 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqual_FullScan_OneDiff-12        	  940570	      1109 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqual_FullScan_OneDiff-12        	 1000000	      1291 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqual_FullScan_OneDiff-12        	 1000000	      1208 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	github.com/sandwich-go/boost/xmap	41.369s
+goos: darwin
+goarch: arm64
+pkg: github.com/sandwich-go/boost/xcompress
+cpu: Apple M2 Pro
+BenchmarkFlat_Gzip-12         	   25996	     45553 ns/op	     383 B/op	       1 allocs/op
+BenchmarkFlat_Gzip-12         	   26407	     45428 ns/op	     383 B/op	       1 allocs/op
+BenchmarkFlat_Gzip-12         	   26358	     45395 ns/op	     383 B/op	       1 allocs/op
+BenchmarkFlat_Gzip-12         	   26419	     45599 ns/op	     383 B/op	       1 allocs/op
+BenchmarkFlat_Gzip-12         	   26358	     45469 ns/op	     383 B/op	       1 allocs/op
+BenchmarkFlat_Snappy-12       	 1256593	       980.2 ns/op	    4864 B/op	       1 allocs/op
+BenchmarkFlat_Snappy-12       	 1253857	       976.3 ns/op	    4864 B/op	       1 allocs/op
+BenchmarkFlat_Snappy-12       	 1253065	       943.6 ns/op	    4864 B/op	       1 allocs/op
+BenchmarkFlat_Snappy-12       	 1248958	       963.2 ns/op	    4864 B/op	       1 allocs/op
+BenchmarkFlat_Snappy-12       	 1259806	       963.2 ns/op	    4864 B/op	       1 allocs/op
+BenchmarkInflate_Gzip-12      	  210951	      5448 ns/op	   17435 B/op	       7 allocs/op
+BenchmarkInflate_Gzip-12      	  224254	      5436 ns/op	   17434 B/op	       7 allocs/op
+BenchmarkInflate_Gzip-12      	  200581	      5546 ns/op	   17432 B/op	       7 allocs/op
+BenchmarkInflate_Gzip-12      	  201585	      6060 ns/op	   17434 B/op	       7 allocs/op
+BenchmarkInflate_Gzip-12      	  223046	      5514 ns/op	   17434 B/op	       7 allocs/op
+BenchmarkInflate_Snappy-12    	 1476784	       803.2 ns/op	    4096 B/op	       1 allocs/op
+BenchmarkInflate_Snappy-12    	 1506616	       806.7 ns/op	    4096 B/op	       1 allocs/op
+BenchmarkInflate_Snappy-12    	 1504531	       810.5 ns/op	    4096 B/op	       1 allocs/op
+BenchmarkInflate_Snappy-12    	 1484522	       801.5 ns/op	    4096 B/op	       1 allocs/op
+BenchmarkInflate_Snappy-12    	 1451326	       804.1 ns/op	    4096 B/op	       1 allocs/op
+PASS
+ok  	github.com/sandwich-go/boost/xcompress	36.599s
+goos: darwin
+goarch: arm64
+pkg: github.com/sandwich-go/boost/ratelimiter
+cpu: Apple M2 Pro
+BenchmarkTake_AtomicInt64-12    	 7992362	       135.2 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTake_AtomicInt64-12    	 7905922	       151.2 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTake_AtomicInt64-12    	 7957632	       151.1 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTake_AtomicInt64-12    	 7973971	       151.2 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTake_AtomicInt64-12    	 7957807	       150.4 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTake_Unlimited-12      	43640330	        27.87 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTake_Unlimited-12      	43550187	        27.63 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTake_Unlimited-12      	43611121	        27.52 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTake_Unlimited-12      	43574763	        27.56 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTake_Unlimited-12      	43591846	        27.49 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	github.com/sandwich-go/boost/ratelimiter	13.933s
+goos: darwin
+goarch: arm64
+pkg: github.com/sandwich-go/boost/xparallel
+cpu: Apple M2 Pro
+BenchmarkSliceV_NoLimit-12    	   28077	     42076 ns/op	    5793 B/op	     101 allocs/op
+BenchmarkSliceV_NoLimit-12    	   28510	     42112 ns/op	    5792 B/op	     101 allocs/op
+BenchmarkSliceV_NoLimit-12    	   27840	     44610 ns/op	    5792 B/op	     101 allocs/op
+BenchmarkSliceV_NoLimit-12    	   27415	     42719 ns/op	    5792 B/op	     101 allocs/op
+BenchmarkSliceV_NoLimit-12    	   28057	     42960 ns/op	    5792 B/op	     101 allocs/op
+PASS
+ok  	github.com/sandwich-go/boost/xparallel	8.828s
+goos: darwin
+goarch: arm64
+pkg: github.com/sandwich-go/boost/xcontainer/redblacktree
+cpu: Apple M2 Pro
+BenchmarkRedBlackTreeGet100-12                	  380251	      3031 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeGet100-12                	  401860	      3057 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeGet100-12                	  398966	      3016 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeGet100-12                	  402288	      3008 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeGet100-12                	  399567	      3036 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeGet1000-12               	   21481	     55841 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeGet1000-12               	   19405	     61621 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeGet1000-12               	   21294	     65148 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeGet1000-12               	   21549	     55695 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeGet1000-12               	   21492	     56026 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeGet10000-12              	    1779	    671280 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeGet10000-12              	    1801	    668156 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeGet10000-12              	    1779	    666387 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeGet10000-12              	    1801	    668050 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeGet10000-12              	    1796	    667404 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeGet100000-12             	     148	   8077178 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeGet100000-12             	     148	   8495531 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeGet100000-12             	     146	   8086557 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeGet100000-12             	     148	   8011739 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeGet100000-12             	     148	   8012951 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreePut100-12                	  402439	      2970 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreePut100-12                	  402988	      2971 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreePut100-12                	  409848	      2967 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreePut100-12                	  407479	      2972 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreePut100-12                	  407001	      2978 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreePut1000-12               	   21511	     55617 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreePut1000-12               	   21667	     55469 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreePut1000-12               	   21584	     55658 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreePut1000-12               	   21626	     55582 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreePut1000-12               	   21729	     55649 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreePut10000-12              	    1784	    669525 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreePut10000-12              	    1779	    674575 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreePut10000-12              	    1773	    669050 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreePut10000-12              	    1776	    676076 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreePut10000-12              	    1792	    669410 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreePut100000-12             	     150	   7951476 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreePut100000-12             	     150	   7932782 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreePut100000-12             	     148	   7932104 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreePut100000-12             	     151	   7915234 ns/op	       1 B/op	       0 allocs/op
+BenchmarkRedBlackTreePut100000-12             	     147	   7921694 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemove100-12             	 4868556	       246.3 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemove100-12             	 4859647	       246.3 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemove100-12             	 4864275	       247.1 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemove100-12             	 4853046	       247.1 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemove100-12             	 4851634	       247.0 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemove1000-12            	  491484	      2410 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemove1000-12            	  497450	      2417 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemove1000-12            	  497100	      2411 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemove1000-12            	  492261	      2419 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemove1000-12            	  494583	      2416 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemove10000-12           	   49740	     24096 ns/op	       5 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemove10000-12           	   49651	     24076 ns/op	       5 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemove10000-12           	   49758	     24003 ns/op	       5 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemove10000-12           	   49851	     24110 ns/op	       5 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemove10000-12           	   49555	     24046 ns/op	       5 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemove100000-12          	    4609	    243767 ns/op	     456 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemove100000-12          	    4923	    242307 ns/op	     427 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemove100000-12          	    4951	    241989 ns/op	     424 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemove100000-12          	    4950	    242199 ns/op	     424 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemove100000-12          	    4946	    242383 ns/op	     425 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemoveAndPut100-12       	  107270	     11137 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemoveAndPut100-12       	  107264	     11115 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemoveAndPut100-12       	  108273	     11098 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemoveAndPut100-12       	  108223	     11089 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemoveAndPut100-12       	  107826	     11105 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemoveAndPut1000-12      	    7765	    155939 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemoveAndPut1000-12      	    7761	    155871 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemoveAndPut1000-12      	    7747	    156318 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemoveAndPut1000-12      	    7719	    156279 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemoveAndPut1000-12      	    7694	    156557 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemoveAndPut10000-12     	     678	   1769600 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemoveAndPut10000-12     	     679	   1770974 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemoveAndPut10000-12     	     675	   1769022 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemoveAndPut10000-12     	     679	   1775024 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemoveAndPut10000-12     	     678	   1774548 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemoveAndPut100000-12    	      56	  20427193 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemoveAndPut100000-12    	      52	  20396084 ns/op	       4 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemoveAndPut100000-12    	      55	  20355258 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemoveAndPut100000-12    	      57	  20473708 ns/op	       1 B/op	       0 allocs/op
+BenchmarkRedBlackTreeRemoveAndPut100000-12    	      56	  20416201 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	github.com/sandwich-go/boost/xcontainer/redblacktree	121.451s
+goos: darwin
+goarch: arm64
+pkg: github.com/sandwich-go/boost/xcontainer/syncmap
+cpu: Apple M2 Pro
+BenchmarkKeys_Cached-12    	484998638	         2.405 ns/op	       0 B/op	       0 allocs/op
+BenchmarkKeys_Cached-12    	499184836	         2.398 ns/op	       0 B/op	       0 allocs/op
+BenchmarkKeys_Cached-12    	500160381	         2.410 ns/op	       0 B/op	       0 allocs/op
+BenchmarkKeys_Cached-12    	497927635	         2.406 ns/op	       0 B/op	       0 allocs/op
+BenchmarkKeys_Cached-12    	496595302	         2.404 ns/op	       0 B/op	       0 allocs/op
+BenchmarkKeys_Raw-12       	    2785	    416812 ns/op	  669660 B/op	      18 allocs/op
+BenchmarkKeys_Raw-12       	    3158	    427403 ns/op	  670430 B/op	      18 allocs/op
+BenchmarkKeys_Raw-12       	    3116	    431838 ns/op	  670597 B/op	      18 allocs/op
+BenchmarkKeys_Raw-12       	    2998	    425721 ns/op	  670171 B/op	      18 allocs/op
+BenchmarkKeys_Raw-12       	    2854	    417104 ns/op	  669688 B/op	      18 allocs/op
+PASS
+ok  	github.com/sandwich-go/boost/xcontainer/syncmap	16.500s
+goos: darwin
+goarch: arm64
+pkg: github.com/sandwich-go/boost/isnil
+cpu: Apple M2 Pro
+BenchmarkEqNilBasic-12        	1000000000	         0.3002 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqNilBasic-12        	1000000000	         0.3042 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqNilBasic-12        	1000000000	         0.2996 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqNilBasic-12        	1000000000	         0.2993 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqNilBasic-12        	1000000000	         0.2997 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqNilInterface-12    	1000000000	         0.2990 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqNilInterface-12    	1000000000	         0.3021 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqNilInterface-12    	1000000000	         0.3017 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqNilInterface-12    	1000000000	         0.2997 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEqNilInterface-12    	1000000000	         0.2993 ns/op	       0 B/op	       0 allocs/op
+BenchmarkIsNilBasic-12        	40882029	        28.54 ns/op	      16 B/op	       1 allocs/op
+BenchmarkIsNilBasic-12        	41518719	        28.42 ns/op	      16 B/op	       1 allocs/op
+BenchmarkIsNilBasic-12        	41865454	        31.19 ns/op	      16 B/op	       1 allocs/op
+BenchmarkIsNilBasic-12        	40954756	        28.55 ns/op	      16 B/op	       1 allocs/op
+BenchmarkIsNilBasic-12        	41949423	        28.53 ns/op	      16 B/op	       1 allocs/op
+BenchmarkIsNilInterface-12    	42258480	        28.67 ns/op	      16 B/op	       1 allocs/op
+BenchmarkIsNilInterface-12    	41821926	        28.68 ns/op	      16 B/op	       1 allocs/op
+BenchmarkIsNilInterface-12    	41704617	        28.59 ns/op	      16 B/op	       1 allocs/op
+BenchmarkIsNilInterface-12    	41390786	        28.36 ns/op	      16 B/op	       1 allocs/op
+BenchmarkIsNilInterface-12    	41632754	        28.41 ns/op	      16 B/op	       1 allocs/op
+BenchmarkIsNilNil-12          	624797158	         1.924 ns/op	       0 B/op	       0 allocs/op
+BenchmarkIsNilNil-12          	594339777	         1.947 ns/op	       0 B/op	       0 allocs/op
+BenchmarkIsNilNil-12          	609884962	         1.971 ns/op	       0 B/op	       0 allocs/op
+BenchmarkIsNilNil-12          	614259652	         1.946 ns/op	       0 B/op	       0 allocs/op
+BenchmarkIsNilNil-12          	609528840	         1.975 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	github.com/sandwich-go/boost/isnil	23.221s

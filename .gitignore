@@ -2,3 +2,14 @@
 .idea/.gitignore
 .idea/boost.iml
 .idea/inspectionProfiles/profiles_settings.xml
+
+# bench 工作产物（make bench 生成）；入仓基线在 benchdata/main.txt
+bench.txt
+
+# 测试覆盖率产物（make cover 生成）
+coverage.out
+coverage.html
+
+# AGENTS.md §10：go test -c 生成的 _test 二进制偶发被误推过（commit
+# E10），全局 ignore *.test 防 silent 入仓
+*.test

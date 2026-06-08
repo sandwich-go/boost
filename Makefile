@@ -183,9 +183,27 @@ cover_pkg:
 #   2. 切分支改代码 → `make bench_diff`，看 ±X% + p-value
 #   3. 主干 perf 改动 land 后 `make bench_refresh` 单独 chore commit
 #
-# BENCH_PKGS 列出当前真有 Benchmark* 的包；动新包前要在这里加：
+# BENCH_PKGS 列出当前真有 Benchmark* 的包；动新包前要在这里加。
+#
+# 维护备忘：rg -l '^func Benchmark' --type go 列出全仓 bench 文件，按
+# 包路径合并到这里。fork 代码（xhash/nhash/jenkins）的 bench 是 stdlib
+# 上游随附测试，跑也不破坏什么；保留覆盖完整 baseline。
+#
+# 不在 BENCH_PKGS 内的 bench：
+#   ./lru/...：clean_worker bench 是 worker scheduling 时序观察（每次
+#     iteration 含 100ms sleep + goroutine 启停），不适合 latency baseline；
+#     单独跑（make bench BENCH_PKGS=./lru/...）做 worker 设计实验。
+#   ./xhash/nhash/jenkins/...：fork stdlib hash 测试用 b.Logf 输出
+#     'bench: X Mhashes/sec' 与 bench result 行混在一起，污染 benchstat
+#     parsing；按 §4.6 fork 不动，bench 单独跑 'make bench
+#     BENCH_PKGS=./xhash/nhash/jenkins/...' 但不入 baseline。
 BENCH_PKGS    ?= ./xrand/... ./xpool/... ./xtime/... ./xencoding/... \
-                 ./xcrypto/algorithm/aes/... ./xhash/...
+                 ./xcrypto/algorithm/aes/... \
+                 ./xhash/fnv/... ./xhash/hash14v/... ./xhash/md5/... \
+                 ./xerror/... ./xpanic/... ./xsync/... ./xmap/... \
+                 ./xcompress/... ./ratelimiter/... ./xparallel/... \
+                 ./xcontainer/redblacktree/... ./xcontainer/syncmap/... \
+                 ./isnil/...
 BENCH_RUN      ?= -run=^$$ -bench=. -benchmem -benchtime=1s -count=5
 BENCH_OUT      ?= bench.txt
 BENCH_BASELINE ?= benchdata/main.txt
@@ -215,11 +233,23 @@ bench_diff: bench benchstat
 
 # bench_refresh：把当前 bench.txt 作为新基线写入 benchdata/main.txt。
 # 只在主干 perf 真实变动（修复 / 大改动 landed）后跑一次，单独 chore commit。
-bench_refresh: bench
+#
+# 注意：bench_refresh 不依赖 bench target（避免误重跑长达 25min 的全仓
+# bench）。先 'make bench' 拿到 bench.txt 再 'make bench_refresh' 仅 cp。
+# 一键跑用 'make bench_refresh_full'。
+bench_refresh:
+	@if [ ! -f $(BENCH_OUT) ]; then \
+		echo "缺少 $(BENCH_OUT)，请先 'make bench'（25min+）或 'make bench_refresh_full' 一键跑"; \
+		exit 1; \
+	fi
 	@mkdir -p benchdata
 	@cp $(BENCH_OUT) $(BENCH_BASELINE)
 	@echo "==> refreshed baseline: $(BENCH_BASELINE)"
 	@echo "    请在 chore commit 里独立提交，不与功能改动混合（AGENTS.md §7.2）"
+
+# bench_refresh_full：一键 bench + refresh（25min+）。日常 bench refresh
+# 推荐分两步走（'make bench' 后看输出 / tail -f 进度，再 'make bench_refresh'）。
+bench_refresh_full: bench bench_refresh
 
 # ---------------------------------------------------------------------------
 # code generation：optiongen / gotemplate / stringer / mockgen
@@ -273,6 +303,6 @@ version:
 	fmt imports import goimports vet lint vuln \
 	test test_short test_race race \
 	cover cover_pkg cover_html \
-	bench benchstat bench_diff bench_refresh \
+	bench benchstat bench_diff bench_refresh bench_refresh_full \
 	gen generate build \
 	commit ci style version

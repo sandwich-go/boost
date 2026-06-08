@@ -309,8 +309,22 @@ boost 仓 `.golangci.yml` v2 schema 已入仓（参考 myproxy / dataserver 风�
 
 ### 5.2 bench 入仓作为基线
 
-性能敏感包要写 `BenchmarkXxx`，并把当前数值作为**回归监测基线**。已有的
-基线点：
+性能敏感包要写 `BenchmarkXxx`，并把当前数值作为**回归监测基线**。
+
+**整仓 baseline**：`benchdata/main.txt` 入仓。25 个包 / 800 bench / 5×1s
+benchtime，跑一次约 25min。维护方式：
+
+```bash
+make bench           # 跑 bench 写 bench.txt（25min+）
+make bench_refresh   # cp bench.txt → benchdata/main.txt（仅 cp，不重跑）
+make bench_refresh_full  # 一键 bench + refresh
+make bench_diff      # 跑当前 bench.txt 对比 benchdata/main.txt（开发常用）
+```
+
+`bench_refresh` 独立 chore commit，不与功能改动混合（§7.2）；perf PR
+本地跑 `make bench_diff` 看 ±X% + p-value。
+
+**已有的高价值基线点**（PoC + bench 决策记录在 bench 文件头部）：
 
 | 包 | bench 文件 | 关键 bench |
 |---|---|---|
@@ -322,6 +336,15 @@ boost 仓 `.golangci.yml` v2 schema 已入仓（参考 myproxy / dataserver 风�
 | `xencoding/msgpack` | `msgpack_benchmark_test.go` | msgpack 性能基线 |
 | `xencoding/json` | `json_benchmark_test.go` | json 性能基线 |
 | `xcrypto/algorithm/aes` | `aes_test.go` | AES 性能基线 |
+
+**不在 BENCH_PKGS 内的 bench**（Makefile 注释也有说明）：
+
+- `./lru/...`：clean_worker bench 是 worker scheduling 时序观察（每次
+  iteration 含 100ms sleep + goroutine 启停），不适合 latency baseline；
+  做 worker 设计实验时手动 `make bench BENCH_PKGS=./lru/...`
+- `./xhash/nhash/jenkins/...`：fork stdlib hash 测试用 `b.Logf` 输出
+  `bench: X Mhashes/sec` 与 bench result 行混在一起，污染 benchstat
+  parsing；按 §4.6 fork 不动
 
 **改 hot path 必须 bench**，规约见 [`AGENTS.md` 全局版 §3.4](~/.config/opencode/AGENTS.md)：
 
