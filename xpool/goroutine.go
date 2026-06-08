@@ -20,11 +20,16 @@ type worker struct {
 }
 
 func (w *worker) Start(jobQueue chan Job) {
-	defer func() {
-		close(w.closedChan)
-	}()
-
+	// 历史 bug：defer close(w.closedChan) 原本写在 Start 函数顶部，会
+	// 在 Start 返回时（即 go func 起完即返）立刻 close closedChan，
+	// 让 worker.join() 不再等待 worker goroutine 真退出。表现：
+	// GoroutinePool.Close 立即返但 worker goroutine 仍存活（leak），
+	// 直到 close(jobQueue) 后 worker 收 nil job 才真退。
+	// 修复：把 defer close 移到 worker goroutine 内部，让 closedChan
+	// 在 worker 真退出时才 close（job=nil 退出 / closeChan 信号退出
+	// 两种路径），SetSize(0) 经 join() 同步等待 worker 真退。
 	go func() {
+		defer close(w.closedChan)
 		var job Job
 		for {
 			select {
