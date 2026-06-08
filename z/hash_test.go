@@ -40,3 +40,27 @@ func TestHash(t *testing.T) {
 		}
 	})
 }
+
+// TestAnyHash 覆盖 AnyHash 函数（hash.go:26 0% → 100%）+ KeyToHash
+// default 分支（自定义类型 → AnyHash）。
+func TestAnyHash(t *testing.T) {
+	Convey("AnyHash 直接调用", t, func() {
+		// AnyHash 用 runtime.typehash，相同 v 返同 hash
+		v := struct{ X int }{X: 42}
+		h1 := AnyHash(v, 0)
+		h2 := AnyHash(v, 0)
+		So(h1, ShouldEqual, h2)
+
+		// 不同种子 h 返不同 hash
+		h3 := AnyHash(v, 1)
+		So(h3, ShouldNotEqual, h1)
+	})
+
+	Convey("KeyToHash 自定义类型走 default 分支调 AnyHash", t, func() {
+		type customKey struct{ X int }
+		k := customKey{X: 7}
+		h := KeyToHash(k)
+		// 不强断言具体值（runtime hash 跨进程不稳定），只验证不 panic
+		_ = h
+	})
+}
