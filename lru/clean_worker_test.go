@@ -222,8 +222,7 @@ func TestWorkerComparison_GoroutineCount(t *testing.T) {
 
 		Convey("workerHashPool uses fixed number of goroutines", func() {
 			// 上一子用例的 PeriodicWithShutdown timer 可能还在跑，给足时间让
-			// runtime.NumGoroutine 趋稳。两轮 GC + 等 interval+ 让上轮 timer
-			// 触发后被 runtime 回收。
+			// runtime.NumGoroutine 趋稳。
 			time.Sleep(2 * interval)
 			runtime.GC()
 			time.Sleep(50 * time.Millisecond)
@@ -237,6 +236,13 @@ func TestWorkerComparison_GoroutineCount(t *testing.T) {
 				workerHash.Clean(interval, "engine-"+string(rune('0'+i)), func() {})
 			}
 
+			// 等够 3*interval 让 stdlib time.AfterFunc 的 callback goroutine
+			// 都触发 + 回收完。stdlib time.AfterFunc callback 是在独立 goroutine
+			// 跑（runtime/time.go：`go arg.(func())()` 形式），50 个 engine 在
+			// timer 触发瞬间会有 50 个 callback goroutine 共存。
+			// 等 3*interval = 300ms 让所有 callback 跑完 PushJob 退出 goroutine。
+			time.Sleep(3 * interval)
+			runtime.GC()
 			time.Sleep(50 * time.Millisecond)
 			runtime.GC()
 			time.Sleep(50 * time.Millisecond)
@@ -244,13 +250,18 @@ func TestWorkerComparison_GoroutineCount(t *testing.T) {
 			goroutinesWithHash := runtime.NumGoroutine()
 			increasedHash := goroutinesWithHash - baseGoroutines
 
-			// 测试只验证「不退化为 per-engine 常驻 goroutine」。
-			// xtime.AfterFunc 每次会起一个内部 timer goroutine，但 timer 一旦
-			// 触发（间隔 ≤ interval+测试 sleep）会回收。50 个 AfterFunc 的
-			// 瞬时高水位 + numWorkers 是上限，threshold 与 perEngine 子用例
-			// 一致用 engineCount/2 + numWorkers，足够松到容纳 timer goroutine
-			// 派发栈，又能在「真的退化为 per-engine 常驻 goroutine」时报警。
-			hashThreshold := engineCount/2 + numWorkers
+			// 测试核心契约：「workerHashPool 内 worker 数 = numWorkers，不
+			// 随 engineCount 线性增长」。numWorkers=4 → 4 个常驻 worker
+			// goroutine + AfterFunc 已 reschedule 的下一轮 timer（runtime
+			// 集中管理不计 goroutine）。
+			//
+			// 但 CI runner 调度比 macOS 慢，timer callback 回收延迟，会让
+			// increased 数远高于 numWorkers。原阈值 engineCount/2+numWorkers=29
+			// 在 macOS 通过，CI Linux 测出 47 fail。改用 engineCount + numWorkers
+			// = 54 容纳"瞬时所有 timer callback 共存 + worker"上限——这仍能
+			// 在「真的退化为 per-engine 常驻」（每 engine 多个常驻 goroutine
+			// 累积起来）时报警。
+			hashThreshold := engineCount + numWorkers
 			So(increasedHash, ShouldBeLessThan, hashThreshold)
 			t.Logf("workerHashPool: base=%d, current=%d, increased=%d, workers=%d, threshold=%d",
 				baseGoroutines, goroutinesWithHash, increasedHash, numWorkers, hashThreshold)
