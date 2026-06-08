@@ -253,4 +253,54 @@ func TestDispatcher_TickerCAndTimerNotify(t *testing.T) {
 		d := NewDispatcher(64).(*dispatcher) // TickerC 在 TickerDispatcher 子接口上
 		So(d.TickerC(), ShouldBeNil)
 	})
+
+	Convey("TickerC tickFreq>0 + hostingMode=true 走 warn 分支返 nil", t, func() {
+		// hostingMode=true（默认）下调 TickerC 是用法错误（应让 dispatcher 自托管），
+		// 走 line 149-151 log.Warn + return nil 路径。
+		d := NewDispatcher(64, WithTickDuration(5*time.Millisecond)).(*dispatcher)
+		defer d.Close()
+		So(d.TickerC(), ShouldBeNil)
+	})
+}
+
+// TestDispatcher_TickFunc_DuplicateKey 覆盖 TickFunc 的重复 key 早返路径（warn）。
+func TestDispatcher_TickFunc_DuplicateKey(t *testing.T) {
+	Convey("TickFunc 同 key 重复注册走 warn 不重复加入 tickFuncs", t, func() {
+		d := NewDispatcher(64, WithTickDuration(5*time.Millisecond)).(*dispatcher)
+		defer d.Close()
+
+		// 第一次注册成功
+		d.TickFunc("dup-key", func(_ context.Context) {})
+		So(len(d.tickFuncs), ShouldEqual, 1)
+
+		// 第二次相同 key 走 warn 分支，不再 append
+		d.TickFunc("dup-key", func(_ context.Context) {})
+		So(len(d.tickFuncs), ShouldEqual, 1)
+
+		// 不同 key 正常 append
+		d.TickFunc("another-key", func(_ context.Context) {})
+		So(len(d.tickFuncs), ShouldEqual, 2)
+	})
+}
+
+// TestDispatcher_TriggerTickFuncs_NotRunning 覆盖 TriggerTickFuncs 在
+// closeFlag != stateRunning 时的早返路径（line 159-160）。
+//
+// 注意：NewDispatcher 内部已自动 Start（dispatcher.go:87），所以构造完
+// 直接 TriggerTickFuncs 是 running 状态会执行。要触发早返必须先 Close。
+func TestDispatcher_TriggerTickFuncs_NotRunning(t *testing.T) {
+	Convey("TriggerTickFuncs 在 dispatcher Close 后早返不执行 cb", t, func() {
+		d := NewDispatcher(64, WithTickDuration(5*time.Millisecond), WithTickHostingMode(false)).(*dispatcher)
+		var called atomic.Int32
+		d.TickFunc("k", func(_ context.Context) { called.Add(1) })
+
+		// 构造后是 running 状态，TriggerTickFuncs 正常跑 cb
+		d.TriggerTickFuncs(context.Background())
+		So(called.Load(), ShouldEqual, int32(1))
+
+		// Close 后 closeFlag != stateRunning，TriggerTickFuncs 走早返不再 cb
+		d.Close()
+		d.TriggerTickFuncs(context.Background())
+		So(called.Load(), ShouldEqual, int32(1)) // 没再涨，确认走早返
+	})
 }

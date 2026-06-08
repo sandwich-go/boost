@@ -49,6 +49,13 @@ type DanglingTimer struct {
 	cb     func()
 }
 
+// stop 实现 Timer 接口的小写 stop 方法。
+//
+// 注意：DanglingTimer 是"业务自管"timer，不进 dispatcher.runningTimers
+// （见 AfterFuncWithOwnershipTransferInDomain），不会被 RemoveAllTimer
+// 经 stop() 触发；CronFunc 用的是 SafeTimer 不是 DanglingTimer。所以
+// 此方法在生产代码路径中**实际不被调用**，仅为满足 Timer interface
+// 编译要求保留。test cover 显示 0% 是预期，不补 fake test。
 func (t *DanglingTimer) stop() {
 	t.Stop()
 }

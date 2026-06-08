@@ -229,3 +229,43 @@ func TestSameDay(t *testing.T) {
 		}
 	}
 }
+
+// TestDaysInMonth_AllMonths 覆盖 DaysInMonth 三个 switch 分支：
+//   - 30 天月：4/6/9/11
+//   - 28-29 天月：2 月（含闰年判断）
+//   - 31 天月：default（1/3/5/7/8/10/12）
+func TestDaysInMonth_AllMonths(t *testing.T) {
+	cases := []struct {
+		name string
+		date time.Time
+		want int
+	}{
+		{"jan 31d", time.Date(2026, 1, 15, 0, 0, 0, 0, time.UTC), 31},
+		{"feb non-leap 28d", time.Date(2026, 2, 15, 0, 0, 0, 0, time.UTC), 28},
+		{"feb leap 29d (2024)", time.Date(2024, 2, 15, 0, 0, 0, 0, time.UTC), 29},
+		{"mar 31d", time.Date(2026, 3, 15, 0, 0, 0, 0, time.UTC), 31},
+		{"apr 30d", time.Date(2026, 4, 15, 0, 0, 0, 0, time.UTC), 30},
+		{"may 31d", time.Date(2026, 5, 15, 0, 0, 0, 0, time.UTC), 31},
+		{"jun 30d", time.Date(2026, 6, 15, 0, 0, 0, 0, time.UTC), 30},
+		{"jul 31d", time.Date(2026, 7, 15, 0, 0, 0, 0, time.UTC), 31},
+		{"aug 31d", time.Date(2026, 8, 15, 0, 0, 0, 0, time.UTC), 31},
+		{"sep 30d", time.Date(2026, 9, 15, 0, 0, 0, 0, time.UTC), 30},
+		{"oct 31d", time.Date(2026, 10, 15, 0, 0, 0, 0, time.UTC), 31},
+		{"nov 30d", time.Date(2026, 11, 15, 0, 0, 0, 0, time.UTC), 30},
+		{"dec 31d", time.Date(2026, 12, 15, 0, 0, 0, 0, time.UTC), 31},
+	}
+	for _, c := range cases {
+		got := DaysInMonth(c.date)
+		if got != c.want {
+			t.Errorf("DaysInMonth(%s): got %d, want %d", c.name, got, c.want)
+		}
+	}
+}
+
+// TestSubDays_StartEqEnd 覆盖 SubDays 的 start==end 早返分支。
+func TestSubDays_StartEqEnd(t *testing.T) {
+	ts := time.Date(2026, 6, 15, 12, 0, 0, 0, time.UTC).Unix()
+	if v := SubDays(ts, ts); v != 0 {
+		t.Errorf("SubDays(start==end): got %d, want 0", v)
+	}
+}
