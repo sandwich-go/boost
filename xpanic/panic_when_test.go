@@ -46,6 +46,33 @@ func TestPanicWhen(t *testing.T) {
 		So(func() { WhenFalse(false, "%d", 1) }, ShouldPanic)
 		So(func() { WhenFalse(true, "%d", 1) }, ShouldNotPanic)
 
+		// WhenTrue / WhenFalse panic value 字面格式断言（§9.2 防 verb 回归：
+		// 误改 fmt.Sprintf 为 fmt.Errorf 或 verb 用 %w 会让格式串出现
+		// "%!w(...)" 等错误，这里精确断言 fmt.Sprintf("%d %s", 42, "x")
+		// 输出"42 x"，与历史 panic_when.go:39 实现绑定）。
+		Try(func() {
+			WhenTrue(true, "%d %s", 42, "x")
+		}).Catch(func(e E) {
+			So(panicValueFrom(e), ShouldEqual, "42 x")
+		})
+		Try(func() {
+			WhenFalse(false, "got %v err: %d", "io", 9)
+		}).Catch(func(e E) {
+			So(panicValueFrom(e), ShouldEqual, "got io err: 9")
+		})
+
+		// WhenError 无 reason 分支：panic value 是 err 本身（不走 fmt.Sprintf）。
+		// recover 拿到的是 error 类型，与有 reason 时走 strings.Join 出 string
+		// 形成对照，验证两条分支契约不同（一条传 err，一条传 string）。
+		Try(func() {
+			WhenError(err)
+		}).Catch(func(e E) {
+			pv := panicValueFrom(e)
+			recovered, ok := pv.(error)
+			So(ok, ShouldBeTrue)
+			So(recovered, ShouldEqual, err)
+		})
+
 		// WhenHereNotNil 走 fmt.Sprintf("err should be nil when here, got:%v", err)
 		// （历史 bug：曾用 %w，本次随包修复改为 %v）。验证 panic value 字面格式。
 		Try(func() {
@@ -78,6 +105,15 @@ func TestPanicWhen(t *testing.T) {
 			WhenNotNil(nonNilPtr, "got %d", 42)
 		}).Catch(func(e E) {
 			So(panicValueFrom(e), ShouldEqual, "got 42")
+		})
+
+		// WhenNil panic value 字面断言（间接经 WhenTrue 走 fmt.Sprintf）。
+		// 历史教训 §9.2：verb 误改 %w 会让 panic value 变成 "%!w(...)" 字面，
+		// 这里精确比较防回归。
+		Try(func() {
+			WhenNil(nil, "value missing: %s/%d", "key", 7)
+		}).Catch(func(e E) {
+			So(panicValueFrom(e), ShouldEqual, "value missing: key/7")
 		})
 	})
 }
