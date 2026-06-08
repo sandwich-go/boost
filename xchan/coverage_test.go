@@ -1,7 +1,10 @@
 package xchan
 
 import (
+	"context"
+	"sync/atomic"
 	"testing"
+	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -140,5 +143,74 @@ func TestRingBuffer_GrowLarge(t *testing.T) {
 		for i := 0; i < 1024; i++ {
 			So(rb.Pop(), ShouldEqual, i)
 		}
+	})
+}
+
+// TestUnboundedChan_Callback 覆盖 process 内 Callback 路径
+// （line 86-88 / 101-103 / 117-119）。
+//
+// 触发条件：CallbackOnBufCount 设小阈值，让写满 In/Out 后 buffer 增长
+// 越过阈值，Callback 被调；多次写入测试三个 Callback 触发点。
+func TestUnboundedChan_Callback(t *testing.T) {
+	Convey("CallbackOnBufCount 阈值触发 Callback", t, func() {
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		var callbackCount atomic.Int32
+		var lastBufCount atomic.Int64
+		ch := NewUnboundedChanSize[int](
+			ctx, 2, 2, 2, // small In/Out/Buffer 强制走 buffer 路径
+			WithCallbackOnBufCount(3),
+			WithCallback(func(bufCount int64) {
+				callbackCount.Add(1)
+				lastBufCount.Store(bufCount)
+			}),
+		)
+
+		// 灌入 20 个值；In=2 / Out=2，剩下 16 都进 buffer，buffer 增长会
+		// 反复越过 CallbackOnBufCount=3 → Callback 被调多次
+		for i := 0; i < 20; i++ {
+			ch.In <- i
+		}
+		// 等 process 处理完所有 push
+		time.Sleep(100 * time.Millisecond)
+
+		So(callbackCount.Load(), ShouldBeGreaterThan, int32(0))
+		So(lastBufCount.Load(), ShouldBeGreaterThan, int64(3))
+
+		// 收尾：close in 让 process drain + close out
+		close(ch.In)
+		// drain Out
+		for range ch.Out {
+		}
+	})
+}
+
+// TestUnboundedChan_DrainOnCtxDone 覆盖 drain 内 'case <-ctx.Done():
+// return' 早返路径（line 63-64）。
+//
+// 触发条件：buffer 有数据时 cancel ctx，drain 在 select 内捕到 Done
+// 早返而不是把 buffer 全放进 out。
+func TestUnboundedChan_DrainOnCtxDone(t *testing.T) {
+	Convey("drain 内 ctx.Done 早返", t, func() {
+		ctx, cancel := context.WithCancel(context.Background())
+		ch := NewUnboundedChanSize[int](ctx, 1, 1, 1) // 极小容量强制 buffer
+
+		// 灌入比 In+Out 多得多的值让 buffer 塞满
+		for i := 0; i < 100; i++ {
+			ch.In <- i
+		}
+		// 仅消费几个让 buffer 仍有数据
+		for i := 0; i < 3; i++ {
+			<-ch.Out
+		}
+
+		// close in 让 process 进 drain，drain 中 cancel ctx 触发 Done 早返
+		close(ch.In)
+		cancel()
+		// drain Out 让 goroutine 退出（process 已 close out）
+		for range ch.Out {
+		}
+		// 不强断言数量（drain 早返时 buffer 中可能仍有未送出的）
 	})
 }
