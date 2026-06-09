@@ -12,8 +12,19 @@ func Contain[T comparable](s []T, v T) bool {
 	return false
 }
 
+// Deprecated: 使用 SetAdd
 // Add 如果 s 中不存在给定的元素 v 则添加
 func Add[T comparable](s []T, v ...T) []T {
+	for _, ele := range v {
+		if !Contain(s, ele) {
+			s = append(s, ele)
+		}
+	}
+	return s
+}
+
+// SetAdd 如果 s 中不存在给定的元素 v 则添加
+func SetAdd[T comparable](s []T, v ...T) []T {
 	for _, ele := range v {
 		if !Contain(s, ele) {
 			s = append(s, ele)
