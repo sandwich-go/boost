@@ -1,6 +1,7 @@
 package xpool
 
 import (
+	"context"
 	"runtime"
 	"sync"
 	"sync/atomic"
@@ -82,4 +83,89 @@ func TestGoroutinePool_Close_WaitsForWorkers(t *testing.T) {
 		t.Errorf("worker goroutines leaked after Close: base=%d, current=%d (delta=%d)",
 			baseGoroutines, got, got-baseGoroutines)
 	}
+}
+
+// TestGoroutinePool_Close_DrainsResidualJobs 验证 Close 时 jobQueue 里残余
+// 的 job 被 worker drain 跑完才退出，**不**丢失。
+//
+// 设计动机：dataserver 的 Publish 路径 in-flight job 走 asyncQueue.Produce
+// 把落库 task 入 stream——若 Close 时 jobQueue 残余 job 被丢失，等同丢未
+// 落库任务。详见 worker.Start 注释"历史 bug 2"段。
+//
+// 反向验证锚点（§3.1）：把 worker.Start 里 closeChan case 的 drain 内层
+// for-select 改回 'return' → 残余 job 不会跑 → counter < N → 测试 fail。
+//
+// 测试构造：
+//
+//   - 单 worker（避免并行 drain 的随机性，让"是否 drain"判定确定）
+//   - 队列预填 N 个慢 job（每个 sleep）—— Push 完后 worker 还没消费完
+//   - Close 触发 SetSize(0) → worker 收 closeChan → 切 drain → 跑完所有
+//   - 断言 counter == N
+func TestGoroutinePool_Close_DrainsResidualJobs(t *testing.T) {
+	const numJobs = 20
+	// 单 worker 让 drain 顺序确定；timeout=0 让 Push 阻塞到队列有空
+	// （但 capacity 设大于 numJobs 不会阻塞）。
+	pool := NewGoroutinePool(1, numJobs+1, time.Duration(0))
+
+	var counter atomic.Uint64
+	var wg sync.WaitGroup
+	wg.Add(numJobs)
+	ctx := context.Background()
+	for i := 0; i < numJobs; i++ {
+		err := pool.Push(ctx, func() {
+			defer wg.Done()
+			// 让 job 慢一点确保 Close 时还有残余在 jobQueue 里
+			time.Sleep(10 * time.Millisecond)
+			counter.Add(1)
+		})
+		if err != nil {
+			t.Fatalf("Push %d: %v", i, err)
+		}
+	}
+
+	// Push 完立即 Close —— 此时 worker 大概率只跑了 1-2 个 job，jobQueue
+	// 里至少 18+ 个 job 残余。Close 应同步等所有残余 drain 完。
+	pool.Close()
+
+	// 强不变量 1：drain 完成后所有 job 都跑过
+	if got := counter.Load(); got != numJobs {
+		t.Errorf("residual jobs not drained: counter=%d, want=%d", got, numJobs)
+	}
+	// 强不变量 2：wg.Wait 不应阻塞（所有 job.Done 都跑过）
+	done := make(chan struct{})
+	go func() {
+		wg.Wait()
+		close(done)
+	}()
+	select {
+	case <-done:
+		// OK
+	case <-time.After(2 * time.Second):
+		t.Fatal("wg.Wait timeout: 部分 job 未执行 Done() —— drain 不全")
+	}
+}
+
+// TestGoroutinePool_Close_PushAfterCloseShortCircuits 验证 Close 后 Push
+// 立即短路返 "pool closed" error，不阻塞、不 panic。
+func TestGoroutinePool_Close_PushAfterCloseShortCircuits(t *testing.T) {
+	pool := NewGoroutinePool(2, 10, time.Duration(0))
+	pool.Close()
+
+	if !pool.IsClosed() {
+		t.Fatal("Close 后 IsClosed 应为 true")
+	}
+
+	err := pool.Push(context.Background(), func() {})
+	if err == nil {
+		t.Fatal("Close 后 Push 应返 error，got nil")
+	}
+}
+
+// TestGoroutinePool_Close_Idempotent 验证 Close 幂等——重复调不 panic、
+// CAS 让第二次起 short-circuit。
+func TestGoroutinePool_Close_Idempotent(t *testing.T) {
+	pool := NewGoroutinePool(2, 10, time.Duration(0))
+	pool.Close()
+	pool.Close() // 不 panic
+	pool.Close() // 不 panic
 }
