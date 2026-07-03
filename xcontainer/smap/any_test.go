@@ -1,13 +1,61 @@
 package smap
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
-
+	"fmt"
+	"strconv"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 type ss string
 type ii int
+
+func __formatKTypeToInt32String(i any) int32 {
+	switch ii := i.(type) {
+	case int:
+		return int32(ii)
+	case int8:
+		return int32(ii)
+	case int16:
+		return int32(ii)
+	case int32:
+		return ii
+	case int64:
+		return int32(ii)
+	case uint:
+		return int32(ii)
+	case uint8:
+		return int32(ii)
+	case uint16:
+		return int32(ii)
+	case uint32:
+		return int32(ii)
+	case uint64:
+		return int32(ii)
+	case float32:
+		return int32(ii)
+	case float64:
+		return int32(ii)
+	case string:
+		iv, err := strconv.ParseInt(ii, 10, 64)
+		if err != nil {
+			panic(err)
+		}
+		return int32(iv)
+	default:
+		panic("unknown type")
+	}
+}
+
+func __formatVTypeToInt32String(i any) string {
+	switch ii := i.(type) {
+	case string:
+		return ii
+	default:
+		return fmt.Sprintf("%d", i)
+	}
+}
 
 func TestAnyInt32String(t *testing.T) {
 	Convey("test sync array should work ok", t, func() {
