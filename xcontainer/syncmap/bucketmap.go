@@ -22,20 +22,41 @@ type BucketMap[K comparable, V any] struct {
 	activeIndex  atomic.Uint32
 	keySlicePool sync.Pool
 	stopCh       chan struct{}
+	stopOnce     sync.Once
 	refreshDur   time.Duration
 }
 
+// BucketOption 配置 BucketMap 的可选行为。
+type BucketOption func(*bucketOptions)
+
+type bucketOptions struct {
+	refreshDur time.Duration
+}
+
+// WithKeySnapshot 开启后台键快照：每隔 dur 刷新一次全量键快照，
+// 使 Keys() 直接返回缓存快照而非实时遍历所有桶。dur<=0 时不开启。
+// 开启后必须在不再使用时调用 Close() 停止后台刷新 goroutine。
+func WithKeySnapshot(dur time.Duration) BucketOption {
+	return func(o *bucketOptions) { o.refreshDur = dur }
+}
+
+// NewBucketMapWithCacheKey 已废弃：请使用 NewBucketMap(bucketNum, hashFunc, WithKeySnapshot(dur))，
+// 用 m.RefreshKeys() 替代 forceFresh、m.Close() 替代 stopFunc。
+//
+// Deprecated: use NewBucketMap with WithKeySnapshot; call m.RefreshKeys()/m.Close().
 func NewBucketMapWithCacheKey[K comparable, V any](bucketNum int, cacheKeyInterval time.Duration, hashFunc func(K) int64) (
 	m *BucketMap[K, V],
 	forceFresh func(),
 	stopFunc func()) {
 	m = newBucketMap[K, V](bucketNum, cacheKeyInterval, hashFunc)
-	return m, m.refreshKeysNow, func() {
-		close(m.stopCh)
-	}
+	return m, m.RefreshKeys, m.Close
 }
-func NewBucketMap[K comparable, V any](bucketNum int, hashFunc func(K) int64) *BucketMap[K, V] {
-	return newBucketMap[K, V](bucketNum, 0, hashFunc)
+func NewBucketMap[K comparable, V any](bucketNum int, hashFunc func(K) int64, opts ...BucketOption) *BucketMap[K, V] {
+	var o bucketOptions
+	for _, opt := range opts {
+		opt(&o)
+	}
+	return newBucketMap[K, V](bucketNum, o.refreshDur, hashFunc)
 }
 func newBucketMap[K comparable, V any](bucketNum int, refreshDur time.Duration, hashFunc func(K) int64) *BucketMap[K, V] {
 	if bucketNum <= 0 {
@@ -77,6 +98,18 @@ func newBucketMap[K comparable, V any](bucketNum int, refreshDur time.Duration, 
 
 func (m *BucketMap[K, V]) refreshKeysNow() {
 	m.refreshKeySnapshot()
+}
+
+// RefreshKeys 立即刷新一次键快照（仅在 WithKeySnapshot 开启时有意义）。
+func (m *BucketMap[K, V]) RefreshKeys() {
+	m.refreshKeysNow()
+}
+
+// Close 停止后台键快照刷新 goroutine，可安全重复调用。
+func (m *BucketMap[K, V]) Close() {
+	m.stopOnce.Do(func() {
+		close(m.stopCh)
+	})
 }
 
 func (m *BucketMap[K, V]) refreshKeySnapshot() {

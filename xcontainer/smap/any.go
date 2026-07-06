@@ -6,8 +6,6 @@ import (
 	"github.com/sandwich-go/boost/z"
 )
 
-//template type Concurrent(KType,VType,KeyHash)
-
 // A thread safe map.
 // To avoid lock bottlenecks this map is dived to several (DefaultShardCount) map shards.
 

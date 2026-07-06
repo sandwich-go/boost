@@ -337,6 +337,43 @@ func TestBucketMap_CacheKey(t *testing.T) {
 	})
 }
 
+func TestBucketMap_WithKeySnapshotAndClose(t *testing.T) {
+	Convey("NewBucketMap + WithKeySnapshot + RefreshKeys + Close", t, func() {
+		m := NewBucketMap[string, int](4, stringHash, WithKeySnapshot(50*time.Millisecond))
+		defer m.Close()
+
+		So(m.Keys(), ShouldBeEmpty)
+
+		m.Store("a", 1)
+		m.Store("bb", 2)
+		So(m.Keys(), ShouldBeEmpty)
+
+		m.RefreshKeys()
+		keys := m.Keys()
+		sort.Strings(keys)
+		So(keys, ShouldResemble, []string{"a", "bb"})
+
+		m.Store("ccc", 3)
+		time.Sleep(150 * time.Millisecond)
+		keys = m.Keys()
+		sort.Strings(keys)
+		So(keys, ShouldResemble, []string{"a", "bb", "ccc"})
+
+		So(func() {
+			m.Close()
+			m.Close()
+		}, ShouldNotPanic)
+	})
+
+	Convey("NewBucketMap without WithKeySnapshot: Close is safe no-op", t, func() {
+		m := NewBucketMap[string, int](4, stringHash)
+		So(func() {
+			m.Close()
+			m.Close()
+		}, ShouldNotPanic)
+	})
+}
+
 // TestBucketMap_Concurrent 关键并发测试：100 goroutine × 50 次混合 CRUD。
 // 必须配合 -race 跑（CI race job 守关）。
 func TestBucketMap_Concurrent(t *testing.T) {
