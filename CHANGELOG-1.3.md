@@ -1,4 +1,37 @@
-### v1.3.101 🌈 (2026-03-12 20:42:05)
+### v1.3.104 🌈 (2026-07-20 13:06:30)
+
+#### 🚀  New Feature
+  * **xts**: 新增全局时间戳时钟包，xtime 提供无状态 TimeProvider ([5e143ae](https://github.com/sandwich-go/boost/commit/5e143aeb996d43a7480481776920b6ce05468ecb)) (<small>[huangqing.zhu](huangqing.zhu@centurygame.com)@2026-07-20 13:06:30 &#43;0800 &#43;0800</small>)
+
+### v1.3.103 (2026-06-09 09:46:14)
+
+#### 🛠  Refactor
+  * xslice 增加 SetAdd ([cc42986](https://github.com/sandwich-go/boost/commit/cc4298674cba4ecb59dcf7b3f48c954ba1a12918) , [8c5cc4f](https://github.com/sandwich-go/boost/commit/8c5cc4fa75a9f6b59237b0e7d808a3a1fe23192a)) (<small>[huangqing.zhu](huangqing.zhu@centurygame.com)@2026-06-09 09:46:14 &#43;0800 &#43;0800</small>)
+
+### v1.3.102 (2026-06-03 17:51:14)
+
+#### 🐛  Bug Fixed
+  * **misc**: 修复 pointerShift 在 -race 下触发 checkptr 报错 ([347fd36](https://github.com/sandwich-go/boost/commit/347fd365a42e0cf51681fd0cab519d250a1b8220)) (<small>[huangqing.zhu](huangqing.zhu@centurygame.com)@2026-05-09 18:46:32 &#43;0800 &#43;0800</small>)
+
+#### 🚀  New Feature
+  * **xtime**: 新增 Periodic 周期任务原语，单实例稳态 0 timer 分配 ([35d0e8c](https://github.com/sandwich-go/boost/commit/35d0e8c89d5295364db1b2a2f21c2050a58113ad)) (<small>[huangqing.zhu](huangqing.zhu@centurygame.com)@2026-06-03 17:50:43 &#43;0800 &#43;0800</small>)
+  * xtime暴露NowFunc函数 ([725bbd1](https://github.com/sandwich-go/boost/commit/725bbd1d8cc3a1135a18f177770ebffe9e0b2889)) (<small>[huangqing.zhu](huangqing.zhu@centurygame.com)@2026-05-12 21:18:51 &#43;0800 &#43;0800</small>)
+  * 增加 map diff ([f226c2f](https://github.com/sandwich-go/boost/commit/f226c2ffb58aa05921bb786fe3c104788da8727c)) (<small>[huangqing.zhu](huangqing.zhu@centurygame.com)@2026-04-21 10:41:51 &#43;0800 &#43;0800</small>)
+  * 超时锁 ([06fc89f](https://github.com/sandwich-go/boost/commit/06fc89f21bd3033fe0825e622d0a2c8fd7409312)) (<small>[huangqing.zhu](huangqing.zhu@centurygame.com)@2026-03-26 15:26:20 &#43;0800 &#43;0800</small>)
+
+#### ⚡️  Performance Improves
+  * **lru**: workerPerEngine 切到 xtime.PeriodicWithShutdown ([aefae5f](https://github.com/sandwich-go/boost/commit/aefae5ff6566f3121000cbc50c40aa7de989dfbd)) (<small>[huangqing.zhu](huangqing.zhu@centurygame.com)@2026-06-03 17:51:14 &#43;0800 &#43;0800</small>)
+
+#### 🛠  Refactor
+  * redblacktree 分配回收 ([eb3b3f1](https://github.com/sandwich-go/boost/commit/eb3b3f1b717eb3ee28c134ce2e641dc0ea5b80ac)) (<small>[huangqing.zhu](huangqing.zhu@centurygame.com)@2026-04-08 21:06:13 &#43;0800 &#43;0800</small>)
+
+#### 🤖  Tools
+  * **sem**: make changelog ([7282a7a](https://github.com/sandwich-go/boost/commit/7282a7a5cf1dbe676102ded4c1b6786235eb8e7c)) (<small>[daming.yang](daming.yang@centurygame.com)@2026-03-12 20:42:40 &#43;0800 &#43;0800</small>)
+
+#### 💪  Commit
+  * refactor ([ebde337](https://github.com/sandwich-go/boost/commit/ebde337a1afef2fd92cfdc0f3cca5c03c3a4eed6)) (<small>[huangqing.zhu](huangqing.zhu@centurygame.com)@2026-04-14 15:28:41 &#43;0800 &#43;0800</small>)
+
+### v1.3.101 (2026-03-12 20:42:05)
 
 #### 🐛  Bug Fixed
   * **cloud**: trim导致下载文件不兼容 ([e08d485](https://github.com/sandwich-go/boost/commit/e08d4859296beb93766401bc59a4e21f5fb45306)) (<small>[daming.yang](daming.yang@centurygame.com)@2026-03-12 20:42:05 &#43;0800 &#43;0800</small>)
