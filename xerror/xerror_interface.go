@@ -30,6 +30,12 @@ type apiLogic interface {
 	Logic() bool
 }
 
+// apiRetry Retryable feature.
+type apiRetry interface {
+	Error() string
+	Retry() bool
+}
+
 // Code 返回错误码数据，如果没有实现APICode则根据CodeHandlerForNotAPICode逻辑返回
 func Code(err error) int32 {
 	if err != nil {
@@ -62,6 +68,18 @@ func Logic(err error) bool {
 	// 兼容err2接口
 	if e, ok := err.(interface{ IsLogicException() bool }); ok {
 		return e.IsLogicException()
+	}
+	return false
+}
+
+// Retryable 返回错误是否可重试，默认为 false。
+// 调用方可据此决定是否重试（如刷新路由信息后重发 RPC）。
+func Retryable(err error) bool {
+	if err == nil {
+		return false
+	}
+	if e, ok := err.(apiRetry); ok {
+		return e.Retry()
 	}
 	return false
 }
