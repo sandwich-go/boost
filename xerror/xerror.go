@@ -14,10 +14,26 @@ type Error struct {
 	skip       int    // error skip
 	setTimeout bool   // 是否设置超时, 如果明确设置超时状态，则不再根据底层错误判断
 	timeout    bool   // 是否为超时错误
+	retry      bool   // 是否为可重试错误，调用方可据此决定是否重试
 }
 
 // Logic 是否为逻辑层错误
 func (cc *Error) Logic() bool { return cc.logic }
+
+// Retry 是否为可重试错误
+func (cc *Error) Retry() bool { return cc.retry }
+
+// SetRetry 设定为可重试错误
+func (cc *Error) SetRetry() *Error {
+	cc.retry = true
+	return cc
+}
+
+// UnsetRetry 设定为不可重试错误
+func (cc *Error) UnsetRetry() *Error {
+	cc.retry = false
+	return cc
+}
 
 // Timeout 是否为超时错误 os.IsTimeout
 func (cc *Error) Timeout() bool {
@@ -80,6 +96,7 @@ func WithErr(v error) ErrorOption   { return func(cc *Error) { cc.err = v } }
 func WithText(v string) ErrorOption { return func(cc *Error) { cc.text = v } }
 func WithCode(v int32) ErrorOption  { return func(cc *Error) { cc.code = v } }
 func WithLogic(v bool) ErrorOption  { return func(cc *Error) { cc.logic = v } }
+func WithRetry(v bool) ErrorOption  { return func(cc *Error) { cc.retry = v } }
 func WithSkip(v int) ErrorOption    { return func(cc *Error) { cc.skip = v } }
 func WithTimeout(v bool) ErrorOption {
 	return func(cc *Error) {
