@@ -7,17 +7,52 @@ import (
 	"os"
 )
 
-// File 对文件进行 md5 hash
+// File 对文件进行 md5 hash，换行符差异不影响 Windows 和 Unix 平台下的结果。
 func File(filePath string) (string, error) {
-	//Open the passed argument and check for any error
 	file, err := os.Open(filePath)
 	if err != nil {
 		return "", err
 	}
-	//Tell the program to call the following function when the current function returns
 	defer func() { _ = file.Close() }()
-	return Buffer(file)
 
+	hash := md5.New()
+	buf := make([]byte, 32*1024)
+	normalized := make([]byte, 0, len(buf))
+	pendingCR := false
+
+	for {
+		n, readErr := file.Read(buf)
+		if n > 0 {
+			normalized = normalized[:0]
+			for _, b := range buf[:n] {
+				if pendingCR {
+					normalized = append(normalized, '\n')
+					pendingCR = false
+					if b == '\n' {
+						continue
+					}
+				}
+				if b == '\r' {
+					pendingCR = true
+				} else {
+					normalized = append(normalized, b)
+				}
+			}
+			_, _ = hash.Write(normalized)
+		}
+
+		if readErr == io.EOF {
+			if pendingCR {
+				_, _ = hash.Write([]byte{'\n'})
+			}
+			break
+		}
+		if readErr != nil {
+			return "", readErr
+		}
+	}
+
+	return hex.EncodeToString(hash.Sum(nil)), nil
 }
 
 // Buffer 对数据流进行 md5 hash
