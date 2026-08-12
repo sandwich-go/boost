@@ -108,3 +108,87 @@ func TestExpireBatch(t *testing.T) {
 		}
 	})
 }
+
+func TestFiveSecondTTLExpiryAndHeapReschedule(t *testing.T) {
+	const ttl = 5 * time.Second
+
+	var lock sync.RWMutex
+	store := make(map[string]bool)
+	expired := make(chan string, 2)
+	engine := NewEngine(ttl, &lock, func(key string) {
+		delete(store, key)
+		expired <- key
+	})
+
+	lock.Lock()
+	store["cold"] = true
+	cold := engine.Add("cold")
+	store["hot"] = true
+	hot := engine.Add("hot")
+	lock.Unlock()
+
+	// 在初始 TTL 到达前访问 hot。它仍留在旧堆位置，只更新时间戳。
+	time.Sleep(3 * time.Second)
+	lock.RLock()
+	oldSchedule := hot.scheduledAt
+	if !engine.Promote(hot) {
+		t.Fatal("hot promote failed")
+	}
+	promotedAt := hot.lastAccess.Load()
+	if hot.scheduledAt != oldSchedule {
+		t.Fatal("Promote 不应在读路径调整堆")
+	}
+	lock.RUnlock()
+
+	// cold 应按首次写入时间淘汰；hot 到达旧过期点后应按最后访问时间重新排堆。
+	select {
+	case key := <-expired:
+		if key != "cold" {
+			t.Fatalf("先淘汰了 %q，期望 cold", key)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("cold 未在 5 秒 TTL 后被淘汰")
+	}
+
+	rescheduledDeadline := time.Now().Add(2 * time.Second)
+	for {
+		lock.RLock()
+		rescheduled := hot.scheduledAt == promotedAt
+		lock.RUnlock()
+		if rescheduled {
+			break
+		}
+		if time.Now().After(rescheduledDeadline) {
+			t.Fatal("hot 到达旧过期点后未重新排堆")
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+
+	lock.RLock()
+	if store["cold"] || cold.engine != nil {
+		t.Error("cold key 或结点未被完整淘汰")
+	}
+	if !store["hot"] || hot.engine != engine {
+		t.Error("hot key 在续期后不应被淘汰")
+	}
+	if engine.nodes.Len() != 1 || engine.nodes[0] != hot || hot.heapIndex != 0 {
+		t.Error("hot 重新排堆后的根结点或 heapIndex 不正确")
+	}
+	lock.RUnlock()
+
+	// hot 必须从最后一次访问起再存活完整 TTL，随后才淘汰。
+	select {
+	case key := <-expired:
+		if key != "hot" {
+			t.Fatalf("最终淘汰了 %q，期望 hot", key)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("hot 未在最后访问时间起 5 秒后被淘汰")
+	}
+
+	lock.RLock()
+	defer lock.RUnlock()
+	if store["hot"] || hot.engine != nil || engine.nodes.Len() != 0 || hot.heapIndex != -1 {
+		t.Fatal("hot 淘汰后 store 或堆中仍有残留")
+	}
+}

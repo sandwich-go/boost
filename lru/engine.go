@@ -13,8 +13,8 @@ import (
 type Node[V any] struct {
 	value V
 
-	lastAccess  atomic.Int64
-	scheduledAt int64
+	lastAccess  atomic.Int64 //最后访问时间
+	scheduledAt int64        //只有cleaner修改
 	heapIndex   int
 	engine      *Engine[V]
 }
@@ -27,14 +27,14 @@ func (n *Node[V]) Value() V { return n.value }
 
 type nodeHeap[V any] []*Node[V]
 
-func (h nodeHeap[V]) Len() int { return len(h) }
-func (h nodeHeap[V]) Less(i, j int) bool {
-	return h[i].scheduledAt < h[j].scheduledAt
+func (h *nodeHeap[V]) Len() int { return len(*h) }
+func (h *nodeHeap[V]) Less(i, j int) bool {
+	return (*h)[i].scheduledAt < (*h)[j].scheduledAt
 }
-func (h nodeHeap[V]) Swap(i, j int) {
-	h[i], h[j] = h[j], h[i]
-	h[i].heapIndex = i
-	h[j].heapIndex = j
+func (h *nodeHeap[V]) Swap(i, j int) {
+	(*h)[i], (*h)[j] = (*h)[j], (*h)[i]
+	(*h)[i].heapIndex = i
+	(*h)[j].heapIndex = j
 }
 func (h *nodeHeap[V]) Push(value any) {
 	node := value.(*Node[V])

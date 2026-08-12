@@ -7,14 +7,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/RussellLuo/timingwheel"
-	"github.com/sandwich-go/boost/xtime"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestMain(m *testing.M) {
-	xtime.DefaultTiming = timingwheel.NewTimingWheel(time.Millisecond*10, 128)
-	xtime.DefaultTiming.Start()
+	//xtime.DefaultTiming = timingwheel.NewTimingWheel(time.Millisecond*10, 128)
+	//xtime.DefaultTiming.Start()
 	m.Run()
 }
 
