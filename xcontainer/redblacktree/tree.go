@@ -2,38 +2,7 @@ package redblacktree
 
 import (
 	"cmp"
-	"reflect"
-	"sync"
 )
-
-var treePools sync.Map
-
-func newPooledTree[K comparable, V any]() *Tree[K, V] {
-	return &Tree[K, V]{}
-}
-
-func treePoolFor[K comparable, V any]() *sync.Pool {
-	v, _ := treePools.LoadOrStore(reflect.TypeFor[Tree[K, V]](), &sync.Pool{
-		New: func() any {
-			return newPooledTree[K, V]()
-		},
-	})
-	return v.(*sync.Pool)
-}
-
-func acquireTree[K comparable, V any](comparator Comparator[K]) *Tree[K, V] {
-	p := treePoolFor[K, V]()
-	var t *Tree[K, V]
-	if v := p.Get(); v != nil {
-		t = v.(*Tree[K, V])
-	} else {
-		t = newPooledTree[K, V]()
-	}
-	t.Comparator = comparator
-	t.Root = nil
-	t.size = 0
-	return t
-}
 
 type Comparator[T any] func(a, b T) int
 
@@ -42,7 +11,6 @@ type Tree[K comparable, V any] struct {
 	Root       *Node[K, V]
 	size       int
 	Comparator Comparator[K]
-	nodePool   sync.Pool
 }
 
 // New instantiates a red-black tree with the built-in comparator for K
@@ -52,44 +20,11 @@ func New[K cmp.Ordered, V any]() *Tree[K, V] {
 
 // NewWith instantiates a red-black tree with the custom comparator.
 func NewWith[K comparable, V any](comparator Comparator[K]) *Tree[K, V] {
-	return acquireTree[K, V](comparator)
-}
-
-func (t *Tree[K, V]) acquireNode(key K, value V) *Node[K, V] {
-	var n *Node[K, V]
-	if v := t.nodePool.Get(); v != nil {
-		n = v.(*Node[K, V])
-	} else {
-		n = new(Node[K, V])
-	}
-	n.Key = key
-	n.Value = value
-	n.color = red
-	n.Left = nil
-	n.Right = nil
-	n.Parent = nil
-	return n
-}
-
-func (t *Tree[K, V]) releaseNode(n *Node[K, V]) {
-	if n == nil {
-		return
-	}
-	*n = Node[K, V]{}
-	t.nodePool.Put(n)
-}
-
-func (t *Tree[K, V]) releaseSubtree(n *Node[K, V]) {
-	if n == nil {
-		return
-	}
-	t.releaseSubtree(n.Left)
-	t.releaseSubtree(n.Right)
-	t.releaseNode(n)
+	return &Tree[K, V]{Comparator: comparator}
 }
 
 func (t *Tree[K, V]) newNode(key K, value V) *Node[K, V] {
-	return t.acquireNode(key, value)
+	return &Node[K, V]{Key: key, Value: value, color: red}
 }
 
 // Put inserts node into the tree or update the node's value if the key exsited.
@@ -189,7 +124,6 @@ func (t *Tree[K, V]) Remove(key K) {
 		if node.Parent == nil && child != nil {
 			child.color = black
 		}
-		t.releaseNode(node)
 	}
 	t.size--
 }
@@ -471,20 +405,8 @@ func (t *Tree[K, V]) Values() []V {
 
 // Clear removes all nodes from the tree.
 func (t *Tree[K, V]) Clear() {
-	t.releaseSubtree(t.Root)
 	t.Root = nil
 	t.size = 0
-}
-
-func (t *Tree[K, V]) Release() {
-	if t == nil {
-		return
-	}
-	t.releaseSubtree(t.Root)
-	t.Root = nil
-	t.size = 0
-	t.Comparator = nil
-	treePoolFor[K, V]().Put(t)
 }
 
 // WalkTailNodeKeys 找到 k 结点或者后继结点，然后依次遍历后续结点直到尾部
