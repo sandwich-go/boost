@@ -18,12 +18,18 @@ type UnboundedChan[T any] struct {
 }
 
 // Len 所有待读取的数据的长度
-func (c UnboundedChan[T]) Len() int {
+//
+// 必须用指针接收者：bufCount 由 process 协程以原子操作维护，值接收者会在调用时拷贝整个
+// 结构体，拷贝动作本身就是对 bufCount 的非原子读，与那些原子写构成数据竞争。
+func (c *UnboundedChan[T]) Len() int {
 	return len(c.In) + c.BufLen() + len(c.Out)
 }
 
 // BufLen 获取缓存中的数据的长度，不包含外发Out channel中数据的长度
-func (c UnboundedChan[T]) BufLen() int {
+//
+// 必须用指针接收者，理由同 Len。值接收者下 atomic.LoadInt64 读的是拷贝里的字段，
+// 既拦不住竞争，也读不到最新值。
+func (c *UnboundedChan[T]) BufLen() int {
 	return int(atomic.LoadInt64(&c.bufCount))
 }
 
