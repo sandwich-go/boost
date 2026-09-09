@@ -391,3 +391,216 @@ func benchFanout(b *testing.B, fan int, push func(context.Context, Job) error) {
 		wg.Wait()
 	}
 }
+
+// TestSemaphorePoolReserveHoldsSlotBeforeRun 锁住 Reserve 的核心承诺：返回成功即额度在手，
+// 此时还没派发任何 Job，但容量已被占住。
+//
+// 这是 Reserve 存在的全部理由——调用方要在派发前取「不可回收」的资源（例如全局单调序号），
+// 必须先确认派发一定会发生。若 Reserve 没真占住额度，后续 run 仍可能因额度不足而阻塞或失败，
+// 资源就漏在外面且无从补偿。
+func TestSemaphorePoolReserveHoldsSlotBeforeRun(t *testing.T) {
+	p := NewSemaphoreGoroutinePool(1, 0)
+	defer closeAndWait(t, p)
+
+	run, err := p.Reserve(context.Background())
+	if err != nil {
+		t.Fatalf("Reserve 失败: %v", err)
+	}
+
+	// 唯一的额度已被预约但尚未派发，此刻再 Push 必须拿不到额度。
+	// 用短 ctx 断言"拿不到"，而不是断言 Running()——Running 统计的是在飞 Job 数，
+	// 预约还没派发时它本就是 0，用它区分不出"额度被占住"和"额度还空着"。
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	defer cancel()
+	if err = p.Push(ctx, func() {}); err == nil {
+		t.Error("Reserve 之后额度仍可被别人拿走：预约没有真正占住容量，" +
+			"调用方在 run 之前取的不可回收资源可能白取")
+	}
+
+	var ran atomic.Bool
+	done := make(chan struct{})
+	run(func() { ran.Store(true); close(done) })
+
+	select {
+	case <-done:
+	case <-time.After(2 * time.Second):
+		t.Fatal("run 提交的 Job 未在 2s 内执行")
+	}
+	if !ran.Load() {
+		t.Error("run 没有执行 Job")
+	}
+}
+
+// TestSemaphorePoolReserveNilJobReleasesSlot 锁住放弃预约时额度被归还。
+//
+// 调用方在 Reserve 成功之后仍可能决定不发（例如发现没有可发的内容），此时必须能把额度还回去，
+// 否则每次放弃都让池容量永久缩水一格。
+func TestSemaphorePoolReserveNilJobReleasesSlot(t *testing.T) {
+	p := NewSemaphoreGoroutinePool(1, 0)
+	defer closeAndWait(t, p)
+
+	run, err := p.Reserve(context.Background())
+	if err != nil {
+		t.Fatalf("Reserve 失败: %v", err)
+	}
+	run(nil) // 放弃
+
+	// 额度归还后，Push 应立即成功。
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	done := make(chan struct{})
+	if err = p.Push(ctx, func() { close(done) }); err != nil {
+		t.Fatalf("放弃预约后额度没被归还，Push 失败: %v；每次放弃都会让容量缩水一格", err)
+	}
+	select {
+	case <-done:
+	case <-time.After(2 * time.Second):
+		t.Fatal("Job 未在 2s 内执行")
+	}
+}
+
+// TestSemaphorePoolReserveRunIsIdempotent 锁住 run 重复调用不会多还额度。
+//
+// 多还一次就凭空多出一个额度，池的并发上限被撑破——而上限本身就是这个池唯一的承诺。
+// 误用（重复调用）应当是安全的空操作，而不是静默破坏容量。
+func TestSemaphorePoolReserveRunIsIdempotent(t *testing.T) {
+	const limit = 2
+	p := NewSemaphoreGoroutinePool(limit, 0)
+	defer closeAndWait(t, p)
+
+	run, err := p.Reserve(context.Background())
+	if err != nil {
+		t.Fatalf("Reserve 失败: %v", err)
+	}
+
+	block := make(chan struct{})
+	var running atomic.Int32
+	var peak atomic.Int32
+	job := func() {
+		cur := running.Add(1)
+		for {
+			old := peak.Load()
+			if cur <= old || peak.CompareAndSwap(old, cur) {
+				break
+			}
+		}
+		<-block
+		running.Add(-1)
+	}
+
+	run(job)
+	run(job) // 重复调用：必须是空操作
+	run(nil) // 放弃：同样必须是空操作
+
+	// 再填满剩余额度；若上面的重复调用多还了额度，这里能塞进超过 limit 个并发 Job。
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	for i := 0; i < limit; i++ {
+		_ = p.Push(ctx, job)
+	}
+
+	deadline := time.Now().Add(time.Second)
+	for time.Now().Before(deadline) && running.Load() < int32(limit) {
+		runtime.Gosched()
+	}
+	close(block)
+
+	if got := peak.Load(); got > int32(limit) {
+		t.Errorf("并发峰值 %d 超过上限 %d：run 被重复调用后多归还了额度，池的限流承诺被打破",
+			got, limit)
+	}
+}
+
+// TestSemaphorePoolReserveRespectsContextAndClose 锁住 Reserve 的失败路径不占额度。
+//
+// 失败时若把额度留在手里，池容量会随每次失败递减；而失败恰恰发生在关停与超时这类本就异常的
+// 时刻，容量泄漏会让问题雪上加霜。
+func TestSemaphorePoolReserveRespectsContextAndClose(t *testing.T) {
+	t.Run("ctx 取消时失败且不占额度", func(t *testing.T) {
+		p := NewSemaphoreGoroutinePool(1, 0)
+		defer closeAndWait(t, p)
+
+		// 先占满唯一额度
+		block := make(chan struct{})
+		if err := p.Push(context.Background(), func() { <-block }); err != nil {
+			t.Fatalf("前置 Push 失败: %v", err)
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+		defer cancel()
+		if run, err := p.Reserve(ctx); err == nil {
+			run(nil)
+			t.Error("额度已满且 ctx 到期，Reserve 仍返回成功")
+		}
+
+		close(block)
+	})
+
+	t.Run("池关闭后失败", func(t *testing.T) {
+		p := NewSemaphoreGoroutinePool(1, 0)
+		p.Close()
+		if run, err := p.Reserve(context.Background()); err == nil {
+			run(nil)
+			t.Error("池已关闭，Reserve 仍返回成功：关停期间不该再占额度起新工作")
+		}
+	})
+}
+
+// TestSemaphorePoolPushStillWorksViaReserve 锁住 Push 改为复用 Reserve 之后行为不变。
+//
+// Push 是既有 API，绝大多数调用方在用；拆出 Reserve 时若把 nil job 校验或错误语义弄丢，
+// 影响面远大于新 API 本身。
+func TestSemaphorePoolPushStillWorksViaReserve(t *testing.T) {
+	p := NewSemaphoreGoroutinePool(2, 0)
+	defer closeAndWait(t, p)
+
+	if err := p.Push(context.Background(), nil); err == nil {
+		t.Error("Push(nil) 应当报错：拆分后不能把 nil job 校验丢掉")
+	}
+
+	done := make(chan struct{})
+	if err := p.Push(context.Background(), func() { close(done) }); err != nil {
+		t.Fatalf("Push 失败: %v", err)
+	}
+	select {
+	case <-done:
+	case <-time.After(2 * time.Second):
+		t.Fatal("Push 的 Job 未在 2s 内执行")
+	}
+}
+
+// TestSemaphorePoolReserveFailsFastWhenClosed 锁住池已关闭时 Reserve 立即失败，而不是先去等额度。
+//
+// Reserve 里有两道 IsClosed 检查：入口一道、拿到额度后一道。后者处理「等额度期间池被关闭」的
+// 竞态，是正确性所必需；前者只影响快慢——删掉它结果依然正确（第二道会拦住），所以用例必须
+// 断言「耗时」而不只是「失败」，否则这道检查删掉也没人知道。
+//
+// 快速失败的意义：额度被长时间占用的 Job 占满时，入口不判就会一直等到那些 Job 结束或 ctx 取消。
+// 关停路径上多等这一会儿会拖慢整个进程收干。
+func TestSemaphorePoolReserveFailsFastWhenClosed(t *testing.T) {
+	p := NewSemaphoreGoroutinePool(1, 0)
+
+	// 占满唯一额度，且让它在用例结束前不释放。
+	block := make(chan struct{})
+	if err := p.Push(context.Background(), func() { <-block }); err != nil {
+		t.Fatalf("前置 Push 失败: %v", err)
+	}
+	p.Close() // Close 本身不阻塞
+
+	start := time.Now()
+	run, err := p.Reserve(context.Background())
+	cost := time.Since(start)
+	if err == nil {
+		run(nil)
+		t.Fatal("池已关闭，Reserve 仍返回成功")
+	}
+	// 阈值取一个宽松值：入口判 IsClosed 是纯内存操作，正常在微秒级；
+	// 而少了它就要等上面那个 Job 结束（本用例里它永不结束，只能等到超时）。
+	if cost > 200*time.Millisecond {
+		t.Errorf("Reserve 在池关闭后耗时 %v 才失败：入口的 IsClosed 检查没生效，"+
+			"关停时会白等额度，拖慢进程收干", cost)
+	}
+
+	close(block)
+	closeAndWait(t, p)
+}
