@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	rtdebug "runtime/debug"
-	"sync"
 	"time"
 
 	"github.com/sandwich-go/boost/internal/log"
@@ -93,33 +92,8 @@ func (p *SemaphoreGoroutinePool) Push(ctx context.Context, job Job) error {
 	if job == nil {
 		return xerror.NewText("goroutine pool push nil job")
 	}
-	run, err := p.Reserve(ctx)
-	if err != nil {
-		return err
-	}
-	run(job)
-	return nil
-}
-
-// Reserve 先占住一个执行额度，把「能不能执行」与「执行什么」分成两步。
-//
-// 返回 nil error 时额度已在手，此后派发一定会发生；返回的 run 必须且只需调用一次：
-// 传入 Job 表示派发执行，传 nil 表示放弃本次预约、立即归还额度。重复调用是安全的空操作，
-// 但一次都不调会让该额度永久泄漏，池容量静默缩水。
-//
-// 等待额度的结束条件与 Push 一致：ctx 取消、timeout 到时、拿到额度。
-//
-// # 什么时候需要它
-//
-// 当调用方要在派发前获取「不可回收」的资源时。用 Push 的话，资源已经取走而 Push 可能失败，
-// 那份资源就漏在外面且无从补偿。典型场景是取一个全局单调递增的序号：下游按序号连续性做保序
-// 处理，缺号会让后续数据被压住等超时，而序号取出来就还不回去了。
-//
-// 用 Reserve 可以把顺序写成「先占额度 → 取资源 → 派发」，取资源发生在派发已确定之后，
-// 也仍处在调用方的顺序执行流里（而不是 Job 内部的并发上下文），资源的先后顺序因此可控。
-func (p *SemaphoreGoroutinePool) Reserve(ctx context.Context) (run func(Job), err error) {
 	if p.IsClosed() {
-		return nil, xerror.NewText("goroutine pool closed")
+		return xerror.NewText("goroutine pool closed")
 	}
 	if ctx == nil {
 		ctx = context.Background()
@@ -132,34 +106,18 @@ func (p *SemaphoreGoroutinePool) Reserve(ctx context.Context) (run func(Job), er
 	}
 	select {
 	case <-ctx.Done():
-		return nil, xerror.NewText("goroutine pool job push context done, running: %d", p.Running())
+		return xerror.NewText("goroutine pool job push context done, running: %d", p.Running())
 	case <-timerC:
-		return nil, xerror.NewText("goroutine pool job push blocked with %s, running: %d", p.timeout, p.Running())
+		return xerror.NewText("goroutine pool job push blocked with %s, running: %d", p.timeout, p.Running())
 	case p.tokens <- struct{}{}:
 	}
 
 	// 拿到额度后再判一次：Close 期间不再启动新工作，让 Close 能尽快收干
 	if p.IsClosed() {
 		<-p.tokens
-		return nil, xerror.NewText("goroutine pool closed")
+		return xerror.NewText("goroutine pool closed")
 	}
 
-	// once 保证额度只被消费一次：调用方重复调 run 时不会重复归还，
-	// 否则一次误用就会凭空多出一个额度、把并发上限撑破。
-	var once sync.Once
-	return func(job Job) {
-		once.Do(func() {
-			if job == nil {
-				<-p.tokens
-				return
-			}
-			p.goWithToken(job)
-		})
-	}, nil
-}
-
-// goWithToken 用已经占住的额度执行 job，额度在 job 结束后归还。
-func (p *SemaphoreGoroutinePool) goWithToken(job Job) {
 	go func() {
 		// 归还额度的 defer 先注册、后执行，因此即使 onPanic 自身再 panic，
 		// 额度也会在栈展开时归还。
@@ -177,6 +135,7 @@ func (p *SemaphoreGoroutinePool) goWithToken(job Job) {
 		}()
 		job()
 	}()
+	return nil
 }
 
 // Running 返回当前占用的额度数，即正在执行的 Job 数（含刚拿到额度尚未开始的）。
