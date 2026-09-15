@@ -1,3 +1,5 @@
+//go:build !boost_lru_list
+
 package lru
 
 import (
@@ -190,5 +192,11 @@ func TestFiveSecondTTLExpiryAndHeapReschedule(t *testing.T) {
 	defer lock.RUnlock()
 	if store["hot"] || hot.engine != nil || engine.nodes.Len() != 0 || hot.heapIndex != -1 {
 		t.Fatal("hot 淘汰后 store 或堆中仍有残留")
+	}
+}
+
+func TestImplementationName_Heap(t *testing.T) {
+	if got := ImplementationName(); got != "heap" {
+		t.Fatalf("ImplementationName() = %q, want \"heap\"", got)
 	}
 }

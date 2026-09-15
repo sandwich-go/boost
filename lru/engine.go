@@ -1,3 +1,5 @@
+//go:build !boost_lru_list
+
 package lru
 
 import (
@@ -95,6 +97,11 @@ func NewEngine[V any](interval time.Duration, locker sync.Locker, expireHandler 
 	e.startCleaner()
 	return e
 }
+
+// ImplementationName 返回当前编译进二进制的 lru 实现名。lru 有两份实现，靠
+// boost_lru_list build tag 二选一，且必须在所有构建路径上一致；服务启动时打印它可以
+// 让 tag 配错在日志里一眼可见，而不是等行为异常了才发现。
+func ImplementationName() string { return "heap" }
 
 func (e *Engine[V]) now() int64 {
 	return time.Since(e.epoch).Nanoseconds()
