@@ -4,6 +4,7 @@
 
 - `graph` [图形](https://github.com/sandwich-go/boost/tree/main/graph/README.md)
 - `httputil` [HTTP工具](https://github.com/sandwich-go/boost/tree/main/httputil/README.md)
+- `lru` [滑动 TTL 引擎](./lru/README.md)
 - `middleware` 中间件
 - `misc` [杂项工具](https://github.com/sandwich-go/boost/tree/main/misc/README.md)
 - `module` [Module工具](https://github.com/sandwich-go/boost/tree/main/module/README.md)
