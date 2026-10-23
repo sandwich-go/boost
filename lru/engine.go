@@ -164,6 +164,33 @@ func (e *Engine[V]) size() int { return e.nodes.Len() }
 // heap.Pop/Push 的成本已经足以摊平一次线性整理。
 const expiryBatchThreshold = 256
 
+// expireLimited 逐个校正堆顶；正数预算下不能触发全堆线性整理，否则会突破锁内预算。
+func (e *Engine[V]) expireLimited(limit int) bool {
+	if e.locker != nil {
+		e.locker.Lock()
+		defer e.locker.Unlock()
+	}
+	now := e.now()
+	for processed := 0; e.nodes.Len() > 0; processed++ {
+		node := e.nodes[0]
+		if now-node.scheduledAt <= e.cleanIntervalNanos {
+			return false
+		}
+		if processed == limit {
+			return true
+		}
+		lastAccess := node.lastAccess.Load()
+		if now-lastAccess <= e.cleanIntervalNanos {
+			node.scheduledAt = lastAccess
+			heap.Fix(&e.nodes, 0)
+			continue
+		}
+		heap.Pop(&e.nodes)
+		e.expireNode(node)
+	}
+	return false
+}
+
 func (e *Engine[V]) expire() {
 	if e.locker != nil {
 		e.locker.Lock()

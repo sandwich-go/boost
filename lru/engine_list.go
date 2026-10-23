@@ -182,6 +182,29 @@ func (e *Engine[V]) moveNodeToHead(node *Node[V]) {
 	e.head = node
 }
 
+// expireLimited 每次摘下完整节点后才执行回调，批次结束时链表始终可供读写。
+func (e *Engine[V]) expireLimited(limit int) bool {
+	if e.locker != nil {
+		e.locker.Lock()
+		defer e.locker.Unlock()
+	}
+	now := time.Now()
+	for processed := 0; e.head != nil; processed++ {
+		node := e.head.prev
+		if now.Sub(node.accessTime) <= e.cleanInterval {
+			return false
+		}
+		if processed == limit {
+			return true
+		}
+		e.Remove(node)
+		if e.expireHandler != nil {
+			e.expireHandler(node.value)
+		}
+	}
+	return false
+}
+
 func (e *Engine[V]) expire() {
 	if e.locker != nil {
 		e.locker.Lock()

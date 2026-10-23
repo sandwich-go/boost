@@ -1,6 +1,7 @@
 package lru
 
 import (
+	"fmt"
 	"sort"
 	"sync"
 	"sync/atomic"
@@ -40,6 +41,80 @@ func TestConformance_AutoCleanDefault(t *testing.T) {
 	e := NewEngine[int](time.Hour, nil, nil)
 	if e.started.Get() != 1 {
 		t.Fatal("默认构造没有启动自动清理")
+	}
+}
+
+func TestConformance_ExpireBatchBudget(t *testing.T) {
+	for _, limit := range []int{0, 1, 7, 256, 512} {
+		t.Run(fmt.Sprint(limit), func(t *testing.T) {
+			var lock sync.Mutex
+			removed := 0
+			e := NewEngine[int](-time.Hour, &lock, func(int) { removed++ }, WithAutoClean(false))
+			const count = 1025
+			lock.Lock()
+			for i := 0; i < count; i++ {
+				e.Add(i)
+			}
+			lock.Unlock()
+			for removed < count {
+				before := removed
+				pending := e.ExpireBatch(limit)
+				want := count - before
+				if limit > 0 {
+					want = min(want, limit)
+				}
+				if removed-before != want || pending != (removed < count) {
+					t.Fatalf("removed=%d want=%d pending=%t remaining=%d", removed-before, want, pending, count-removed)
+				}
+				// 返回时已释放构造时的锁，调用方可以在下一批前继续读写。
+				lock.Lock()
+				if e.size() != count-removed {
+					t.Fatal("部分淘汰破坏了剩余节点")
+				}
+				lock.Unlock()
+			}
+			if e.ExpireBatch(limit) {
+				t.Fatal("空引擎仍报告积压")
+			}
+		})
+	}
+}
+
+func TestConformance_ExpireBatchKeepsLiveNodes(t *testing.T) {
+	e := NewEngine[int](time.Hour, nil, func(int) { t.Error("误删存活节点") }, WithAutoClean(false))
+	node := e.Add(1)
+	if e.ExpireBatch(1) || e.size() != 1 {
+		t.Fatal("存活节点不应被删除或报告到期积压")
+	}
+	e.Remove(node)
+	defer func() {
+		if recover() == nil {
+			t.Error("负数预算必须拒绝")
+		}
+	}()
+	e.ExpireBatch(-1)
+}
+
+func TestConformance_ExpireBatchCallbackPanic(t *testing.T) {
+	panicOnce := true
+	e := NewEngine[int](-time.Hour, nil, func(int) {
+		if panicOnce {
+			panicOnce = false
+			panic("expiry callback")
+		}
+	}, WithAutoClean(false))
+	e.Add(1)
+	e.Add(2)
+	func() {
+		defer func() {
+			if recover() == nil {
+				t.Error("过期回调未执行")
+			}
+		}()
+		e.ExpireBatch(1)
+	}()
+	if e.size() != 1 || e.ExpireBatch(1) || e.size() != 0 {
+		t.Fatal("回调异常后剩余节点不可继续清理")
 	}
 }
 

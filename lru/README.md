@@ -20,6 +20,12 @@ locker 为 nil 时，调用方须自行保证清理与节点操作互斥。
 由外层共用的调度任务调用 `Expire()`。`Add` 不会启动清理任务；不传选项时仍自动清理。
 `Expire()` 使用构造时传入的 locker；外层已经持锁时传 nil locker，避免重复加锁。
 
+`ExpireBatch(limit)` 在单次调用内最多处理 `limit` 个到期排期，返回是否仍有排期需要检查。
+`limit=0` 沿用不限量的 `Expire()`，负数会 panic。正数预算同时限制堆模式的续期重排，
+不会触发全堆线性整理；返回 true 不一定意味着有同样数量的实际过期对象。
+外层收到 true 后，应释放本批持有的锁，再继续下一批；单次返回时节点结构和索引回调已更新。
+
+
 ```sh
 go test ./lru ./xcontainer/redblacktree
 go test -tags boost_lru_heap ./lru ./xcontainer/redblacktree
