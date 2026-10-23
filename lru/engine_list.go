@@ -146,6 +146,15 @@ func (e *Engine[V]) IsExpired(node *Node[V]) bool {
 	return node == nil || node.engine != e || time.Since(node.accessTime) > e.cleanInterval
 }
 
+// NextExpiry 返回下一次可能过期的时间，空引擎返回零值；调用方须持有读锁或写锁。
+// 读取不修改节点，也不包括调用返回后新加入的节点。
+func (e *Engine[V]) NextExpiry() time.Time {
+	if e.head == nil {
+		return time.Time{}
+	}
+	return e.head.prev.accessTime.Add(e.cleanInterval)
+}
+
 // TryPromote 只为尚未过期的节点续期，避免分批淘汰期间读操作复活旧数据。
 // 与 Promote 一样，调用方须持有写锁。
 func (e *Engine[V]) TryPromote(node *Node[V]) bool {

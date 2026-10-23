@@ -144,6 +144,39 @@ func TestConformance_LogicalExpiry(t *testing.T) {
 	}
 }
 
+func TestConformance_NextExpiry(t *testing.T) {
+	const ttl = time.Hour
+	e := NewEngine[int](ttl, nil, nil, WithAutoClean(false))
+	if !e.NextExpiry().IsZero() {
+		t.Fatal("空引擎不应返回排期")
+	}
+	before := time.Now()
+	first := e.Add(1)
+	after := time.Now()
+	next := e.NextExpiry()
+	if next.Before(before.Add(ttl)) || next.After(after.Add(ttl)) {
+		t.Fatal("排期不在节点写入时间加 TTL 的范围内")
+	}
+	secondBefore := time.Now()
+	second := e.Add(2)
+	secondAfter := time.Now()
+	e.Remove(first)
+	next = e.NextExpiry()
+	if next.Before(secondBefore.Add(ttl)) || next.After(secondAfter.Add(ttl)) {
+		t.Fatal("删除最早节点后未更新排期")
+	}
+	e.Remove(second)
+	if !e.NextExpiry().IsZero() {
+		t.Fatal("全部删除后仍返回排期")
+	}
+	expired := NewEngine[int](-time.Hour, nil, nil, WithAutoClean(false))
+	expired.Add(1)
+	expired.Add(2)
+	if !expired.ExpireBatch(1) || !expired.NextExpiry().Before(time.Now()) {
+		t.Fatal("批次尚有积压时不应把排期推迟到未来")
+	}
+}
+
 func BenchmarkPromoteLive(b *testing.B) {
 	for _, checked := range []bool{false, true} {
 		b.Run(fmt.Sprint("checked=", checked), func(b *testing.B) {

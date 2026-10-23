@@ -159,6 +159,16 @@ func (e *Engine[V]) IsExpired(node *Node[V]) bool {
 	return node == nil || node.engine != e || e.now()-node.lastAccess.Load() > e.cleanIntervalNanos
 }
 
+// NextExpiry 返回下一次需要复查的排期，空引擎返回零值；调用方须持有读锁或写锁。
+// Promote 只续期、不调整堆，因此这里可能提前唤醒，但不能按堆顶的 lastAccess 推迟检查，
+// 否则会漏掉其他节点更早的排期。结果不包括调用返回后新加入的节点。
+func (e *Engine[V]) NextExpiry() time.Time {
+	if e.nodes.Len() == 0 {
+		return time.Time{}
+	}
+	return e.epoch.Add(time.Duration(e.nodes[0].scheduledAt)).Add(e.cleanInterval)
+}
+
 // TryPromote 只为尚未过期的节点续期，避免分批淘汰期间读操作复活旧数据。
 // 与 Promote 一样，可在保护节点的读锁下调用。
 func (e *Engine[V]) TryPromote(node *Node[V]) bool {

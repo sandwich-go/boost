@@ -11,6 +11,17 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
+func TestNextExpiryKeepsOldRootSchedule(t *testing.T) {
+	e := NewEngine[int](time.Hour, nil, nil, WithAutoClean(false))
+	first := e.Add(1)
+	second := e.Add(2)
+	time.Sleep(time.Millisecond)
+	e.Promote(first)
+	if e.NextExpiry().After(e.epoch.Add(time.Duration(second.scheduledAt)).Add(time.Hour)) {
+		t.Fatal("按堆顶续期后的访问时间推迟检查，会漏掉另一节点更早的排期")
+	}
+}
+
 func TestExpireBatchBoundsRescheduling(t *testing.T) {
 	e := NewEngine[int](time.Hour, nil, func(int) { t.Error("续期节点不能淘汰") }, WithAutoClean(false))
 	const count = 1025
