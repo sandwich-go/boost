@@ -1,3 +1,5 @@
+//go:build !boost_lru_heap
+
 package lru
 
 import (

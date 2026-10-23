@@ -50,3 +50,25 @@ func TestEngine(t *testing.T) {
 		}
 	})
 }
+
+func BenchmarkEnginePromote(b *testing.B) {
+	e := NewEngine[int](time.Hour, nil, nil, WithAutoClean(false))
+	nodes := make([]*Node[int], 1024)
+	for i := range nodes {
+		nodes[i] = e.Add(i)
+	}
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := range b.N {
+		e.Promote(nodes[i%len(nodes)])
+	}
+}
+
+func BenchmarkEngineExpireEmpty(b *testing.B) {
+	e := NewEngine[int](time.Hour, nil, nil, WithAutoClean(false))
+	b.ReportAllocs()
+	b.ResetTimer()
+	for range b.N {
+		e.Expire()
+	}
+}
