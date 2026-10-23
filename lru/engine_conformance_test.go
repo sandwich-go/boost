@@ -3,17 +3,52 @@ package lru
 import (
 	"sort"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 )
+
+func TestConformance_ManualExpire(t *testing.T) {
+	var lock sync.Mutex
+	var expired atomic.Int32
+	e := NewEngine[int](5*time.Millisecond, &lock, func(value int) {
+		expired.Add(int32(value))
+	}, WithAutoClean(false))
+	lock.Lock()
+	e.Add(7)
+	lock.Unlock()
+	if e.started.Get() != 0 {
+		t.Fatal("关闭自动清理后 Add 仍启动了后台任务")
+	}
+	time.Sleep(15 * time.Millisecond)
+	if expired.Load() != 0 {
+		t.Fatal("显式清理前触发了过期回调")
+	}
+	e.Expire()
+	if expired.Load() != 7 {
+		t.Fatal("显式清理未回收过期项")
+	}
+	lock.Lock()
+	e.Add(9)
+	lock.Unlock()
+	if e.started.Get() != 0 {
+		t.Fatal("清空后重新写入启动了后台任务")
+	}
+}
+
+func TestConformance_AutoCleanDefault(t *testing.T) {
+	e := NewEngine[int](time.Hour, nil, nil)
+	if e.started.Get() != 1 {
+		t.Fatal("默认构造没有启动自动清理")
+	}
+}
 
 // 本文件刻意不带 build tag：lru 默认使用链表，boost_lru_heap 选择惰性堆，
 // 而两者对外可见的语义必须一致。同一份用例在两种配置下都跑，就是这份一致性的守卫——
 // 比写一个「同时引用两种实现」的对比用例更实在，因为 build tag 下两者本就互斥。
 //
-// 这里只用两份实现都提供的入口：newEngine / Add / Remove / Promote / expire / size /
-// Value / SetValue / ImplementationName。任何依赖内部字段的断言都属于某一份实现，应放到
-// 带 tag 的测试文件里。
+// 这里只用两份实现共同提供的入口及启动状态，不依赖节点在链表或堆中的布局。
+// 依赖具体节点布局的断言放到带 tag 的测试文件里。
 
 // sameIntSet 比较两个 int 切片的多重集合，不比较顺序。
 //

@@ -92,9 +92,11 @@ func NewLazyEngine[V any](interval time.Duration, locker sync.Locker, expireHand
 // interval ticker 间隔时间，过期时间需要 [interval*0.9, interval*1.1] 之前才准确
 // locker 节点锁，保证添加/删除/过期元素并发安全
 // expireHandler 过期元素处理器
-func NewEngine[V any](interval time.Duration, locker sync.Locker, expireHandler func(V)) *Engine[V] {
+func NewEngine[V any](interval time.Duration, locker sync.Locker, expireHandler func(V), opts ...EngineOption) *Engine[V] {
 	var e = newEngine(interval, locker, expireHandler, true)
-	e.startCleaner()
+	if autoCleanEnabled(opts) {
+		e.startCleaner()
+	}
 	return e
 }
 

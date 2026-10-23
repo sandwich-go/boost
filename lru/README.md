@@ -16,6 +16,10 @@ locker 为 nil 时，调用方须自行保证清理与节点操作互斥。
 `ImplementationName()` 返回 `linkedlist` 或 `heap`，可用于启动日志确认构建模式。
 服务、测试与 Go plugin 等构建入口应使用一致的 tag。
 
+`NewEngine(..., WithAutoClean(false))` 关闭每个 Engine 自带的后台清理，
+由外层共用的调度任务调用 `Expire()`。`Add` 不会启动清理任务；不传选项时仍自动清理。
+`Expire()` 使用构造时传入的 locker；外层已经持锁时传 nil locker，避免重复加锁。
+
 ```sh
 go test ./lru ./xcontainer/redblacktree
 go test -tags boost_lru_heap ./lru ./xcontainer/redblacktree

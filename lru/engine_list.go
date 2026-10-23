@@ -72,9 +72,11 @@ func NewLazyEngine[V any](interval time.Duration, locker sync.Locker, expireHand
 // expireHandler 过期元素处理器
 //
 // Add、Remove、Promote 均需在 locker 对应的写锁下调用，详见 Engine 的说明。
-func NewEngine[V any](interval time.Duration, locker sync.Locker, expireHandler func(V)) *Engine[V] {
+func NewEngine[V any](interval time.Duration, locker sync.Locker, expireHandler func(V), opts ...EngineOption) *Engine[V] {
 	var e = newEngine(interval, locker, expireHandler, true)
-	e.startCleaner()
+	if autoCleanEnabled(opts) {
+		e.startCleaner()
+	}
 	return e
 }
 
