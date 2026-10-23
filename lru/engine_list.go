@@ -142,6 +142,35 @@ func (e *Engine[V]) Promote(node *Node[V]) bool {
 	return true
 }
 
+// IsExpired 只判断逻辑过期，不删除节点；调用方须持有保护节点的读锁或写锁。
+func (e *Engine[V]) IsExpired(node *Node[V]) bool {
+	return node == nil || node.engine != e || time.Since(node.accessTime) > e.cleanInterval
+}
+
+// NextExpiry 返回下一次可能过期的时间，空引擎返回零值；调用方须持有读锁或写锁。
+// 读取不修改节点，也不包括调用返回后新加入的节点。
+func (e *Engine[V]) NextExpiry() time.Time {
+	if e.head == nil {
+		return time.Time{}
+	}
+	return e.head.prev.accessTime.Add(e.cleanInterval)
+}
+
+// TryPromote 只为尚未过期的节点续期，避免分批淘汰期间读操作复活旧数据。
+// 与 Promote 一样，调用方须持有写锁。
+func (e *Engine[V]) TryPromote(node *Node[V]) bool {
+	if node == nil || node.engine != e {
+		return false
+	}
+	now := time.Now()
+	if now.Sub(node.accessTime) > e.cleanInterval {
+		return false
+	}
+	node.accessTime = now
+	e.moveNodeToHead(node)
+	return true
+}
+
 func (e *Engine[V]) size() int {
 	if e.head == nil {
 		return 0
@@ -181,6 +210,29 @@ func (e *Engine[V]) moveNodeToHead(node *Node[V]) {
 	e.head.prev.next = node
 	e.head.prev = node
 	e.head = node
+}
+
+// expireLimited 每次摘下完整节点后才执行回调，批次结束时链表始终可供读写。
+func (e *Engine[V]) expireLimited(limit int) bool {
+	if e.locker != nil {
+		e.locker.Lock()
+		defer e.locker.Unlock()
+	}
+	now := time.Now()
+	for processed := 0; e.head != nil; processed++ {
+		node := e.head.prev
+		if now.Sub(node.accessTime) <= e.cleanInterval {
+			return false
+		}
+		if processed == limit {
+			return true
+		}
+		e.Remove(node)
+		if e.expireHandler != nil {
+			e.expireHandler(node.value)
+		}
+	}
+	return false
 }
 
 func (e *Engine[V]) expire() {

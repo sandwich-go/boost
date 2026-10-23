@@ -11,6 +11,44 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
+func TestNextExpiryKeepsOldRootSchedule(t *testing.T) {
+	e := NewEngine[int](time.Hour, nil, nil, WithAutoClean(false))
+	first := e.Add(1)
+	second := e.Add(2)
+	time.Sleep(time.Millisecond)
+	e.Promote(first)
+	if e.NextExpiry().After(e.epoch.Add(time.Duration(second.scheduledAt)).Add(time.Hour)) {
+		t.Fatal("按堆顶续期后的访问时间推迟检查，会漏掉另一节点更早的排期")
+	}
+}
+
+func TestExpireBatchBoundsRescheduling(t *testing.T) {
+	e := NewEngine[int](time.Hour, nil, func(int) { t.Error("续期节点不能淘汰") }, WithAutoClean(false))
+	const count = 1025
+	for i := 0; i < count; i++ {
+		n := e.Add(i)
+		n.scheduledAt = -2 * time.Hour.Nanoseconds()
+	}
+	heap.Init(&e.nodes)
+	if !e.ExpireBatch(256) {
+		t.Fatal("仍有旧排期需要检查")
+	}
+	old := 0
+	for _, n := range e.nodes {
+		if n.scheduledAt < 0 {
+			old++
+		}
+	}
+	if old != count-256 {
+		t.Fatalf("续期重排突破预算: remaining=%d", old)
+	}
+	for e.ExpireBatch(256) {
+	}
+	if e.size() != count {
+		t.Fatal("校正排期时误删了存活节点")
+	}
+}
+
 func TestPromoteDefersExpiry(t *testing.T) {
 	Convey("到达旧过期点时按最后访问时间重新排期", t, func() {
 		var lock sync.Mutex

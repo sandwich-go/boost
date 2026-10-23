@@ -151,12 +151,45 @@ func (e *Engine[V]) Promote(node *Node[V]) bool {
 		return false
 	}
 	now := e.now()
+	e.promoteAt(node, now)
+	return true
+}
+
+// IsExpired 只判断逻辑过期，不删除节点；调用方须持有保护节点的读锁或写锁。
+func (e *Engine[V]) IsExpired(node *Node[V]) bool {
+	return node == nil || node.engine != e || e.now()-node.lastAccess.Load() > e.cleanIntervalNanos
+}
+
+// NextExpiry 返回下一次需要复查的排期，空引擎返回零值；调用方须持有读锁或写锁。
+// Promote 只续期、不调整堆，因此这里可能提前唤醒，但不能按堆顶的 lastAccess 推迟检查，
+// 否则会漏掉其他节点更早的排期。结果不包括调用返回后新加入的节点。
+func (e *Engine[V]) NextExpiry() time.Time {
+	if e.nodes.Len() == 0 {
+		return time.Time{}
+	}
+	return e.epoch.Add(time.Duration(e.nodes[0].scheduledAt)).Add(e.cleanInterval)
+}
+
+// TryPromote 只为尚未过期的节点续期，避免分批淘汰期间读操作复活旧数据。
+// 与 Promote 一样，可在保护节点的读锁下调用。
+func (e *Engine[V]) TryPromote(node *Node[V]) bool {
+	if node == nil || node.engine != e {
+		return false
+	}
+	now := e.now()
+	if now-node.lastAccess.Load() > e.cleanIntervalNanos {
+		return false
+	}
+	e.promoteAt(node, now)
+	return true
+}
+
+func (e *Engine[V]) promoteAt(node *Node[V], now int64) {
 	for lastAccess := node.lastAccess.Load(); now > lastAccess; lastAccess = node.lastAccess.Load() {
 		if node.lastAccess.CompareAndSwap(lastAccess, now) {
 			break
 		}
 	}
-	return true
 }
 
 func (e *Engine[V]) size() int { return e.nodes.Len() }
@@ -164,6 +197,33 @@ func (e *Engine[V]) size() int { return e.nodes.Len() }
 // expiryBatchThreshold 避免少量到期结点触发全堆扫描；达到该数量后，继续逐个
 // heap.Pop/Push 的成本已经足以摊平一次线性整理。
 const expiryBatchThreshold = 256
+
+// expireLimited 逐个校正堆顶；正数预算下不能触发全堆线性整理，否则会突破锁内预算。
+func (e *Engine[V]) expireLimited(limit int) bool {
+	if e.locker != nil {
+		e.locker.Lock()
+		defer e.locker.Unlock()
+	}
+	now := e.now()
+	for processed := 0; e.nodes.Len() > 0; processed++ {
+		node := e.nodes[0]
+		if now-node.scheduledAt <= e.cleanIntervalNanos {
+			return false
+		}
+		if processed == limit {
+			return true
+		}
+		lastAccess := node.lastAccess.Load()
+		if now-lastAccess <= e.cleanIntervalNanos {
+			node.scheduledAt = lastAccess
+			heap.Fix(&e.nodes, 0)
+			continue
+		}
+		heap.Pop(&e.nodes)
+		e.expireNode(node)
+	}
+	return false
+}
 
 func (e *Engine[V]) expire() {
 	if e.locker != nil {
