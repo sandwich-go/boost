@@ -118,6 +118,49 @@ func TestConformance_ExpireBatchCallbackPanic(t *testing.T) {
 	}
 }
 
+func TestConformance_LogicalExpiry(t *testing.T) {
+	for _, ttl := range []time.Duration{-time.Hour, time.Hour} {
+		t.Run(ttl.String(), func(t *testing.T) {
+			e := NewEngine[int](ttl, nil, nil, WithAutoClean(false))
+			node := e.Add(1)
+			expired := ttl < 0
+			if e.IsExpired(node) != expired || e.TryPromote(node) == expired {
+				t.Fatal("逻辑过期判断与续期结果不一致")
+			}
+			if e.size() != 1 {
+				t.Fatal("读取不能改变物理节点数量")
+			}
+			other := NewEngine[int](time.Hour, nil, nil, WithAutoClean(false))
+			for _, n := range []*Node[int]{nil, other.Add(2)} {
+				if !e.IsExpired(n) || e.TryPromote(n) {
+					t.Fatal("空节点或其他 Engine 的节点不能命中")
+				}
+			}
+			e.Remove(node)
+			if !e.IsExpired(node) || e.TryPromote(node) {
+				t.Fatal("已移除节点不能命中")
+			}
+		})
+	}
+}
+
+func BenchmarkPromoteLive(b *testing.B) {
+	for _, checked := range []bool{false, true} {
+		b.Run(fmt.Sprint("checked=", checked), func(b *testing.B) {
+			e := NewEngine[int](time.Hour, nil, nil, WithAutoClean(false))
+			node := e.Add(1)
+			b.ResetTimer()
+			for b.Loop() {
+				if checked {
+					e.TryPromote(node)
+					continue
+				}
+				e.Promote(node)
+			}
+		})
+	}
+}
+
 // 本文件刻意不带 build tag：lru 默认使用链表，boost_lru_heap 选择惰性堆，
 // 而两者对外可见的语义必须一致。同一份用例在两种配置下都跑，就是这份一致性的守卫——
 // 比写一个「同时引用两种实现」的对比用例更实在，因为 build tag 下两者本就互斥。

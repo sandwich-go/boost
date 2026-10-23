@@ -150,12 +150,35 @@ func (e *Engine[V]) Promote(node *Node[V]) bool {
 		return false
 	}
 	now := e.now()
+	e.promoteAt(node, now)
+	return true
+}
+
+// IsExpired 只判断逻辑过期，不删除节点；调用方须持有保护节点的读锁或写锁。
+func (e *Engine[V]) IsExpired(node *Node[V]) bool {
+	return node == nil || node.engine != e || e.now()-node.lastAccess.Load() > e.cleanIntervalNanos
+}
+
+// TryPromote 只为尚未过期的节点续期，避免分批淘汰期间读操作复活旧数据。
+// 与 Promote 一样，可在保护节点的读锁下调用。
+func (e *Engine[V]) TryPromote(node *Node[V]) bool {
+	if node == nil || node.engine != e {
+		return false
+	}
+	now := e.now()
+	if now-node.lastAccess.Load() > e.cleanIntervalNanos {
+		return false
+	}
+	e.promoteAt(node, now)
+	return true
+}
+
+func (e *Engine[V]) promoteAt(node *Node[V], now int64) {
 	for lastAccess := node.lastAccess.Load(); now > lastAccess; lastAccess = node.lastAccess.Load() {
 		if node.lastAccess.CompareAndSwap(lastAccess, now) {
 			break
 		}
 	}
-	return true
 }
 
 func (e *Engine[V]) size() int { return e.nodes.Len() }

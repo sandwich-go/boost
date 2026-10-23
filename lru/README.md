@@ -25,6 +25,11 @@ locker 为 nil 时，调用方须自行保证清理与节点操作互斥。
 不会触发全堆线性整理；返回 true 不一定意味着有同样数量的实际过期对象。
 外层收到 true 后，应释放本批持有的锁，再继续下一批；单次返回时节点结构和索引回调已更新。
 
+分批清理期间，物理节点可能仍在、TTL 却已经到期。读取时用 `IsExpired(node)` 判断，
+需要续期时用 `TryPromote(node)`：它只续期存活节点，检查和续期共用一次时钟读取。
+两者均不物理删除节点，调用方仍按 Engine 的锁契约同步；`TryPromote` 与 `Promote`
+的锁要求相同。原有 `Promote` 保持兼容，仍可续期尚未物理淘汰的旧节点。
+
 
 ```sh
 go test ./lru ./xcontainer/redblacktree
